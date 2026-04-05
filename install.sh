@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO="jfrog/boost"
-INSTALL_DIR="${BOOST_INSTALL_DIR:-/usr/local/bin}"
+INSTALL_DIR="${BOOST_INSTALL_DIR:-$HOME/.local/bin}"
 
 main() {
   check_dependencies
@@ -63,12 +63,8 @@ download_and_install() {
     err "Archive did not contain a 'boost' binary"
   fi
 
-  if [ -w "$INSTALL_DIR" ]; then
-    mv "$TMPDIR/boost" "$INSTALL_DIR/boost"
-  else
-    info "Installing to $INSTALL_DIR (requires sudo)..."
-    sudo mv "$TMPDIR/boost" "$INSTALL_DIR/boost"
-  fi
+  mkdir -p "$INSTALL_DIR"
+  mv "$TMPDIR/boost" "$INSTALL_DIR/boost"
 
   chmod +x "$INSTALL_DIR/boost"
 }
