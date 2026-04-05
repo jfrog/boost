@@ -1,5 +1,5 @@
 <p align="center">
-  <strong>Boost</strong> — Token-optimized CLI wrapper for AI coding agents
+  <strong>Boost</strong> — faster agents, faster CI
 </p>
 
 <p align="center">
