@@ -30,8 +30,6 @@ Add Boost to your CI workflows for automatic output compression:
 ```yaml
 steps:
   - uses: jfrog/boost@v0.1.0
-    with:
-      version: v0.1.0
   - uses: actions/checkout@v4
   - run: npm test  # output automatically compressed
 ```
