@@ -20,7 +20,7 @@ curl -fsSL https://raw.githubusercontent.com/jfrog/boost/main/install.sh | bash
 Then set up your editors:
 
 ```bash
-boost init --auto
+boost init
 ```
 
 ## GitHub Action
@@ -29,7 +29,7 @@ Add Boost to your CI workflows for automatic output compression:
 
 ```yaml
 steps:
-  - uses: jfrog/boost@v0.1.0
+  - uses: jfrog/boost@v1
   - uses: actions/checkout@v4
   - run: npm test  # output automatically compressed
 ```
