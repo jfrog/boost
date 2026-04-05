@@ -1,0 +1,28 @@
+name: "Boost CI"
+description: "Enhance CI performance and observability with Boost"
+author: "FastCI Team @ JFrog"
+
+inputs:
+  version:
+    description: >
+      Boost release tag to install (e.g. "v0.5.0").
+      Must be an explicit signed tag — "latest" is not supported.
+    required: true
+
+  github_token:
+    description: "GitHub token for downloading release assets"
+    default: ${{ github.token }}
+    required: false
+  repo:
+    description: "Repository to download release from"
+    required: false
+    default: "jfrog/boost"
+
+  setup_timeout_seconds:
+    description: "Timeout for the setup phase in seconds"
+    required: false
+    default: "2"
+
+runs:
+  using: "node24"
+  main: "dist/index.js"
