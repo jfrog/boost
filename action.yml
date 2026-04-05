@@ -5,9 +5,9 @@ author: "FastCI Team @ JFrog"
 inputs:
   version:
     description: >
-      Boost release tag to install (e.g. "v0.5.0").
-      Must be an explicit signed tag — "latest" is not supported.
-    required: true
+      Boost release tag to install. Derived automatically from the
+      action ref (e.g. jfrog/boost@v0.5.0) when omitted.
+    required: false
 
   github_token:
     description: "GitHub token for downloading release assets"

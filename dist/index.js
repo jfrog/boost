@@ -30029,29 +30029,32 @@ var external_os_default = /*#__PURE__*/__nccwpck_require__.n(external_os_);
 function getGithubToken() {
     return process.env.GITHUB_TOKEN || core.getInput("github_token") || "";
 }
-function getBinaryArchSuffix() {
+function getArchSuffix() {
     const arch = external_os_default().arch();
     if (arch === "arm64" || arch === "arm") {
         return "arm64";
     }
     return "amd64";
 }
-function getBinaryName() {
-    return `boost-${getBinaryArchSuffix()}`;
+function getAssetName() {
+    return `boost-linux-${getArchSuffix()}.tar.gz`;
 }
 function getTempBinaryPath() {
-    return external_path_default().join(external_os_default().tmpdir(), getBinaryName());
+    return external_path_default().join(external_os_default().tmpdir(), "boost");
 }
 async function downloadRelease(tag, repo) {
     const token = getGithubToken();
-    const binaryName = getBinaryName();
+    const assetName = getAssetName();
     const binaryPath = getTempBinaryPath();
-    const downloadUrl = `https://github.com/${repo}/releases/download/${tag}/${binaryName}`;
-    core.info(`Downloading ${binaryName} from ${downloadUrl}`);
-    const downloadPath = await tool_cache.downloadTool(downloadUrl, binaryPath, token);
-    await external_fs_.promises.chmod(downloadPath, 0o755);
-    core.info(`Downloaded ${binaryName} to ${downloadPath}`);
-    return downloadPath;
+    const downloadUrl = `https://github.com/${repo}/releases/download/${tag}/${assetName}`;
+    core.info(`Downloading ${assetName} from ${downloadUrl}`);
+    const archivePath = await tool_cache.downloadTool(downloadUrl, undefined, token);
+    const extractDir = await tool_cache.extractTar(archivePath);
+    const extracted = external_path_default().join(extractDir, "boost");
+    await external_fs_.promises.copyFile(extracted, binaryPath);
+    await external_fs_.promises.chmod(binaryPath, 0o755);
+    core.info(`Extracted boost binary to ${binaryPath}`);
+    return binaryPath;
 }
 
 ;// CONCATENATED MODULE: ./src/index.ts
@@ -30060,11 +30063,11 @@ async function downloadRelease(tag, repo) {
 
 
 async function setup() {
-    const version = core.getInput("version");
+    const version = core.getInput("version") || process.env.GITHUB_ACTION_REF || "";
     const repo = core.getInput("repo") || "jfrog/boost";
     if (!version || version === "latest") {
-        throw new Error("The 'version' input is required and must be an explicit release tag (e.g. 'v0.5.0'). " +
-            "'latest' is not supported — use a signed tag for reproducibility.");
+        throw new Error("Cannot determine Boost version. Use a tagged ref " +
+            "(e.g. uses: jfrog/boost@v0.5.0) or pass the 'version' input explicitly.");
     }
     const binaryPath = await downloadRelease(version, repo);
     const nodeBinDir = external_path_.dirname(process.execPath);
