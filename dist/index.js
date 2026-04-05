@@ -30060,11 +30060,11 @@ async function downloadRelease(tag, repo) {
 
 
 async function setup() {
-    const version = core.getInput("version");
+    const version = core.getInput("version") || process.env.GITHUB_ACTION_REF || "";
     const repo = core.getInput("repo") || "jfrog/boost";
     if (!version || version === "latest") {
-        throw new Error("The 'version' input is required and must be an explicit release tag (e.g. 'v0.5.0'). " +
-            "'latest' is not supported — use a signed tag for reproducibility.");
+        throw new Error("Cannot determine Boost version. Use a tagged ref " +
+            "(e.g. uses: jfrog/boost@v0.5.0) or pass the 'version' input explicitly.");
     }
     const binaryPath = await downloadRelease(version, repo);
     const nodeBinDir = external_path_.dirname(process.execPath);
