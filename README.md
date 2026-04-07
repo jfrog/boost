@@ -58,3 +58,7 @@ See the [full documentation](https://boost.jfrog.com) for detailed usage, suppor
 ## License
 
 Copyright (c) 2026 JFrog Ltd. All Rights Reserved. See [LICENSE](LICENSE) and [TERMS_OF_USE.md](TERMS_OF_USE.md).
+
+---
+
+*Dedicated to the memory of Dima Gershovich – a brilliant engineer, a talented musician, and a dear friend.* [Read Dima's story](MEMORIAL.md)
