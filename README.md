@@ -61,4 +61,4 @@ Copyright (c) 2026 JFrog Ltd. All Rights Reserved. See [LICENSE](LICENSE) and [T
 
 ---
 
-*Dedicated to the memory of Dima Gershovich – a brilliant engineer, a talented musician, and a dear friend.* [Read Dima's story](MEMORIAL.md)
+*Dedicated to the memory of Dima Gershovich – a brilliant engineer, a talented musician, and a dear friend.* [Read Dima's story](docs/memorial/MEMORIAL.md)
