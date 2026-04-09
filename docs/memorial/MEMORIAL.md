@@ -37,4 +37,6 @@ Dima's contribution to the tech community and to his colleagues at JFrog and bey
 
 ---
 
-*[Visit Dima's GitHub Profile](https://github.com/dimag-jfrog)*
+
+
+*[Visit Dima's GitHub Profile](https://github.com/dmgrit)*
