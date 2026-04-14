@@ -1,114 +1,66 @@
-# JFrog Boost Terms of Use
+**JFROG ONLINE BETA AGREEMENT**
 
-Last Updated: April 5, 2026
+This agreement is a binding legal agreement between JFrog LTD (“**JFrog**” or “**us**” or “**we**”), and you (“you” or “your”), including the company or other legal entity you represent, on behalf of itself and its affiliates, governing the use of and access to the Beta Services (as defined below) , including these terms and any terms incorporated by reference (“**Agreement**”).
 
-This JFrog Boost Terms of Use (this "Agreement"), made by and between
-JFrog Ltd. ("JFrog") and you ("Customer"), governs access to and use of
-the JFrog Boost command-line tool and associated GitHub Action
-(collectively, "Boost") and documentation ("Documentation").
+THIS AGREEMENT TAKES EFFECT WHEN YOU ACCEPT THESE TERMS THROUGH THE PROMPT PROVIDED IN THE PRODUCT'S COMMAND-LINE INTERFACE CLICKSET THE “I ACCEPT CONFIGURATION PARAMETER OF accept\_terms \= “yes” OR SIMILAR INSTRUCTION IN THE PRODUCT’S CONFIGURATION FILE BUTTON BY DOING SO, YOU: (A) ACKNOWLEDGE THAT YOU HAVE READ AND UNDERSTAND THIS AGREEMENT; (B) REPRESENT AND WARRANT THAT YOU HAVE THE RIGHT, POWER, AND LEGAL AUTHORITY TO ENTER INTO THIS AGREEMENT AND, IF YOU ARE ENTERING INTO THIS AGREEMENT FOR AN ORGANIZATION, THAT YOU HAVE THE LEGAL AUTHORITY TO BIND THAT ORGANIZATION TO THIS AGREEMENT, EITHER AS A USER, OR ADMIN ORBY OTHERWISE; AND (C) ACCEPT THIS AGREEMENT AND ACCESSING OR USING THE BETA SERVICE (“EFFECTIVE DATE”). YOU AGREE THAT YOU ARE LEGALLY BOUND BY ITSTHESE TERMS. IF YOU ARE AN EXISTING CUSTOMER OF JFROG, YOUR EXISTING AGREEMENT WILL NOT APPLY TO THE BETA SERVICES.	 
 
-**BY INSTALLING, DOWNLOADING, OR USING BOOST, CUSTOMER: (A) ACKNOWLEDGES
-THAT IT HAS READ AND UNDERSTANDS THIS AGREEMENT; (B) REPRESENTS AND
-WARRANTS THAT IT HAS THE RIGHT, POWER, AND AUTHORITY TO ENTER INTO THIS
-AGREEMENT; AND (C) ACCEPTS THIS AGREEMENT AND AGREES THAT IT IS LEGALLY
-BOUND BY ITS TERMS.**
+IF YOU DO NOT AGREE TO THESE TERMS, OR IF YOU DO NOT HAVE SUCH AUTHORITY, OR IF YOU ARE A COMPETITOR OF JFROG (OR A PERSON ACTING ON BEHALF OF A COMPETITOR), YOU MUST NOT DO NOT ACCEPTSET THE ABOVEMENTIONED PROMPT CONFIGURATION PARAMETER AND DO NOT ACCESS, OR USE OR AUTHORIZE ANY USE OF THE BETA SERVICE AND SELECT THE “I DECLINE” OR SIMILAR BUTTON. JFROG MAY UPDATE THIS AGREEMENT AND ANY REQUIREMENTS AT ANY TIME, AND YOU SHOULD PERIODICALLY REVIEW THIS AGREEMENT AND ALL REQUIREMENTS TO ENSURE COMPLIANCE WITH THE MOST RECENT VERSION. THE BETA SERVICE.	 
 
-## 1. License Grant
+Undefined terms shallwill have their meaning as provided in the JFrog Subscription Agreement (accessible online at https://jfrog.com/hybrid-terms-and-conditions/) .  
 
-Subject to the terms of this Agreement, JFrog grants Customer a
-non-exclusive, non-transferable, non-sublicensable, revocable, limited
-license to install and use Boost solely for Customer's internal
-development and CI/CD purposes, in accordance with this Agreement and the
-Documentation.
+1. **Scope of the Service**. The services under this Agreement software, services, or features and any AI Tools (as defined below) identified as beta, early stage, or early access, evaluation, or words or phrases with similar meaning, which are not ready for production use, and are for testing purposes only as made available by JFrog (the “**Beta Service**”). 
 
-## 2. Restrictions
+2. **Disclaimer**. The Beta Service is provided on an “as is” and “as available” without any warranty of any kind, whether express or implied, including without limitation, the implied warranties of merchantability, non-infringement, accuracy, completeness, performance, and fitness for a particular purpose basis, and is still in testing; The Beta Service may still contain defects, errors, design flaws, instability issues, unexpected results, or other problems. JFrog requests that you identify bugs, errors and performance deficiencies. 
 
-Customer will not, directly or indirectly, or permit any third party to:
+3. **Use and Usage Restrictions**. The Beta Service is for the limited use of internal testing and evaluation. Beta Service is not to be used in production, and you are hereby advised to safeguard your data, hold a backup of your data (including repositories), use caution, and not rely in any way on the correct functioning and performance of the Beta Service. In order for you to evaluate the Beta Service you are advised to upload mock data to the server. 
 
-(a) use Boost for the purpose of building, improving, enhancing, or
-providing a competitive product or service;
+You may choose to use Beta Service, in your sole discretion; JFrog will have no liability arising out of or in connection with Beta Service \- use it at your own risk.
 
-(b) sublicense, assign, publish, resell, transfer, distribute, pledge,
-loan, lease, market, rent, or make available Boost to any third party,
-except to Customer's authorized employees and contractors;
+4. **Restrictions on Use**. You will not, directly or indirectly permit, facilitate, or otherwise allow any other person or entity to:
 
-(c) translate, reverse-translate, decipher, decode, disassemble,
-reverse-engineer, or otherwise attempt to discover the source code or
-underlying algorithms of Boost;
+(i) Access or use the Beta Services: (A) in a manner that does not comply with this Agreement, the Acceptable Use Policy (accessible online at https://jfrog.com/acceptable-use-policy/), and/or the Beta Service Documentation; (B) for fraudulent, misleading, or unlawful activities or purposes; or (C) for the purpose of building, improving, enhancing or providing a competitive product of service;
 
-(d) copy, modify, or create derivative works of Boost or Documentation;
+(ii) Use any proxying, caching or other mechanism to provide any third parties (other than those permitted under this Agreement) with access to and/or use of the Beta Service.
 
-(e) use Boost, its output, or any data derived from Boost as training
-data for machine learning models, artificial intelligence systems, or
-any automated data processing system;
+(iii) Sublicense, assign, publish, resell, transfer, distribute, pledge, loan, lease, market, rent, make available, or provide use of the Beta Service to any entity or person, including on or in connection with any service bureau arrangement, facility management or third-party training, except as expressly allowed under the license grant in this Agreement.
 
-(f) remove, delete, obscure, or alter any proprietary notices, labels,
-or marks on Boost or Documentation;
+(iv) Delete, obscure, or alter JFrog’s Marks, brand features, warranties, or disclaimers, or any copyright, trademark, patent, or other intellectual property or proprietary rights notices from the Beta Service or Documentation;
 
-(g) use Boost in any manner that violates applicable laws or regulations.
+(v) upload or transmit to the Beta Service any personal data (except for each user's name, username, email address, and IP address), sensitive personal data or special categories of personal data as defined by applicable data protection laws or, without limiting any of the foregoing, patient, medical or protected health information as regulated by the U.S. Health Insurance Portability and Accountability Act of 1996 and its implementing regulations (HIPAA) or payment card information (PCI).
 
-## 3. Data Collection and Telemetry
+(vi) Translate, reverse-translate, decipher, decode, disassemble, or otherwise reverse-engineer, or otherwise attempt to discover the source code or underlying ideas of the Beta Service;
 
-Boost collects anonymous usage telemetry to improve product quality and
-performance. **No source code, file contents, environment variables, or
-personal data are collected.** The following categories of data may be
-transmitted:
+(vii) Breach, bypass, or otherwise interfere with security-related or limiting features of the Beta Service;
 
-- **Command metadata**: command name (e.g. "cargo build", "git status"),
-  subcommand arguments, exit code, and execution duration
-- **Token savings metrics**: byte counts of standard output before and
-  after filtering (measures compression effectiveness)
-- **Environment metadata**: operating system, CPU architecture, Boost
-  binary version
-- **Error indicators**: boolean error flag and error category (not error
-  message content)
-- **Session identifiers**: conversation ID and run ID for grouping
-  related commands within a single session
-- **Process metadata**: process ID (for span correlation only)
-- **CI metadata** (when running in CI): Docker build configuration
-  flags, cache settings, platform targets (no image contents or
-  build secrets)
+(viii) Copy, modify, or create derivative works of, the Beta Service or its Documentation; or;
 
-Telemetry data is transmitted via OpenTelemetry (OTLP/gRPC) to JFrog's
-observability infrastructure. Telemetry is only transmitted for commands
-that exceed a minimum duration threshold.
+(ix) Develop, implement, or install any third-party extension, plug-in, or other means of access or use of the Beta Service, without prior written approval from JFrog; 
 
-Customer may disable remote telemetry by setting the environment variable
-`BOOST_OTEL_REMOTE=false` or by not bundling telemetry tokens at build
-time.
+5. **Feedback**. JFrog offers Beta Service in order to get your feedback, reports, opinions, suggestions, comments and requests (“**Feedback**”). You hereby agree that we will be free to use your Feedback for the development of the Beta Service and other products of ours, and hereby agree that any right, title and interest to any Feedback relating to the Beta Service or its modifications shallwill be owned by JFrog. 
 
-## 4. Intellectual Property
+6. **Analytics Information.** You agree that during the Term we may collect, use, store and transmit technical and related information that is being collected from your use of the Beta Service, including information that may identify your computer (including the Internet Protocol Address), browser type, operating system, application and feature usage (including but not limited to successful installation and/or removal, commands invoked, command arguments, exit codes, execution duration, output metrics, tracing and correlation identifiers, error flags and messages, and build or CI environment attributes), software, software usage and peripheral hardware, that may be gathered periodically to facilitate the provision of the services hereunder ("**Analytics Information**"),"). JFrog is and shallwill remain the sole owner of the Analytics Information. 
 
-JFrog retains all right, title, and interest in and to Boost, including
-all intellectual property rights. No rights are granted to Customer other
-than as expressly set forth in this Agreement.
+7. **Confidentiality**. The Beta Service is strictly confidential until the Beta Service is officially launched by JFrog and you will treat the Beta Service, and any documentation, specifications, or instructions related to the Beta Service, as confidential information of JFrog.  and will not disclose it to any third party, or use it for any purpose other than as explicitly permitted under this Agreement.  JFrog reserves all rights to file patent applications covering any aspect of the Beta Service. You will not file any patent application or claim any intellectual property right based on or derived from the Beta Service or any information disclosed in connection with it.
 
-## 5. Disclaimer of Warranties
+8. **Intellectual Property Rights**.  All right, title and interest in and regarding the Beta Service and any related documentation, including associated intellectual property rights, are and shallwill remain with us and no other rights or licenses are granted or to be implied under any of JFrog’s intellectual property rights. This Agreement does not convey to you an interest in or to the Beta Service, but only a limited right of use. 
 
-BOOST IS PROVIDED "AS IS" AND "AS AVAILABLE." JFROG DISCLAIMS ALL
-WARRANTIES, EXPRESS OR IMPLIED, INCLUDING THE IMPLIED WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND
-NON-INFRINGEMENT. JFROG DOES NOT WARRANT THAT BOOST WILL BE
-UNINTERRUPTED, ERROR-FREE, OR SECURE.
+9. **AI Tools and Service Providers**.
 
-## 6. Limitation of Liability
+		**(a)	Integration of AI Features**. The Beta Service may include, without limitation, generative models, predictive models, artificial intelligence algorithms or machine learning models, learnings, datasets, natural language chat interfaces, and processes which are powered by third-party service providers (collectively, “**AI Tools**”). For clarity, the AI Tools are deemed a part of the Beta Service. These features are experimental and are subject to change. “**Input**” means any data (e.g. text, images, files, prompts, or other content) you provide, integrate with or upload into the AI Tools. “**Output**” means any data (e.g. result, prediction, recommendations, decisions, content, or other output) generated by the AI Tools based on your Input from your use of AI Tools. For clarity, Output does not include training data.
 
-TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL JFROG BE LIABLE
-FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE
-DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR
-INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE
-LOSSES, ARISING OUT OF OR RELATING TO CUSTOMER'S USE OF BOOST.
+**(b)	AI Data, Processing, Ownership.** You may provide Input to the AI Tools and receive Output from the AI Tools based on the Input. Output generated by the AI Tools are for informational purposes only. You represent and warrant that you have obtained all consents and provided all notices that are necessary to use, process, and retain all Input you submit to the AI Tools. As between JFrog and its third-party service providers, and to the extent permitted by applicable law, you will (a) retain all ownership rights you may have in the data you submit as Input; and (b) receive a non-exclusive, worldwide, royalty-free license to use, reproduce, modify, and distribute the Output for your internal business purposes. Due to the nature of the AI Tools and artificial intelligence generally, **Output may not be unique and other users may receive similar or identical Output from the AI Tools, and should not be relied upon as medical, legal, financial, or other advice. The Parties agree that no AI Tools will be used to perform automated decision making (meaning decisions that produce legal effects that significantly affect their financial, health, or personal livelihood).** YOU ARE SOLELY RESPONSIBLE FOR (I) EVALUATING (BY HUMAN REVIEW) OUTPUT FOR ACCURACY, SAFETY, COMPLIANCE WITH LAWS, COMPLETENESS, AND APPROPRIATENESS OF ALL OUTPUTS BEFORE USING, DISTRIBUTING, OR RELYING ON THE OUTPUT (II) YOUR  DECISIONS, ACTIONS, AND OMISSIONS IN RELIANCE OR BASED ON THE OUTPUT.
 
-## 7. Term and Termination
+**(c) Service Providers.** To deliver the Beta Service, JFrog may engage third-party service providers, listed on the JFrog Sub-Processors page (available online at https://jfrog.com/trust/privacy/sub-processors/).located at  [Sub-processors list](https://jfrog.com/trust/privacy/sub-processors/).  Third-party service providers utilized by JFrog will be subject to confidentiality obligations.
 
-This Agreement is effective until terminated. JFrog may terminate this
-Agreement at any time for any reason. Upon termination, Customer must
-cease all use of Boost and destroy all copies in its possession.
+**(d) Third Party tools.** You acknowledge and agree that the Beta Service may offer integrations with optional services provided by third parties ("Third-Party Services"), including without limitation, system, extensions, plug-in applications, and MCP Servers, on your desktop or otherwise, which you and/or your users may install themselves in the Beta Service. If you and/or your users elect, in their sole discretion, to access or use a Third-Party Service, such access and use of the Third-Party Service is subject to the terms and conditions provided by that Third-Party Service. JFrog does not make any representations or warranties with respect to Third-Party Services or any third-party providers. As part of your integrations with Third-Party Services, or if you are referred to us from Third-Party Services, you and your users agree to such a connection, including the transfer of tokens to us, to allow the use of the Beta Service. In certain Beta features, your users and your data from Third-Party Services may be apparent to us for your use of the Beta Services or for JFrog business purposes. JFrog bears no liability for such data. 
 
-## 8. General
+**(e) AI Agent.** By using the AI Tool, you may enable an AI agent that will act on your behalf. You acknowledge and agree that the AI agent may take actions, make decisions, or execute transactions on your behalf, subject to your configuration and instructions. You are solely responsible for reviewing, approving, and monitoring the agent’s actions and Outputs. JFrog disclaims liability for any unintended, erroneous, or harmful actions taken by the agent, except as required by law. You must not use the agent for unlawful, unethical, or high-risk activities, and you agree to indemnify JFrog for claims arising from your use of the agent.
 
-This Agreement constitutes the entire agreement between Customer and
-JFrog regarding Boost and supersedes all prior agreements. JFrog may
-modify this Agreement at any time by posting a revised version. Continued
-use of Boost after such modification constitutes acceptance of the
-revised terms.
+10. **Limitation of Total Liability**. In no event shallwill we be liable for any indirect, incidental, consequential, special, or exemplary loss or damage whatsoever (including, without limitation, damages for loss of business profits and business interruption), even if we have been advised of the possibility of such damages. WITHOUT LIMITING THE FOREGOING, JFROG MAKES NO WARRANTY OF ANY KIND THAT THE BETA SERVICE, MATERIALS OR OUTPUT WILL BE ACCURATE, ERROR FREE, OR COMPLETE. Notwithstanding the generality of the above, if we are found to be liable by a final judicial ruling the cumulative liability thereunder for any claim relating to the Beta Service and this agreement, regardless of the form of action, will be limited to, and in no event shallwill exceed us $50.00. The foregoing limitations will apply even if the above stated remedy fails of its essential purpose. You are solely responsible for data that you provide or use within the Beta Service, including compliance with any regulations and laws applicable to such data and use. 
+
+11. **Term.** This Agreement shallwill be in effect for a period commencing on your acceptance hereof and shallwill terminate upon the earlier to occur of: (i) on the final date of the Beta Service as shall be indicated by us via notice or by ending the service or releasing it to general availability ; or (ii) within five (5ninety (90) days of the receipt by a party of a written notice to that effect, for any reason or no reason; or (iii) immediately upon the breach of any provision(the “**Term**”). JFrog may, at its sole discretion, extend the term of this Agreement by providing you  (the “**Term**”). with a written notice.  JFrog may change  or discontinue any the Beta Service at any time at its sole discretion. Either party may terminate this Agreement at any time by providing the other party three (3) days written notice.
+
+12. **Governing Law**. This Agreement shallwill be governed by and construed under the laws of the State of Israel without reference to principles and laws relating to the conflict of laws. The competent courts situated in Tel Aviv, Israel, shallwill have exclusive jurisdiction with respect to any dispute and action arising under or in relation to this Agreement and each Party agrees to submit to the jurisdiction of, and agree that the venue is proper in, the aforesaid courts in any such legal action or proceeding. 
+
+13. **Compliance with Laws**. You shallwill be solely responsible to comply, at your own expense, with local, state, national and international laws and regulations, including without limitation laws regarding data protection, security and privacy and with all governmental approvals, licenses, permits and authorizations which may be required with regards to your use of the Beta Serviceexport control. 
+
