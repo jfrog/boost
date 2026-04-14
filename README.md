@@ -1,3 +1,5 @@
+<img width="1345" height="297" alt="cover" src="https://github.com/user-attachments/assets/366dc500-cdcd-43c2-b34e-aa62b2602380" />
+
 <p align="center">
   <strong>Boost</strong> — faster agents, faster CI
 </p>
