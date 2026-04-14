@@ -30006,6 +30006,8 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(7147);
 // EXTERNAL MODULE: external "path"
 var external_path_ = __nccwpck_require__(1017);
 var external_path_default = /*#__PURE__*/__nccwpck_require__.n(external_path_);
@@ -30015,8 +30017,6 @@ var core = __nccwpck_require__(2186);
 var exec = __nccwpck_require__(1514);
 // EXTERNAL MODULE: ./node_modules/@actions/tool-cache/lib/tool-cache.js
 var tool_cache = __nccwpck_require__(7784);
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(7147);
 // EXTERNAL MODULE: external "os"
 var external_os_ = __nccwpck_require__(2037);
 var external_os_default = /*#__PURE__*/__nccwpck_require__.n(external_os_);
@@ -30039,8 +30039,10 @@ function getArchSuffix() {
 function getAssetName() {
     return `boost-linux-${getArchSuffix()}.tar.gz`;
 }
+// Bootstrap binary for `ci-setup`. Must not live at `/tmp/boost` because
+// `ci-setup` creates `/tmp/boost/tools` and needs `/tmp/boost` to be a directory.
 function getTempBinaryPath() {
-    return external_path_default().join(external_os_default().tmpdir(), "boost");
+    return external_path_default().join(external_os_default().tmpdir(), "boost-action-bootstrap", "boost");
 }
 async function downloadRelease(tag, repo) {
     const token = getGithubToken();
@@ -30051,6 +30053,7 @@ async function downloadRelease(tag, repo) {
     const archivePath = await tool_cache.downloadTool(downloadUrl, undefined, token);
     const extractDir = await tool_cache.extractTar(archivePath);
     const extracted = external_path_default().join(extractDir, "boost");
+    await external_fs_.promises.mkdir(external_path_default().dirname(binaryPath), { recursive: true });
     await external_fs_.promises.copyFile(extracted, binaryPath);
     await external_fs_.promises.chmod(binaryPath, 0o755);
     core.info(`Extracted boost binary to ${binaryPath}`);
@@ -30062,14 +30065,31 @@ async function downloadRelease(tag, repo) {
 
 
 
-async function setup() {
+
+async function resolveBinaryPath() {
+    const localInput = core.getInput("boost_binary_path").trim();
+    if (localInput) {
+        const binaryPath = external_path_.resolve(localInput);
+        await external_fs_.promises.access(binaryPath, external_fs_.constants.F_OK).catch(() => {
+            throw new Error(`boost_binary_path not found: ${binaryPath}`);
+        });
+        await external_fs_.promises.access(binaryPath, external_fs_.constants.X_OK).catch(async () => {
+            await external_fs_.promises.chmod(binaryPath, 0o755);
+        });
+        core.info(`Using local boost binary at ${binaryPath}`);
+        return binaryPath;
+    }
     const version = core.getInput("version") || process.env.GITHUB_ACTION_REF || "";
     const repo = core.getInput("repo") || "jfrog/boost";
     if (!version || version === "latest") {
         throw new Error("Cannot determine Boost version. Use a tagged ref " +
-            "(e.g. uses: jfrog/boost@v0.5.0) or pass the 'version' input explicitly.");
+            "(e.g. uses: jfrog/boost@v0.5.0) or pass the 'version' input explicitly, " +
+            "or set boost_binary_path for local/CI testing.");
     }
-    const binaryPath = await downloadRelease(version, repo);
+    return downloadRelease(version, repo);
+}
+async function setup() {
+    const binaryPath = await resolveBinaryPath();
     const nodeBinDir = external_path_.dirname(process.execPath);
     const nodeVersionDir = external_path_.dirname(nodeBinDir);
     const nodeBaseDir = external_path_.dirname(nodeVersionDir);
