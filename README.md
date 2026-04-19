@@ -55,7 +55,7 @@ boost update
 
 ## Documentation
 
-See the [full documentation](https://boost.jfrog.com) for detailed usage, supported commands, and configuration options.
+See the [full documentation](https://jfrog.github.io/boost) for detailed usage, supported commands, and configuration options.
 
 ## License
 
