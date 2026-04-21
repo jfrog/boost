@@ -1,5 +1,11 @@
 <p align="center">
-  <img src=".github/assets/boost-logo.png" alt="Boost" width="260">
+  <a href="https://jfrog.github.io/boost/">
+    <picture>
+      <source srcset=".github/assets/boost-logo-dark.png" media="(prefers-color-scheme: dark)">
+      <source srcset=".github/assets/boost-logo-light.png" media="(prefers-color-scheme: light)">
+      <img src=".github/assets/boost-logo-light.png" alt="Boost" width="260">
+    </picture>
+  </a>
 </p>
 
 <p align="center">
