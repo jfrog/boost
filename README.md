@@ -1,27 +1,8 @@
-<p align="center">
-  <img src=".github/assets/boost-logo.png" alt="Boost" width="260">
-</p>
+**Boost** — faster agents, faster CI
 
-<p align="center">
-  <strong>Boost</strong> — faster agents, faster CI
-</p>
+Sponsored by **[JFrog](https://jfrog.com)**
 
-<p align="center">
-  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/v/release/jfrog/boost?color=36a13b" alt="Release"></a>
-  <a href="https://go.dev/"><img src="https://img.shields.io/badge/go-1.25-00ADD8?logo=go&logoColor=white" alt="Go 1.25"></a>
-  <img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey" alt="Platforms">
-  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/downloads/jfrog/boost/total?color=6f42c1" alt="Downloads"></a>
-  <a href="https://github.com/jfrog/boost/stargazers"><img src="https://img.shields.io/github/stars/jfrog/boost?style=flat&color=yellow" alt="Stars"></a>
-  <img src="https://img.shields.io/badge/agent--native-brightgreen" alt="Agent-native">
-  <img src="https://img.shields.io/badge/OpenTelemetry-enabled-blueviolet?logo=opentelemetry&logoColor=white" alt="OpenTelemetry">
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-proprietary%20(beta)-blue" alt="License: proprietary (beta)"></a>
-</p>
-
-<p align="center">
-  <sub>Sponsored by <a href="https://jfrog.com"><strong>JFrog</strong></a></sub>
-</p>
-
-> **Beta.** This software is in beta under JFrog's [Online Beta Agreement](./TERMS_OF_USE.md). APIs and behavior may change between 0.x releases. Use in production at your own risk.
+> **Beta.** This software is in beta under JFrog's [Online Beta Agreement](./TERMS_OF_USE.md).
 
 ---
 
@@ -41,51 +22,56 @@ Same binary, same acceleration, same telemetry — wherever your builds run.
 
 ## Before / after
 
-Same `npm ci`, same result — but the log that reaches your agent shrinks roughly 15×:
+Same `npm ci`, same result. What changes:
+
+- **~15× fewer tokens** in your agent's context — 9.8k → 640 on a typical install.
+- **Faster reruns** via content-addressed cache — seconds instead of minutes.
+- **Deep OTel trace** of every command — timing, cache hits, exit code — routable to your backend.
 
 ```bash
 # Without boost — ~9,800 tokens of log noise in your agent's context
 $ npm ci
-npm warn deprecated inflight@1.0.6: This module is not supported
-npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
-npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
-added 1285 packages, and audited 1286 packages in 45s
-184 packages are looking for funding
-  run `npm fund` for details
+npm warn deprecated inflight@1.0.6 / rimraf@3.0.2 / glob@7.2.3 …
+added 1285 packages, audited 1286 in 45s
 found 0 vulnerabilities
 
-# With boost — ~640 tokens, same result
+# With boost — ~640 tokens, same result, cache-backed
 $ boost npm ci
-[OK] npm ci
-     1,285 packages restored from boost cache in 2.4s
-     0 vulnerabilities
+[OK] npm ci · 1,285 packages restored from boost cache in 2.4s · 0 vulnerabilities
 ```
 
-## Supported coding agents and CIs
+## Supported tools
 
 **Coding agents**
 
-![Cursor](https://img.shields.io/badge/Cursor-supported-000000?logo=cursor&logoColor=white)
-![Claude Code](https://img.shields.io/badge/Claude%20Code-supported-D97757?logo=anthropic&logoColor=white)
-![GitHub Copilot](https://img.shields.io/badge/GitHub%20Copilot-supported-6e5494?logo=githubcopilot&logoColor=white)
-![Codex CLI](https://img.shields.io/badge/Codex%20CLI-supported-000000?logo=openai&logoColor=white)
-![Gemini CLI](https://img.shields.io/badge/Gemini%20CLI-supported-4285F4?logo=googlegemini&logoColor=white)
-![OpenCode](https://img.shields.io/badge/OpenCode-supported-FF6A00)
-![Windsurf](https://img.shields.io/badge/Windsurf-supported-00B4D8)
-![Cline](https://img.shields.io/badge/Cline-supported-1f6feb)
 
-**CI**
+| Tool           | Status    |
+| -------------- | --------- |
+| Cursor         | Supported |
+| Claude Code    | Supported |
+| GitHub Copilot | Supported |
+| Codex CLI      | Supported |
+| Gemini CLI     | Supported |
+| OpenCode       | Supported |
+| Windsurf       | Supported |
+| Cline          | Supported |
 
-![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-supported-2088FF?logo=githubactions&logoColor=white)
-![GitLab CI](https://img.shields.io/badge/GitLab%20CI-coming%20soon-grey?logo=gitlab&logoColor=white)
-![Jenkins](https://img.shields.io/badge/Jenkins-coming%20soon-grey?logo=jenkins&logoColor=white)
-![CircleCI](https://img.shields.io/badge/CircleCI-coming%20soon-grey?logo=circleci&logoColor=white)
-![Azure Pipelines](https://img.shields.io/badge/Azure%20Pipelines-coming%20soon-grey?logo=azurepipelines&logoColor=white)
+
+**CI platforms**
+
+
+| Platform        | Status      |
+| --------------- | ----------- |
+| GitHub Actions  | Supported   |
+| GitLab CI       | Coming soon |
+| Jenkins         | Coming soon |
+| CircleCI        | Coming soon |
+| Azure Pipelines | Coming soon |
+
 
 ## Quick Start
 
-<details open>
-<summary><strong>CLI</strong> — prefix any command with <code>boost</code></summary>
+**CLI** — prefix any command with `boost`
 
 Install:
 
@@ -101,10 +87,7 @@ boost npm ci
 boost pytest
 ```
 
-</details>
-
-<details>
-<summary><strong>Coding agent</strong> — auto-wire Cursor, Claude Code, Codex, and more</summary>
+**Coding agent** — auto-wire Cursor, Claude Code, Codex, and more
 
 Run the interactive setup in any project:
 
@@ -114,33 +97,25 @@ boost init
 
 It detects your installed editors and CI providers and registers hooks so every tool call the agent makes gets wrapped by boost. Re-run it any time your editor / agent list changes.
 
-</details>
-
-<details>
-<summary><strong>CI</strong> — one line in your workflow</summary>
+**CI** — one line in your workflow
 
 ```yaml
 steps:
   - uses: jfrog/boost@v0
   - uses: actions/checkout@v4
-  - run: npm ci      # automatically compressed
-  - run: npm test    # automatically compressed
+  ...
 ```
 
 The action pins to the rolling `v0` major; see [releases](https://github.com/jfrog/boost/releases) for the latest tag.
 
-</details>
-
 ## Usage examples
 
-Prefix any command with `boost`:
+Prefix any command with `boost` — anywhere you'd normally run it.
 
-```bash
-boost cargo build    # ~80% token savings
-boost git diff       # ~80% token savings
-boost vitest run     # ~99% token savings
-boost pytest         # ~90% token savings
-```
+- `boost docker build ...` — compressed build log, layer-cache summary, Docker metrics in OTel
+- `boost npm ci` — dependency summary, local package cache, retry-safe output
+- `boost pytest` — per-test pass/fail/duration stored locally, quiet output on green runs
+- `boost gh run view --log` — CI log stream condensed to top failures plus summary
 
 ## Update
 
@@ -151,6 +126,17 @@ boost update
 ## Documentation
 
 See the [full documentation](https://jfrog.github.io/boost) for commands, configuration, OpenTelemetry export, and CI recipes.
+
+## Security & Privacy
+
+Boost is designed to be safe to drop into any developer machine or CI runner.
+
+- **Local-first by design.** Command history, test outcomes, token-savings stats and OTel trace files live in a local SQLite DB and JSONL file under your user directory — nothing is uploaded unless you copy it out.
+- **Secrets never leave the machine.** Boost scrubs command output and OTel spans through a built-in concealer (Gitleaks regex patterns + exact-match on values of env vars like `*_TOKEN`, `*_SECRET`, `*_KEY`, `*_PASSWORD`, `AWS_`*, `DATABASE_URL`, …) before anything is written or exported. Raw log bodies, file contents, and env-var values are never captured — only summaries.
+- **Your data, your backend.** OTel spans (timing, exit code, cache stats — all redacted before export) are sent to the OTLP endpoint you configure. The default is JFrog's managed Coralogix endpoint for convenience; override anytime with `BOOST_OTEL_ENDPOINT` / `BOOST_OTEL_TOKEN` or the `[tracing]` block in `config.toml` to send to Datadog, Grafana, Honeycomb, or your own collector.
+- **Open protocol.** OpenTelemetry is vendor-neutral — any OTLP-compatible backend works.
+- **Signed releases.** Binaries ship through GitHub Releases; install via the pinned `install.sh` (reproducible checksums).
+- **Terms.** Use of the beta is governed by the [JFrog Online Beta Agreement](./TERMS_OF_USE.md); sub-processors are listed at [jfrog.com/trust/privacy/sub-processors](https://jfrog.com/trust/privacy/sub-processors/).
 
 ## License
 
