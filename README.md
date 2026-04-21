@@ -131,14 +131,11 @@ See the [full documentation](https://jfrog.github.io/boost) for commands, config
 
 ## Security & Privacy
 
-Boost is designed to be safe to drop into any developer machine or CI runner.
+- **Local-first.** Command history and raw OTel traces stay on your machine.
+- **Only metadata leaves.** Exported spans carry timing, exit code, and cache stats — never raw logs, file contents, or env values. Secrets matching patterns like `*_TOKEN`, `*_SECRET`, `AWS_*`, `DATABASE_URL` are redacted before write or export.
+- **Open protocol, signed binaries.** OpenTelemetry-native; point `BOOST_OTEL_ENDPOINT` at your own backend. Binaries ship signed via GitHub Releases.
 
-- **Local-first by design.** Command history, test outcomes, token-savings stats and OTel trace files live in a local SQLite DB and JSONL file under your user directory — nothing is uploaded unless you copy it out.
-- **Secrets never leave the machine.** Boost scrubs command output and OTel spans through a built-in concealer (Gitleaks regex patterns + exact-match on values of env vars like `*_TOKEN`, `*_SECRET`, `*_KEY`, `*_PASSWORD`, `AWS_*`, `DATABASE_URL`, …) before anything is written or exported. Raw log bodies, file contents, and env-var values are never captured — only summaries.
-- **Only metadata, never content.** The exported OTel stream carries only what's needed to reason about a command — timing, exit code, cache stats — not raw log bodies, file contents, or request payloads. If you already run Datadog, Grafana, Honeycomb, or your own OTLP collector, plug boost straight in via `BOOST_OTEL_ENDPOINT` / `BOOST_OTEL_TOKEN` or the `[tracing]` block in `config.toml` to get the same signals in your existing observability stack.
-- **Open protocol.** OpenTelemetry is vendor-neutral — any OTLP-compatible backend works.
-- **Signed releases.** Binaries ship through GitHub Releases; install via the pinned `install.sh` (reproducible checksums).
-- **Terms.** Use of the beta is governed by the [JFrog Online Beta Agreement](./TERMS_OF_USE.md); sub-processors are listed at [jfrog.com/trust/privacy/sub-processors](https://jfrog.com/trust/privacy/sub-processors/).
+Full policy, supported versions, and how to report a vulnerability: see [SECURITY.md](./SECURITY.md).
 
 ## License
 
