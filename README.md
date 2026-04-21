@@ -1,6 +1,32 @@
-**Boost** — faster agents, faster CI
+<p align="center">
+  <img src=".github/assets/boost-logo.png" alt="Boost" width="260">
+</p>
 
-Sponsored by **[JFrog](https://jfrog.com)**
+<p align="center">
+  <strong>Boost</strong> — faster agents, faster CI
+</p>
+
+<p align="center">
+  <sub>For coding agents, their commands, and the CI that runs them.</sub>
+</p>
+
+<p align="center">
+  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/v/release/jfrog/boost?color=36a13b" alt="Release"></a>
+  <a href="https://go.dev/"><img src="https://img.shields.io/badge/go-1.25-00ADD8?logo=go&logoColor=white" alt="Go 1.25"></a>
+  <img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey" alt="Platforms">
+  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/downloads/jfrog/boost/total?color=6f42c1" alt="Downloads"></a>
+  <a href="https://github.com/jfrog/boost/stargazers"><img src="https://img.shields.io/github/stars/jfrog/boost?style=flat&color=yellow" alt="Stars"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/agent--native-brightgreen" alt="Agent-native">
+  <img src="https://img.shields.io/badge/OpenTelemetry-enabled-blueviolet?logo=opentelemetry&logoColor=white" alt="OpenTelemetry">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-proprietary%20(beta)-blue" alt="License: proprietary (beta)"></a>
+</p>
+
+<p align="center">
+  <sub>Sponsored by <a href="https://jfrog.com"><strong>JFrog</strong></a></sub>
+</p>
 
 > **Beta.** This software is in beta under JFrog's [Online Beta Agreement](./TERMS_OF_USE.md).
 
