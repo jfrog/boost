@@ -145,7 +145,7 @@ Full policy, supported versions, and how to report a vulnerability: see [SECURIT
 
 ## License
 
-Copyright © 2026 JFrog Ltd. All rights reserved. See [LICENSE](LICENSE) and [TERMS_OF_USE.md](TERMS_OF_USE.md).
+Copyright © 2026 JFrog Ltd. All rights reserved. See [LICENSE](LICENSE) and [BETA_AGREEMENT.md](BETA_AGREEMENT.md).
 
 ---
 

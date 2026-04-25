@@ -89,7 +89,7 @@ The following are outside the scope of this policy:
 
 ## Terms & Privacy
 
-- Use of the beta is governed by the [JFrog Online Beta Agreement](./TERMS_OF_USE.md).
+- Use of the beta is governed by the [JFrog Online Beta Agreement](./BETA_AGREEMENT.md).
 - Sub-processors are listed at [jfrog.com/trust/privacy/sub-processors](https://jfrog.com/trust/privacy/sub-processors/).
 
 ## Contact

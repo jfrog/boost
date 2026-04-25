@@ -4,12 +4,12 @@ Copyright (c) 2026 JFrog Ltd.
 
 This software and associated documentation files (the "Software") are the
 exclusive property of JFrog Ltd. Use of the Software is governed by the
-JFrog Boost Terms of Use available at TERMS_OF_USE.md in this repository
-and at https://github.com/jfrog/boost/blob/main/TERMS_OF_USE.md.
+JFrog Online Beta Agreement available at BETA_AGREEMENT.md in this repository
+and at https://github.com/jfrog/boost/blob/main/BETA_AGREEMENT.md.
 
 No permission is granted to use, copy, modify, merge, publish, distribute,
 sublicense, or sell copies of the Software except as expressly permitted
-under the Terms of Use.
+under the JFrog Online Beta Agreement.
 
 Files located under the skills/ directory (when present) are licensed
 separately under the MIT License. See the LICENSE file within that
