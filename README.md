@@ -1,39 +1,14 @@
-<p align="center">
-  <a href="https://jfrog.github.io/boost/">
-    <picture>
-      <source srcset=".github/assets/boost-logo-dark.png" media="(prefers-color-scheme: dark)">
-      <source srcset=".github/assets/boost-logo-light.png" media="(prefers-color-scheme: light)">
-      <img src=".github/assets/boost-logo-light.png" alt="Boost" width="260">
-    </picture>
-  </a>
-</p>
 
-<p align="center">
-  <strong>Boost</strong> — faster agents, faster CI
-</p>
 
-<p align="center">
-  <sub>For coding agents, their commands, and the CI that runs them.</sub>
-</p>
+**Boost** — faster agents, faster CI
 
-<p align="center">
-  <a href="https://jfrog.github.io/boost/"><img src="https://img.shields.io/badge/website-jfrog.github.io%2Fboost-36a13b?logo=googlechrome&logoColor=white" alt="Website"></a>
-  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/v/release/jfrog/boost?color=36a13b" alt="Release"></a>
-  <a href="https://go.dev/"><img src="https://img.shields.io/badge/go-1.25-00ADD8?logo=go&logoColor=white" alt="Go 1.25"></a>
-  <img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey" alt="Platforms">
-  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/downloads/jfrog/boost/total?color=6f42c1" alt="Downloads"></a>
-  <a href="https://github.com/jfrog/boost/stargazers"><img src="https://img.shields.io/github/stars/jfrog/boost?style=flat&color=yellow" alt="Stars"></a>
-</p>
+For coding agents, their commands, and the CI that runs them.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/agent--native-brightgreen" alt="Agent-native">
-  <img src="https://img.shields.io/badge/OpenTelemetry-enabled-blueviolet?logo=opentelemetry&logoColor=white" alt="OpenTelemetry">
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-proprietary%20(beta)-blue" alt="License: proprietary (beta)"></a>
-</p>
 
-<p align="center">
-  <sub>Sponsored by <a href="https://jfrog.com"><strong>JFrog</strong></a></sub>
-</p>
+
+
+
+Sponsored by **[JFrog](https://jfrog.com)**
 
 ---
 
@@ -138,7 +113,7 @@ See the [full documentation](https://jfrog.github.io/boost) for commands, config
 ## Security & Privacy
 
 - **Local-first.** Command history and raw OTel traces stay on your machine.
-- **Only metadata leaves.** Exported spans carry timing, exit code, and cache stats — never raw logs, file contents, or env values. Secrets matching patterns like `*_TOKEN`, `*_SECRET`, `AWS_*`, `DATABASE_URL` are redacted before write or export.
+- **Only metadata leaves.** Exported spans carry timing, exit code, and cache stats — never raw logs, file contents, or env values. Secrets matching patterns like `*_TOKEN`, `*_SECRET`, `AWS_`*, `DATABASE_URL` are redacted before write or export.
 - **Open protocol, signed binaries.** OpenTelemetry-native; point `BOOST_OTEL_ENDPOINT` at your own backend. Binaries ship signed via GitHub Releases.
 
 Full policy, supported versions, and how to report a vulnerability: see [SECURITY.md](./SECURITY.md).
