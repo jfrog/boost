@@ -1,0 +1,512 @@
+Boost CLI — Full documentation snapshot for LLM ingestion
+Source of truth: https://boost.jfrog.com/
+Last generated: 2026-04-27T19:29:23.277Z
+
+================================================================================
+WHAT IS BOOST
+================================================================================
+
+Boost is a CLI wrapper that makes every command your coding agents and CI run
+faster, quieter, and cheaper in tokens. It works with Cursor, Claude Code,
+GitHub Copilot, Codex CLI, Gemini CLI, Windsurf, Cline, OpenCode, and GitHub
+Actions. Boost is free and requires no signup.
+
+You wrap any command by prefixing it with `boost`:
+
+    boost docker build .
+    boost npm install
+    boost go test ./...
+    boost gh pr list
+
+Boost runs the underlying command transparently, captures its stdout and
+stderr, and replaces them with a compact, agent-friendly summary. It also
+records an OpenTelemetry-style trace for every run, so you can measure token
+savings, command duration, and cache hit rates across local development and CI.
+
+================================================================================
+HOW BOOST WORKS
+================================================================================
+
+1. Boost is installed as a single binary on your PATH.
+2. You run `boost init` once per project. Boost auto-detects the editors and
+   CI providers installed on your machine (Cursor, Claude Code, GitHub Actions,
+   Gemini, Copilot, Codex, Windsurf, Cline, OpenCode) and writes hook files for
+   each one so agent shell calls are transparently rewritten to use `boost`.
+3. When an agent or CI job runs a wrapped command, Boost executes the real
+   tool, applies a per-command filter to compress its output, and emits a
+   trace span recording duration, exit code, token savings, and (where
+   applicable) cache statistics.
+4. `boost report` summarizes total commands, tokens saved, average cache hit
+   rate, and the slowest commands by p90 latency.
+
+Typical token reductions are 60–90% on noisy commands such as `docker build`,
+`npm install`, `vitest run`, and `cargo test`.
+
+================================================================================
+QUICKSTART
+================================================================================
+
+Step 1 — Install Boost (macOS or Linux):
+
+    curl -fsSL https://raw.githubusercontent.com/jfrog/boost/main/install.sh | bash
+
+Step 2 — Initialize your project:
+
+    cd your-project
+    boost init
+
+Or target a specific tool:
+
+    boost init --cursor          # Cursor
+    boost init --claude          # Claude Code
+    boost init --github-actions  # GitHub Actions CI
+    boost init --gemini          # Gemini CLI
+    boost init --codex           # Codex CLI
+    boost init --copilot         # GitHub Copilot
+    boost init --windsurf        # Windsurf
+    boost init --cline           # Cline / Roo Code
+    boost init --opencode        # OpenCode
+
+Step 3 — Restart your editor so the new hooks take effect, then run any
+command to confirm:
+
+    boost git status
+
+Keep Boost up to date with:
+
+    boost update
+
+================================================================================
+USING THE BOOST SKILL
+================================================================================
+
+The Boost skill is installed into your coding agent by boost init and refreshed
+by boost update. In Cursor, use /boost to turn your local Boost history into
+practical engineering work. Good prompts ask the agent to compare recent spans
+instead of judging from a single command log.
+
+Example prompts:
+
+    /boost flaky tests
+    Analyze test traces from the last 7 days.
+    Find flaky tests in this repo. Include pass/fail counts, failure rate,
+    common failure signatures, and the first fix or quarantine step.
+
+    /boost slow CI
+    Inspect recent GitHub Actions traces.
+    Show the slowest CI steps by p90 duration for the last 20 runs, separate
+    install/build/test/Docker/deploy steps, and recommend the highest-impact fix.
+
+    /boost slow commands
+    Review my agent command history for this branch.
+    Find commands that slow down development or waste context, then suggest
+    narrower commands the agent should run first next time.
+
+================================================================================
+FREQUENTLY ASKED QUESTIONS
+================================================================================
+
+Q: What is Boost?
+A: Boost is a CLI wrapper that makes every command your coding agents and CI
+   run faster, quieter, and cheaper in tokens.
+
+Q: Which coding agents does Boost support?
+A: Cursor, Claude Code, GitHub Copilot, Codex CLI, Gemini CLI, Windsurf, Cline,
+   and OpenCode. Boost also wraps GitHub Actions for CI.
+
+Q: How does Boost make commands faster and quieter?
+A: Boost wraps the underlying tool, runs it normally, and replaces its noisy
+   stdout with a compact summary tailored to that command. For supported
+   commands it also adds caching where possible.
+
+Q: Does Boost work with GitHub Actions?
+A: Yes. Run `boost init --github-actions` and Boost wires itself into your
+   workflows so every command in CI is wrapped automatically.
+
+Q: Is Boost free?
+A: Yes. The Boost CLI is free and requires no signup. Optional paid plans add
+   managed cache acceleration.
+
+Q: Does Boost send my command output anywhere?
+A: Yes. We collect telemetry data to help us understand how Boost is used
+   and to continuously improve the tool.
+
+================================================================================
+SUPPORTED COMMANDS (121 total with dedicated filters)
+================================================================================
+
+Commands not listed here still pass through Boost with generic compression
+and tracing.
+
+## docker
+
+  boost docker build   (tokens: ~85%  |  trace: yes  |  cache: ~2-5x faster)
+  boost docker buildx   (tokens: ~85%  |  trace: yes  |  cache: ~2-5x faster)
+  boost docker ps   (tokens: ~80%  |  trace: yes)
+  boost docker images   (tokens: ~80%  |  trace: yes)
+  boost docker logs   (tokens: ~75%  |  trace: yes)
+
+## git
+
+  boost git status   (tokens: ~70%  |  trace: yes)
+  boost git log   (tokens: ~75%  |  trace: yes)
+  boost git diff   (tokens: ~80%  |  trace: yes)
+  boost git show   (tokens: ~80%  |  trace: yes)
+  boost git add   (tokens: ~59%  |  trace: yes)
+  boost git commit   (tokens: ~59%  |  trace: yes)
+  boost git push   (tokens: ~59%  |  trace: yes)
+  boost git pull   (tokens: ~59%  |  trace: yes)
+  boost git branch   (tokens: ~65%  |  trace: yes)
+  boost git fetch   (tokens: ~65%  |  trace: yes)
+  boost git stash   (tokens: ~60%  |  trace: yes)
+  boost git worktree   (tokens: ~60%  |  trace: yes)
+  boost git merge   (tokens: ~65%  |  trace: yes)
+
+## cargo
+
+  boost cargo build   (tokens: ~80%  |  trace: yes)
+  boost cargo check   (tokens: ~80%  |  trace: yes)
+  boost cargo clippy   (tokens: ~80%  |  trace: yes)
+  boost cargo test   (tokens: ~90%  |  trace: yes)
+  boost cargo install   (tokens: ~80%  |  trace: yes)
+
+## go
+
+  boost go test   (tokens: ~90%  |  trace: yes)
+  boost go build   (tokens: ~80%  |  trace: yes)
+  boost go vet   (tokens: ~75%  |  trace: yes)
+
+## gh
+
+  boost gh pr view   (tokens: ~87%  |  trace: yes)
+  boost gh pr checks   (tokens: ~79%  |  trace: yes)
+  boost gh run list   (tokens: ~82%  |  trace: yes)
+  boost gh issue list   (tokens: ~80%  |  trace: yes)
+  boost gh api   (tokens: ~26%  |  trace: yes)
+
+## pnpm
+
+  boost pnpm list   (tokens: ~70%  |  trace: yes)
+  boost pnpm outdated   (tokens: ~80%  |  trace: yes)
+  boost pnpm install   (tokens: ~90%  |  trace: yes)
+
+## npm
+
+  boost npm run   (tokens: ~80%  |  trace: yes)
+  boost npm install   (tokens: ~85%  |  trace: yes)
+
+## pip
+
+  boost pip list   (tokens: ~70%  |  trace: yes)
+  boost pip outdated   (tokens: ~75%  |  trace: yes)
+  boost pip install   (tokens: ~85%  |  trace: yes)
+
+## kubectl
+
+  boost kubectl get pods   (tokens: ~85%  |  trace: yes)
+  boost kubectl get svc   (tokens: ~85%  |  trace: yes)
+  boost kubectl logs   (tokens: ~75%  |  trace: yes)
+
+## dotnet
+
+  boost dotnet build   (tokens: ~85%  |  trace: yes)
+  boost dotnet test   (tokens: ~80%  |  trace: yes)
+
+## ruff
+
+  boost ruff check   (tokens: ~80%  |  trace: yes)
+  boost ruff format   (tokens: ~80%  |  trace: yes)
+
+## prisma
+
+  boost prisma generate   (tokens: ~88%  |  trace: yes)
+  boost prisma migrate   (tokens: ~85%  |  trace: yes)
+  boost prisma db   (tokens: ~85%  |  trace: yes)
+
+## tsc
+
+  boost tsc   (tokens: ~83%  |  trace: yes)
+
+## eslint
+
+  boost eslint   (tokens: ~84%  |  trace: yes)
+
+## prettier
+
+  boost prettier --check   (tokens: ~70%  |  trace: yes)
+
+## next
+
+  boost next build   (tokens: ~87%  |  trace: yes)
+
+## vitest
+
+  boost vitest run   (tokens: ~99%  |  trace: yes)
+
+## playwright
+
+  boost playwright test   (tokens: ~94%  |  trace: yes)
+
+## pytest
+
+  boost pytest   (tokens: ~90%  |  trace: yes)
+
+## mypy
+
+  boost mypy   (tokens: ~80%  |  trace: yes)
+
+## black
+
+  boost black   (tokens: ~75%  |  trace: yes)
+
+## golangci-lint
+
+  boost golangci-lint run   (tokens: ~85%  |  trace: yes)
+
+## aws
+
+  boost aws   (tokens: ~70%  |  trace: yes)
+
+## psql
+
+  boost psql   (tokens: ~70%  |  trace: yes)
+
+## ansible-playbook
+
+  boost ansible-playbook   (tokens: ~80%  |  trace: yes)
+
+## basedpyright
+
+  boost basedpyright   (tokens: ~80%  |  trace: yes)
+
+## biome
+
+  boost biome   (tokens: ~80%  |  trace: yes)
+
+## brew
+
+  boost brew install   (tokens: ~75%  |  trace: yes)
+
+## composer
+
+  boost composer install   (tokens: ~80%  |  trace: yes)
+
+## df
+
+  boost df   (tokens: ~70%  |  trace: yes)
+
+## du
+
+  boost du   (tokens: ~70%  |  trace: yes)
+
+## fail2ban-client
+
+  boost fail2ban-client   (tokens: ~70%  |  trace: yes)
+
+## gcc
+
+  boost gcc   (tokens: ~80%  |  trace: yes)
+
+## gcloud
+
+  boost gcloud   (tokens: ~70%  |  trace: yes)
+
+## gradle
+
+  boost gradle   (tokens: ~80%  |  trace: yes)
+
+## hadolint
+
+  boost hadolint   (tokens: ~75%  |  trace: yes)
+
+## helm
+
+  boost helm   (tokens: ~75%  |  trace: yes)
+
+## iptables
+
+  boost iptables   (tokens: ~70%  |  trace: yes)
+
+## jira
+
+  boost jira   (tokens: ~75%  |  trace: yes)
+
+## jj
+
+  boost jj   (tokens: ~70%  |  trace: yes)
+
+## jq
+
+  boost jq   (tokens: ~70%  |  trace: yes)
+
+## just
+
+  boost just   (tokens: ~70%  |  trace: yes)
+
+## make
+
+  boost make   (tokens: ~75%  |  trace: yes)
+
+## markdownlint
+
+  boost markdownlint   (tokens: ~75%  |  trace: yes)
+
+## mise
+
+  boost mise   (tokens: ~75%  |  trace: yes)
+
+## mix
+
+  boost mix compile   (tokens: ~75%  |  trace: yes)
+  boost mix format   (tokens: ~70%  |  trace: yes)
+
+## mvn
+
+  boost mvn   (tokens: ~80%  |  trace: yes)
+
+## nx
+
+  boost nx   (tokens: ~80%  |  trace: yes)
+
+## ollama
+
+  boost ollama   (tokens: ~70%  |  trace: yes)
+
+## oxlint
+
+  boost oxlint   (tokens: ~80%  |  trace: yes)
+
+## ping
+
+  boost ping   (tokens: ~75%  |  trace: yes)
+
+## pio
+
+  boost pio run   (tokens: ~80%  |  trace: yes)
+
+## poetry
+
+  boost poetry install   (tokens: ~80%  |  trace: yes)
+
+## pre-commit
+
+  boost pre-commit   (tokens: ~80%  |  trace: yes)
+
+## ps
+
+  boost ps   (tokens: ~70%  |  trace: yes)
+
+## quarto
+
+  boost quarto render   (tokens: ~75%  |  trace: yes)
+
+## rsync
+
+  boost rsync   (tokens: ~75%  |  trace: yes)
+
+## shellcheck
+
+  boost shellcheck   (tokens: ~75%  |  trace: yes)
+
+## shopify
+
+  boost shopify theme   (tokens: ~75%  |  trace: yes)
+
+## skopeo
+
+  boost skopeo   (tokens: ~75%  |  trace: yes)
+
+## sops
+
+  boost sops   (tokens: ~70%  |  trace: yes)
+
+## spring-boot
+
+  boost spring-boot   (tokens: ~80%  |  trace: yes)
+
+## ssh
+
+  boost ssh   (tokens: ~75%  |  trace: yes)
+
+## stat
+
+  boost stat   (tokens: ~70%  |  trace: yes)
+
+## swift
+
+  boost swift build   (tokens: ~80%  |  trace: yes)
+
+## systemctl
+
+  boost systemctl status   (tokens: ~75%  |  trace: yes)
+
+## task
+
+  boost task   (tokens: ~75%  |  trace: yes)
+
+## terraform
+
+  boost terraform plan   (tokens: ~80%  |  trace: yes)
+
+## tofu
+
+  boost tofu fmt   (tokens: ~70%  |  trace: yes)
+  boost tofu init   (tokens: ~75%  |  trace: yes)
+  boost tofu plan   (tokens: ~80%  |  trace: yes)
+  boost tofu validate   (tokens: ~70%  |  trace: yes)
+
+## trunk
+
+  boost trunk build   (tokens: ~75%  |  trace: yes)
+
+## turbo
+
+  boost turbo   (tokens: ~80%  |  trace: yes)
+
+## ty
+
+  boost ty   (tokens: ~80%  |  trace: yes)
+
+## uv
+
+  boost uv sync   (tokens: ~80%  |  trace: yes)
+
+## xcodebuild
+
+  boost xcodebuild   (tokens: ~85%  |  trace: yes)
+
+## yadm
+
+  boost yadm   (tokens: ~70%  |  trace: yes)
+
+## yamllint
+
+  boost yamllint   (tokens: ~75%  |  trace: yes)
+
+## ls
+
+  boost ls   (tokens: ~65%  |  trace: yes)
+
+## grep
+
+  boost grep   (tokens: ~75%  |  trace: yes)
+
+## find
+
+  boost find   (tokens: ~70%  |  trace: yes)
+
+## wget
+
+  boost wget   (tokens: ~65%  |  trace: yes)
+
+================================================================================
+LINKS
+================================================================================
+
+Website:        https://boost.jfrog.com/
+Docs overview:  https://boost.jfrog.com/docs/en/overview/
+Quickstart:     https://boost.jfrog.com/docs/en/quickstart/
+Boost skill:    https://boost.jfrog.com/docs/en/boost-skill/
+Commands:       https://boost.jfrog.com/docs/en/commands/
+Changelog:      https://boost.jfrog.com/docs/en/changelog/
+Source:         https://github.com/jfrog/boost

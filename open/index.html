@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="description" content="Redirecting to your IDE..."><meta name="generator" content="Astro v5.18.1"><meta name="author" content="JFrog"><meta name="application-name" content="Boost"><meta name="keywords" content="boost cli, cursor, claude code, github copilot, coding agents, ci optimization, docker build, npm, gh cli, go test, token optimization"><meta name="robots" content="index,follow,max-image-preview:large"><meta name="theme-color" content="#0A0A0A"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="canonical" href="https://boost.jfrog.com/open/"><!--
+      Fonts are self-hosted via @fontsource (see src/styles/global.css), so no
+      preconnect to fonts.googleapis.com / fonts.gstatic.com is needed. Only the
+      Navbar's GitHub stars fetch still hits a third party.
+    --><link rel="preconnect" href="https://api.github.com"><!-- Open Graph: Facebook, LinkedIn, Slack, WhatsApp, Telegram, Discord, iMessage, etc. --><meta property="og:type" content="website"><meta property="og:site_name" content="Boost"><meta property="og:title" content="Opening IDE - Boost"><meta property="og:description" content="Redirecting to your IDE..."><meta property="og:url" content="https://boost.jfrog.com/open/"><meta property="og:image" content="https://boost.jfrog.com/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Opening IDE - Boost"><meta property="og:image:type" content="image/png"><!-- Twitter / X --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@jfrog"><meta name="twitter:creator" content="@jfrog"><meta name="twitter:title" content="Opening IDE - Boost"><meta name="twitter:description" content="Redirecting to your IDE..."><meta name="twitter:image" content="https://boost.jfrog.com/og-image.png"><meta name="twitter:image:alt" content="Opening IDE - Boost"><title>Opening IDE - Boost</title><link rel="stylesheet" href="/_astro/_slug_.CMZGIabR.css">
+<link rel="stylesheet" href="/_astro/_slug_.BOd91PZz.css"></head> <body>  <div id="redirect-container" style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Open Sans',sans-serif;color:#e5e7eb;text-align:center;padding:2rem;"> <div> <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 37 30" fill="#36a13b" style="margin:0 auto 1.5rem;"> <path d="M27.05.73h.01c1.6 0 3.12.63 4.18 1.73 1.88 1.92 5.1 6.14 5.1 12.7 0 6.06-2.7 10.03-4.95 12.3-2.17 2.13-5.93 2.25-8.18.13l-.23-.22-5.24-6.15 2.99-2.68 5.3 6.27c.73.66 2.14.65 2.87-.05 1.56-1.56 3.65-4.5 3.65-9.6 0-4.65-2.13-7.84-3.91-9.62-.34-.35-.84-.54-1.37-.54h-.01c-.53 0-1.01.18-1.33.5l-6.79 7.7c1.1 0 1.98.91 1.98 2.04 0 1.12-.89 2.03-1.98 2.03h-4.38c-.78 0-1.49-.47-1.81-1.2-.32-.73-.19-1.58.31-2.18l9.56-11.14.09-.09C24.43 1.37 25.95.73 27.05.73z"></path> <path d="M9.95 29.27h-.01c-1.6 0-3.12-.63-4.18-1.73C3.88 25.62.71 21.4.71 14.84.71 8.79 3.4 4.81 5.66 2.55c2.17-2.13 5.93-2.25 8.18-.13l.23.22 5.24 6.15-2.99 2.68-5.3-6.27c-.73-.66-2.14-.65-2.87.05-1.56 1.56-3.65 4.5-3.65 9.6 0 4.65 2.13 7.84 3.91 9.62.34.35.84.54 1.37.54h.01c.53 0 1.01-.18 1.33-.5l6.79-7.7c-1.1 0-1.98-.91-1.98-2.04 0-1.12.89-2.03 1.98-2.03h4.38c.78 0 1.49.47 1.81 1.2.32.73.19 1.58-.31 2.18l-9.56 11.14-.09.09c-1.07 1.1-2.59 1.73-3.69 1.73z"></path> </svg> <h2 id="status-text" style="font-size:1.25rem;font-weight:600;margin-bottom:0.75rem;">Opening your IDE...</h2> <p id="status-detail" style="color:#9ca3af;font-size:0.9rem;margin-bottom:1.5rem;">If nothing happens, click the link below.</p> <a id="manual-link" href="#" style="color:#36a13b;text-decoration:underline;font-size:0.9rem;">Open manually</a> </div> </div>  </body></html> <script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var ide = params.get('ide');
+  var prompt = params.get('prompt') || '';
+
+  var targetUrl = null;
+
+  if (ide === 'copilot') {
+    targetUrl = 'vscode://GitHub.Copilot-Chat/chat?agent=agent&prompt=' + encodeURIComponent(prompt);
+  } else if (ide === 'cursor') {
+    targetUrl = 'https://cursor.com/link/prompt?text=' + encodeURIComponent(prompt);
+  }
+
+  var manualLink = document.getElementById('manual-link');
+  var statusText = document.getElementById('status-text');
+  var statusDetail = document.getElementById('status-detail');
+
+  if (targetUrl) {
+    manualLink.href = targetUrl;
+    manualLink.textContent = 'Open in ' + (ide === 'copilot' ? 'GitHub Copilot' : 'Cursor');
+    window.location.href = targetUrl;
+  } else {
+    statusText.textContent = 'Invalid link';
+    statusDetail.textContent = 'This redirect link is missing required parameters.';
+    manualLink.style.display = 'none';
+  }
+})();
+</script>

@@ -1,0 +1,1 @@
+const i={hidden:{opacity:0,y:40},visible:{opacity:1,y:0,transition:{duration:.7,ease:[.25,.4,.25,1]}}},s={hidden:{opacity:0},visible:{opacity:1,transition:{staggerChildren:.12,delayChildren:.1}}},n="/".replace(/\/$/,""),t=n||"/";function r(a){const e=a.replace(/^\//,"");return`${t}/${e}`.replace(/\/+/g,"/")}export{r as b,i as f,s};

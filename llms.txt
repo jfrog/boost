@@ -1,0 +1,25 @@
+# Boost CLI
+
+> Boost is a CLI wrapper that makes every command your coding agents and CI run faster, quieter, and cheaper in tokens. It works with Cursor, Claude Code, GitHub Copilot, Codex CLI, Gemini CLI, Windsurf, Cline, OpenCode, and GitHub Actions. Free, no signup required.
+
+Boost wraps any command (e.g. `boost docker build`, `boost npm install`, `boost go test`) and replaces noisy, multi-thousand-line stdout with a compact, agent-friendly summary. It also records OpenTelemetry-style traces for every run, so you can measure token savings, command duration, and cache hit rates across local development and CI.
+
+## Docs
+
+- [Boost overview](https://boost.jfrog.com/docs/en/overview/): What Boost is, how it works, and what it gives you out of the box.
+- [Quickstart](https://boost.jfrog.com/docs/en/quickstart/): Install Boost and wire it into Cursor, Claude Code, Copilot, Codex, Gemini, or GitHub Actions in under two minutes.
+- [Use the Boost skill](https://boost.jfrog.com/docs/en/boost-skill/): Practical agent prompts for finding flaky tests, slow CI steps, and expensive development loops from Boost traces.
+- [Supported commands](https://boost.jfrog.com/docs/en/commands/): The full list of commands with dedicated filters — docker, npm, go, gh, git, vite, bun, and more — including token reduction and caching details.
+- [Changelog](https://boost.jfrog.com/docs/en/changelog/): What shipped in every Boost release.
+
+## Source
+
+- [GitHub repository](https://github.com/jfrog/boost): Source code, issues, releases, and discussions.
+
+## Install
+
+```
+curl -fsSL https://raw.githubusercontent.com/jfrog/boost/main/install.sh | bash
+```
+
+After install, run `boost init` from any project to auto-detect installed editors and CI providers and wire them up.

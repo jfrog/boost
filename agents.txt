@@ -1,0 +1,15 @@
+# Machine-readable context for autonomous agents visiting this site.
+# Human-readable product information: https://boost.jfrog.com/
+
+name: Boost CLI
+url: https://boost.jfrog.com/
+description: Boost is a CLI wrapper that accelerates the commands coding agents and CI run — Cursor, Claude Code, Copilot, Codex, Gemini, Windsurf, Cline, OpenCode, and GitHub Actions. Free, no signup required.
+
+documentation: https://boost.jfrog.com/docs/en/overview/
+quickstart: https://boost.jfrog.com/docs/en/quickstart/
+boost_skill: https://boost.jfrog.com/docs/en/boost-skill/
+commands: https://boost.jfrog.com/docs/en/commands/
+changelog: https://boost.jfrog.com/docs/en/changelog/
+source: https://github.com/jfrog/boost
+llms_txt: https://boost.jfrog.com/llms.txt
+llms_full_txt: https://boost.jfrog.com/llms-full.txt
