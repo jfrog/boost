@@ -7,12 +7,21 @@ inputs:
     description: >
       Boost release tag to install. Derived automatically from the
       action ref (e.g. jfrog/boost@v0.5.0) when omitted.
+      Ignored when boost_binary_path is set.
+    required: false
+    default: "v0.4.13"
+
+  boost_binary_path:
+    description: >
+      Absolute or workspace-relative path to a pre-built boost binary.
+      When set, skips downloading a GitHub release (for CI and fork testing).
     required: false
 
   github_token:
     description: "GitHub token for downloading release assets"
     default: ${{ github.token }}
     required: false
+
   repo:
     description: "Repository to download release from"
     required: false
@@ -26,3 +35,4 @@ inputs:
 runs:
   using: "node24"
   main: "dist/index.js"
+  post: "dist/cleanup/index.js"
