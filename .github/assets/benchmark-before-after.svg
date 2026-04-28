@@ -1,46 +1,78 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="920" height="360" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520" role="img" aria-labelledby="title desc">
   <title id="title">Boost benchmark before and after</title>
   <desc id="desc">Before Boost, build time is 8 minutes and logs are 20,000 tokens. After Boost, build time is 2 minutes and logs are 5,000 tokens.</desc>
   <defs>
     <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#07111f"/>
-      <stop offset="100%" stop-color="#12263f"/>
+      <stop offset="0%" stop-color="#07101c"/>
+      <stop offset="58%" stop-color="#0b1422"/>
+      <stop offset="100%" stop-color="#101f32"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#1b2538"/>
     </linearGradient>
     <linearGradient id="boost" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0%" stop-color="#40be46"/>
-      <stop offset="100%" stop-color="#36a13b"/>
+      <stop offset="0%" stop-color="#58d55d"/>
+      <stop offset="100%" stop-color="#37b64a"/>
     </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/>
+    <linearGradient id="greenSoft" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#1e6f36"/>
+      <stop offset="100%" stop-color="#40be46"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.36"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.25 0 0 0 0 0.74 0 0 0 0 0.28 0 0 0 0.45 0"/>
+      <feBlend in="SourceGraphic"/>
     </filter>
   </defs>
 
-  <rect width="920" height="360" rx="28" fill="url(#bg)"/>
-  <text x="460" y="52" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">Boost benchmark: same build, less waiting</text>
-  <text x="460" y="82" fill="#b6c2d0" font-family="Inter, Arial, sans-serif" font-size="16" text-anchor="middle">Build time and agent log tokens before and after Boost</text>
+  <rect width="1100" height="520" rx="36" fill="url(#bg)"/>
+  <circle cx="930" cy="70" r="180" fill="#40be46" opacity="0.11"/>
+  <circle cx="120" cy="460" r="180" fill="#40be46" opacity="0.08"/>
+  <path d="M84 112h932" stroke="#213047" stroke-width="1"/>
 
-  <g filter="url(#shadow)">
-    <rect x="70" y="118" width="330" height="190" rx="22" fill="#182338" stroke="#36445b"/>
-    <text x="235" y="156" fill="#ffcf70" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">Before</text>
-    <text x="235" y="206" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="800" text-anchor="middle">8 min</text>
-    <text x="235" y="238" fill="#b6c2d0" font-family="Inter, Arial, sans-serif" font-size="18" text-anchor="middle">build time</text>
-    <text x="235" y="282" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">20,000</text>
-    <text x="235" y="304" fill="#b6c2d0" font-family="Inter, Arial, sans-serif" font-size="16" text-anchor="middle">log tokens</text>
+  <text x="88" y="70" fill="#40be46" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800">JFrog Boost</text>
+  <text x="88" y="150" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="850">Same task. Less context.</text>
+  <text x="88" y="184" fill="#aeb9c9" font-family="Inter, Arial, sans-serif" font-size="18">A benchmark-style CI run with and without Boost wrapping the same commands.</text>
+
+  <g filter="url(#cardShadow)">
+    <rect x="88" y="238" width="406" height="200" rx="28" fill="url(#panel)" stroke="#2d3b52"/>
+    <rect x="120" y="268" width="142" height="34" rx="17" fill="#2a3448"/>
+    <text x="191" y="291" fill="#f2c66d" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">WITHOUT BOOST</text>
+    <text x="120" y="356" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="66" font-weight="850">8 min</text>
+    <text x="120" y="388" fill="#aeb9c9" font-family="Inter, Arial, sans-serif" font-size="19">build time</text>
+    <text x="330" y="356" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="40" font-weight="800">20k</text>
+    <text x="330" y="388" fill="#aeb9c9" font-family="Inter, Arial, sans-serif" font-size="19">log tokens</text>
+    <rect x="120" y="414" width="332" height="8" rx="4" fill="#38445a"/>
+    <rect x="120" y="414" width="332" height="8" rx="4" fill="#f2c66d"/>
+  </g>
+
+  <g filter="url(#glow)">
+    <rect x="520" y="314" width="60" height="12" rx="6" fill="#40be46"/>
+    <path d="M570 286l56 34-56 34" fill="none" stroke="#40be46" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g filter="url(#cardShadow)">
+    <rect x="650" y="220" width="362" height="236" rx="32" fill="url(#boost)" stroke="#86f08d"/>
+    <rect x="682" y="254" width="118" height="34" rx="17" fill="#0a3614" opacity="0.28"/>
+    <text x="741" y="277" fill="#05230a" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="850" text-anchor="middle">WITH BOOST</text>
+    <text x="682" y="366" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="80" font-weight="900">2 min</text>
+    <text x="682" y="402" fill="#eaffec" font-family="Inter, Arial, sans-serif" font-size="20">build time</text>
+    <text x="874" y="366" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="850">5k</text>
+    <text x="874" y="402" fill="#eaffec" font-family="Inter, Arial, sans-serif" font-size="20">log tokens</text>
+    <rect x="682" y="430" width="286" height="10" rx="5" fill="#0b3a14" opacity="0.22"/>
+    <rect x="682" y="430" width="72" height="10" rx="5" fill="#ffffff" opacity="0.92"/>
   </g>
 
   <g>
-    <path d="M430 214h60" stroke="#40be46" stroke-width="8" stroke-linecap="round"/>
-    <path d="M486 192l36 22-36 22" fill="none" stroke="#40be46" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="88" y="462" width="176" height="34" rx="17" fill="#132238" stroke="#2d3b52"/>
+    <text x="176" y="484" fill="#d7dee9" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">4x faster loop</text>
+    <rect x="278" y="462" width="198" height="34" rx="17" fill="#132238" stroke="#2d3b52"/>
+    <text x="377" y="484" fill="#d7dee9" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">75% fewer tokens</text>
+    <rect x="490" y="462" width="214" height="34" rx="17" fill="#132238" stroke="#2d3b52"/>
+    <text x="597" y="484" fill="#d7dee9" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">same commands, same result</text>
   </g>
-
-  <g filter="url(#shadow)">
-    <rect x="520" y="118" width="330" height="190" rx="22" fill="url(#boost)" stroke="#6ee675"/>
-    <text x="685" y="156" fill="#06210a" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">After Boost</text>
-    <text x="685" y="206" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="800" text-anchor="middle">2 min</text>
-    <text x="685" y="238" fill="#eaffeb" font-family="Inter, Arial, sans-serif" font-size="18" text-anchor="middle">build time</text>
-    <text x="685" y="282" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">5,000</text>
-    <text x="685" y="304" fill="#eaffeb" font-family="Inter, Arial, sans-serif" font-size="16" text-anchor="middle">log tokens</text>
-  </g>
-
-  <text x="460" y="335" fill="#b6c2d0" font-family="Inter, Arial, sans-serif" font-size="14" text-anchor="middle">Example benchmark: 4x faster build loop and 75% fewer tokens in agent context</text>
 </svg>

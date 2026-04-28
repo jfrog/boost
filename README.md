@@ -1,6 +1,12 @@
-<h1 align="center">
-  <a href="https://jfrog.github.io/boost/">Boost</a>
-</h1>
+<p align="center">
+  <a href="https://jfrog.github.io/boost/">
+    <picture>
+      <source srcset=".github/assets/boost-logo-dark.png" media="(prefers-color-scheme: dark)">
+      <source srcset=".github/assets/boost-logo-light.png" media="(prefers-color-scheme: light)">
+      <img src=".github/assets/boost-logo-light.png" alt="Boost" width="260">
+    </picture>
+  </a>
+</p>
 
 <p align="center">
   <strong>Boost</strong> — faster agents, faster CI
@@ -137,6 +143,12 @@ Prefix any command with `boost` - anywhere you'd normally run it.
 - `boost npm ci` - dependency summary, local package cache, retry-safe output
 - `boost pytest` - per-test pass/fail/duration stored locally, quiet output on green runs
 - `boost gh run view --log` - CI log stream condensed to top failures plus summary
+
+Boost also gives agents targeted investigations they can run directly:
+
+<p align="center">
+  <img src=".github/assets/boost-usage-example.png" alt="Example Boost slash commands for flaky tests, slow commands, slow CI, failing spans, cache misses, and recent regressions">
+</p>
 
 ## FAQ
 
