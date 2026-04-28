@@ -160,8 +160,7 @@ Start with the GitHub Action, then prefix expensive commands with `boost`.
 steps:
   - uses: jfrog/boost@v1
   - uses: actions/checkout@v4
-  - run: boost npm ci
-  - run: boost npm test
+  ...
 ```
 
 ## Update
