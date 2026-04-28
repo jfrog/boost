@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/jfrog/boost/security/advisories/new
+    about: Please report vulnerabilities privately through GitHub Security Advisories.
+  - name: Security policy
+    url: https://github.com/jfrog/boost/blob/main/SECURITY.md
+    about: Read supported versions, disclosure expectations, and contact details.
+  - name: Documentation
+    url: https://jfrog.github.io/boost
+    about: Read setup, configuration, OpenTelemetry, and CI recipes.

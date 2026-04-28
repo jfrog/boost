@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="360" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+  <title id="title">Boost benchmark before and after</title>
+  <desc id="desc">Before Boost, build time is 8 minutes and logs are 20,000 tokens. After Boost, build time is 2 minutes and logs are 5,000 tokens.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#07111f"/>
+      <stop offset="100%" stop-color="#12263f"/>
+    </linearGradient>
+    <linearGradient id="boost" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#40be46"/>
+      <stop offset="100%" stop-color="#36a13b"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <rect width="920" height="360" rx="28" fill="url(#bg)"/>
+  <text x="460" y="52" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" text-anchor="middle">Boost benchmark: same build, less waiting</text>
+  <text x="460" y="82" fill="#b6c2d0" font-family="Inter, Arial, sans-serif" font-size="16" text-anchor="middle">Build time and agent log tokens before and after Boost</text>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="118" width="330" height="190" rx="22" fill="#182338" stroke="#36445b"/>
+    <text x="235" y="156" fill="#ffcf70" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">Before</text>
+    <text x="235" y="206" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="800" text-anchor="middle">8 min</text>
+    <text x="235" y="238" fill="#b6c2d0" font-family="Inter, Arial, sans-serif" font-size="18" text-anchor="middle">build time</text>
+    <text x="235" y="282" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">20,000</text>
+    <text x="235" y="304" fill="#b6c2d0" font-family="Inter, Arial, sans-serif" font-size="16" text-anchor="middle">log tokens</text>
+  </g>
+
+  <g>
+    <path d="M430 214h60" stroke="#40be46" stroke-width="8" stroke-linecap="round"/>
+    <path d="M486 192l36 22-36 22" fill="none" stroke="#40be46" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="520" y="118" width="330" height="190" rx="22" fill="url(#boost)" stroke="#6ee675"/>
+    <text x="685" y="156" fill="#06210a" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">After Boost</text>
+    <text x="685" y="206" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="800" text-anchor="middle">2 min</text>
+    <text x="685" y="238" fill="#eaffeb" font-family="Inter, Arial, sans-serif" font-size="18" text-anchor="middle">build time</text>
+    <text x="685" y="282" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">5,000</text>
+    <text x="685" y="304" fill="#eaffeb" font-family="Inter, Arial, sans-serif" font-size="16" text-anchor="middle">log tokens</text>
+  </g>
+
+  <text x="460" y="335" fill="#b6c2d0" font-family="Inter, Arial, sans-serif" font-size="14" text-anchor="middle">Example benchmark: 4x faster build loop and 75% fewer tokens in agent context</text>
+</svg>

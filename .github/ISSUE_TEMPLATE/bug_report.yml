@@ -1,0 +1,76 @@
+name: Bug report
+description: Report a reproducible problem with Boost.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Boost. Please do not report security vulnerabilities here; use the Security tab or security@jfrog.com instead.
+  - type: input
+    id: version
+    attributes:
+      label: Boost version
+      description: Run `boost --version` and paste the result.
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where did this happen?
+      options:
+        - CLI
+        - Coding agent integration
+        - GitHub Actions
+        - Install or update
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS and environment
+      description: Include OS, architecture, shell, and CI provider if relevant.
+      placeholder: macOS arm64, zsh, Cursor
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command or workflow step
+      description: Paste the exact command or minimal workflow step that failed.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect Boost to do?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead? Include relevant logs after removing secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Give the smallest sequence of steps that reproduces the issue.
+      placeholder: |
+        1. Install Boost with ...
+        2. Run ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Links, screenshots, trace IDs, or anything else that helps.

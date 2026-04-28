@@ -1,12 +1,6 @@
-<p align="center">
-  <a href="https://jfrog.github.io/boost/">
-    <picture>
-      <source srcset=".github/assets/boost-logo-dark.png" media="(prefers-color-scheme: dark)">
-      <source srcset=".github/assets/boost-logo-light.png" media="(prefers-color-scheme: light)">
-      <img src=".github/assets/boost-logo-light.png" alt="Boost" width="260">
-    </picture>
-  </a>
-</p>
+<h1 align="center">
+  <a href="https://jfrog.github.io/boost/">Boost</a>
+</h1>
 
 <p align="center">
   <strong>Boost</strong> — faster agents, faster CI
@@ -18,7 +12,15 @@
 
 <p align="center">
   <a href="https://jfrog.github.io/boost/"><img src="https://img.shields.io/badge/website-jfrog.github.io%2Fboost-36a13b?logo=googlechrome&logoColor=white" alt="Website"></a>
-  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/v/release/jfrog/boost?color=36a13b" alt="Release"></a>
+  <img src="https://img.shields.io/badge/maintenance-active-36a13b" alt="Maintenance: Active">
+  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/badge/release-v1.0.x-36a13b" alt="Release: v1.0.x"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-free%20(proprietary)-blue" alt="License: Free (Proprietary)"></a>
+  <a href="https://jfrog.com"><img src="https://img.shields.io/badge/supported%20by-JFrog-40be46" alt="Supported by JFrog"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/agent--native-brightgreen" alt="Agent-native">
+  <img src="https://img.shields.io/badge/OpenTelemetry-enabled-blueviolet?logo=opentelemetry&logoColor=white" alt="OpenTelemetry">
   <a href="https://go.dev/"><img src="https://img.shields.io/badge/go-1.25-00ADD8?logo=go&logoColor=white" alt="Go 1.25"></a>
   <img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey" alt="Platforms">
   <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/downloads/jfrog/boost/total?color=6f42c1" alt="Downloads"></a>
@@ -26,13 +28,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/agent--native-brightgreen" alt="Agent-native">
-  <img src="https://img.shields.io/badge/OpenTelemetry-enabled-blueviolet?logo=opentelemetry&logoColor=white" alt="OpenTelemetry">
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-proprietary%20(beta)-blue" alt="License: proprietary (beta)"></a>
-</p>
-
-<p align="center">
-  <sub>Sponsored by <a href="https://jfrog.com"><strong>JFrog</strong></a></sub>
+  <sub>Built and supported by <a href="https://jfrog.com"><strong>JFrog</strong></a></sub>
 </p>
 
 ---
@@ -41,74 +37,91 @@ Humans and coding agents spend too much time waiting for commands to finish and 
 
 - your **terminal** — prefix any command with `boost`
 - your **coding agent** — `boost init` wires up Cursor, Claude Code, Codex, Gemini CLI, and more
-- your **CI** — one line: `uses: jfrog/boost@v0`
+- your **CI** — one line: `uses: jfrog/boost@v1`
 
 Same binary, same acceleration, same telemetry — wherever your builds run.
 
 ## Quick Start
 
-**CLI** — prefix any command with `boost`
-
-Install:
+**CLI** - install once, then prefix any command with `boost`.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jfrog/boost/main/install.sh | bash
-```
-
-Use:
-
-```bash
 boost docker build -t myapp .
-boost npm ci
-boost pytest
-```
-
-**Coding agent** — auto-wire Cursor, Claude Code, Codex, and more
-
-Run the interactive setup in any project:
-
-```bash
 boost init
 ```
 
-It detects your installed editors and CI providers and registers hooks so every tool call the agent makes gets wrapped by boost. Re-run it any time your editor / agent list changes.
-
-**CI** — one line in your workflow
+**GitHub Actions** - add Boost before your build steps.
 
 ```yaml
-steps:
-  - uses: jfrog/boost@v0
-  - uses: actions/checkout@v4
-  ...
+name: ci
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jfrog/boost@v1
+      - uses: actions/checkout@v4
+      - run: boost npm ci
+      - run: boost npm test
 ```
 
-The action pins to the rolling `v0` major; see [releases](https://github.com/jfrog/boost/releases) for the latest tag.
+`boost init` detects your installed editors and CI providers, then registers hooks so every tool call your agent makes can run through Boost. Pin to a specific release such as `jfrog/boost@v1.0.0` when you need reproducible CI.
 
 ## Why Boost
 
-- **One binary, three surfaces** — CLI, coding agent, and CI all share the same runtime and behave identically.
-- **60–90% fewer log tokens** — strips noise from command output before it reaches your agent's context window.
-- **Deep OTel context** — every wrapped command emits OpenTelemetry traces and metrics your agents can reason about.
+- **One binary, three surfaces** - CLI, coding agent, and CI all share the same runtime and behave identically.
+- **75% fewer log tokens in the benchmark below** - compact command output before it reaches your agent's context window.
+- **Deep OTel context** - every wrapped command emits OpenTelemetry traces and metrics your agents can reason about.
+- **Supported by JFrog** - distributed as a signed binary through GitHub Releases.
 
-## Before / after
+## Benchmark: before / after
 
-Same `npm ci`, same result. What changes:
+<p align="center">
+  <img src=".github/assets/benchmark-before-after.svg" alt="Boost benchmark: build time drops from 8 minutes to 2 minutes and log tokens drop from 20,000 to 5,000">
+</p>
 
-- **~15× fewer tokens** in your agent's context — 9.8k → 640 on a typical install.
-- **Faster reruns** via content-addressed cache — seconds instead of minutes.
-- **Deep OTel trace** of every command — timing, cache hits, exit code — routable to your backend.
+Same build, same result. Boost keeps the signal and removes the wait:
+
+- **Build time:** 8 minutes -> 2 minutes.
+- **Agent context:** 20,000 tokens -> 5,000 tokens.
+- **Traceability:** timing, cache hits, and exit codes are captured as OpenTelemetry metadata.
 
 ```bash
-# Without boost — ~9,800 tokens of log noise in your agent's context
-$ npm ci
-npm warn deprecated inflight@1.0.6 / rimraf@3.0.2 / glob@7.2.3 …
-added 1285 packages, audited 1286 in 45s
-found 0 vulnerabilities
+# Without boost - long logs, repeated work
+$ npm ci && npm test
+build finished in 8m 04s
+~20,000 log tokens emitted
 
-# With boost — ~640 tokens, same result, cache-backed
-$ boost npm ci
-[OK] npm ci · 1,285 packages restored from boost cache in 2.4s · 0 vulnerabilities
+# With boost - cached work, compact output, same exit behavior
+$ boost npm ci && boost npm test
+[OK] build finished in 2m 01s - cache hit summary available - ~5,000 tokens emitted
 ```
+
+## How it works (High Level)
+
+Boost is a local wrapper around the commands you already run. It does not need your source code in the cloud to make builds quieter and faster.
+
+```mermaid
+flowchart LR
+  command["Command or agent tool call"] --> boost["Boost wrapper"]
+  boost --> delta["Delta detector"]
+  delta --> cache["Smart cache"]
+  cache --> runner["Original command"]
+  runner --> compact["Log and token compaction"]
+  compact --> output["Terminal, agent, or CI output"]
+  boost --> otel["OpenTelemetry metadata"]
+```
+
+At a high level, Boost:
+
+- detects the changed inputs that matter for the wrapped command;
+- reuses safe cached work when the content fingerprint matches;
+- keeps raw command behavior and exit codes intact;
+- condenses repetitive logs before they enter an agent context window;
+- emits metadata such as duration, cache status, and exit code through OpenTelemetry.
 
 ## Supported tools
 
@@ -118,12 +131,38 @@ $ boost npm ci
 
 ## Usage examples
 
-Prefix any command with `boost` — anywhere you'd normally run it.
+Prefix any command with `boost` - anywhere you'd normally run it.
 
-- `boost docker build ...` — compressed build log, layer-cache summary, Docker metrics in OTel
-- `boost npm ci` — dependency summary, local package cache, retry-safe output
-- `boost pytest` — per-test pass/fail/duration stored locally, quiet output on green runs
-- `boost gh run view --log` — CI log stream condensed to top failures plus summary
+- `boost docker build ...` - compressed build log, layer-cache summary, Docker metrics in OTel
+- `boost npm ci` - dependency summary, local package cache, retry-safe output
+- `boost pytest` - per-test pass/fail/duration stored locally, quiet output on green runs
+- `boost gh run view --log` - CI log stream condensed to top failures plus summary
+
+## FAQ
+
+### Why is Boost free?
+
+Boost started as an internal JFrog tool for making AI agents and CI loops faster. We decided to share it with the developer community because faster, more observable agent workflows help the whole AI engineering ecosystem move forward.
+
+### Is Boost open source?
+
+The Boost binary is free to use under the JFrog Online Beta Agreement, but it is proprietary software. See [LICENSE](LICENSE) and [BETA_AGREEMENT.md](BETA_AGREEMENT.md) for the current terms.
+
+### Does Boost upload my source code or logs?
+
+No. Boost is local-first: raw logs, command history, and traces stay on your machine unless you explicitly export metadata. See [Security & Privacy](#security--privacy) and [SECURITY.md](./SECURITY.md).
+
+### What should I add to CI?
+
+Start with the GitHub Action, then prefix expensive commands with `boost`.
+
+```yaml
+steps:
+  - uses: jfrog/boost@v1
+  - uses: actions/checkout@v4
+  - run: boost npm ci
+  - run: boost npm test
+```
 
 ## Update
 

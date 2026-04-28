@@ -1,0 +1,49 @@
+name: Feature request
+description: Suggest a Boost feature, integration, or workflow improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tell us what would make Boost more useful for your agents, terminal workflows, or CI.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Coding agent integration
+        - CI provider
+        - CLI command wrapping
+        - Caching
+        - Log compaction
+        - OpenTelemetry or observability
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What is slow, noisy, hard to observe, or hard to integrate today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the workflow you would like Boost to support.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What have you tried instead?
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Agent, CI provider, language ecosystem, screenshots, or links.

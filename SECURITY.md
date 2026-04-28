@@ -27,12 +27,12 @@ Reporters are credited in the resulting advisory and release notes unless anonym
 
 ## Supported Versions
 
-Boost is currently in `v0.x` beta. Security fixes target the latest `v0.x` release; upgrade with `boost update`.
+Security fixes target the latest `v1.x` release; upgrade with `boost update`.
 
 | Version              | Status       | Security fixes                   |
 | -------------------- | ------------ | -------------------------------- |
-| v0.x (latest)        | Active       | Yes                              |
-| v0.x (older patches) | Superseded   | Best-effort; upgrade recommended |
+| v1.x (latest)        | Active       | Yes                              |
+| v0.x                 | Superseded   | Best-effort; upgrade recommended |
 | Pre-release builds   | Unsupported  | No                               |
 
 ## Security Model
