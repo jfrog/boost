@@ -53,7 +53,6 @@ Same binary, same acceleration, same telemetry — wherever your builds run.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jfrog/boost/main/install.sh | bash
-boost docker build -t myapp .
 boost init
 ```
 
@@ -68,10 +67,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: jfrog/boost@v1
+      - uses: jfrog/boost@v0
       - uses: actions/checkout@v4
-      - run: boost npm ci
-      - run: boost npm test
+      ...
 ```
 
 `boost init` detects your installed editors and CI providers, then registers hooks so every tool call your agent makes can run through Boost. Pin to a specific release such as `jfrog/boost@v1.0.0` when you need reproducible CI.
