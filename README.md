@@ -18,15 +18,7 @@
 
 <p align="center">
   <a href="https://jfrog.github.io/boost/"><img src="https://img.shields.io/badge/website-jfrog.github.io%2Fboost-36a13b?logo=googlechrome&logoColor=white" alt="Website"></a>
-  <img src="https://img.shields.io/badge/maintenance-active-36a13b" alt="Maintenance: Active">
-  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/badge/release-v1.0.x-36a13b" alt="Release: v1.0.x"></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-free%20(proprietary)-blue" alt="License: Free (Proprietary)"></a>
-  <a href="https://jfrog.com"><img src="https://img.shields.io/badge/supported%20by-JFrog-40be46" alt="Supported by JFrog"></a>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/agent--native-brightgreen" alt="Agent-native">
-  <img src="https://img.shields.io/badge/OpenTelemetry-enabled-blueviolet?logo=opentelemetry&logoColor=white" alt="OpenTelemetry">
+  <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/v/release/jfrog/boost?color=36a13b" alt="Release"></a>
   <a href="https://go.dev/"><img src="https://img.shields.io/badge/go-1.25-00ADD8?logo=go&logoColor=white" alt="Go 1.25"></a>
   <img src="https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey" alt="Platforms">
   <a href="https://github.com/jfrog/boost/releases"><img src="https://img.shields.io/github/downloads/jfrog/boost/total?color=6f42c1" alt="Downloads"></a>
@@ -34,7 +26,19 @@
 </p>
 
 <p align="center">
-  <sub>Built and supported by <a href="https://jfrog.com"><strong>JFrog</strong></a></sub>
+  <img src="https://img.shields.io/badge/agent--native-brightgreen" alt="Agent-native">
+  <img src="https://img.shields.io/badge/OpenTelemetry-enabled-blueviolet?logo=opentelemetry&logoColor=white" alt="OpenTelemetry">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-proprietary%20(beta)-blue" alt="License: proprietary (beta)"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/maintenance-active-36a13b" alt="Maintenance: Active">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-free%20(proprietary)-blue" alt="License: Free (Proprietary)"></a>
+  <a href="https://jfrog.com"><img src="https://img.shields.io/badge/supported%20by-JFrog-40be46" alt="Supported by JFrog"></a>
+</p>
+
+<p align="center">
+  <sub>Sponsored by <a href="https://jfrog.com"><strong>JFrog</strong></a></sub>
 </p>
 
 ---
@@ -43,36 +47,48 @@ Humans and coding agents spend too much time waiting for commands to finish and 
 
 - your **terminal** — prefix any command with `boost`
 - your **coding agent** — `boost init` wires up Cursor, Claude Code, Codex, Gemini CLI, and more
-- your **CI** — one line: `uses: jfrog/boost@v1`
+- your **CI** — one line: `uses: jfrog/boost@v0`
 
 Same binary, same acceleration, same telemetry — wherever your builds run.
 
 ## Quick Start
 
-**CLI** - install once, then prefix any command with `boost`.
+**CLI** — prefix any command with `boost`
+
+Install:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jfrog/boost/main/install.sh | bash
+```
+
+Use:
+
+```bash
+boost docker build -t myapp .
+boost npm ci
+boost pytest
+```
+
+**Coding agent** — auto-wire Cursor, Claude Code, Codex, and more
+
+Run the interactive setup in any project:
+
+```bash
 boost init
 ```
 
-**GitHub Actions** - add Boost before your build steps.
+It detects your installed editors and CI providers and registers hooks so every tool call the agent makes gets wrapped by boost. Re-run it any time your editor / agent list changes.
+
+**CI** — one line in your workflow
 
 ```yaml
-name: ci
-
-on: [push, pull_request]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: jfrog/boost@v0
-      - uses: actions/checkout@v4
-      ...
+steps:
+  - uses: jfrog/boost@v0
+  - uses: actions/checkout@v4
+  ...
 ```
 
-`boost init` detects your installed editors and CI providers, then registers hooks so every tool call your agent makes can run through Boost. Pin to a specific release such as `jfrog/boost@v1.0.0` when you need reproducible CI.
+The action pins to the rolling `v0` major; see [releases](https://github.com/jfrog/boost/releases) for the latest tag.
 
 ## Why Boost
 
@@ -168,7 +184,7 @@ Start with the GitHub Action, then prefix expensive commands with `boost`.
 
 ```yaml
 steps:
-  - uses: jfrog/boost@v1
+  - uses: jfrog/boost@v0
   - uses: actions/checkout@v4
   ...
 ```
