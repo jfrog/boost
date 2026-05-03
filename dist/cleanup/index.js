@@ -130103,6 +130103,9 @@ module.exports = JSON.parse('{"name":"@actions/artifact","version":"6.2.1","prev
 /******/ 	return module.exports;
 /******/ }
 /******/ 
+/******/ // expose the modules object (__webpack_modules__)
+/******/ __nccwpck_require__.m = __webpack_modules__;
+/******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
@@ -130158,6 +130161,28 @@ module.exports = JSON.parse('{"name":"@actions/artifact","version":"6.2.1","prev
 /******/ 	};
 /******/ })();
 /******/ 
+/******/ /* webpack/runtime/ensure chunk */
+/******/ (() => {
+/******/ 	__nccwpck_require__.f = {};
+/******/ 	// This file contains only the entry chunk.
+/******/ 	// The chunk loading function for additional chunks
+/******/ 	__nccwpck_require__.e = (chunkId) => {
+/******/ 		return Promise.all(Object.keys(__nccwpck_require__.f).reduce((promises, key) => {
+/******/ 			__nccwpck_require__.f[key](chunkId, promises);
+/******/ 			return promises;
+/******/ 		}, []));
+/******/ 	};
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/get javascript chunk filename */
+/******/ (() => {
+/******/ 	// This function allow to reference async chunks
+/******/ 	__nccwpck_require__.u = (chunkId) => {
+/******/ 		// return url for filenames based on template
+/******/ 		return "" + chunkId + ".index.js";
+/******/ 	};
+/******/ })();
+/******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
 /******/ (() => {
 /******/ 	__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
@@ -130186,6 +130211,65 @@ module.exports = JSON.parse('{"name":"@actions/artifact","version":"6.2.1","prev
 /******/ /* webpack/runtime/compat */
 /******/ 
 /******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
+/******/ 
+/******/ /* webpack/runtime/import chunk loading */
+/******/ (() => {
+/******/ 	// no baseURI
+/******/ 	
+/******/ 	// object to store loaded and loading chunks
+/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 	// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 	var installedChunks = {
+/******/ 		179: 0
+/******/ 	};
+/******/ 	
+/******/ 	var installChunk = (data) => {
+/******/ 		var {ids, modules, runtime} = data;
+/******/ 		// add "modules" to the modules object,
+/******/ 		// then flag all "ids" as loaded and fire callback
+/******/ 		var moduleId, chunkId, i = 0;
+/******/ 		for(moduleId in modules) {
+/******/ 			if(__nccwpck_require__.o(modules, moduleId)) {
+/******/ 				__nccwpck_require__.m[moduleId] = modules[moduleId];
+/******/ 			}
+/******/ 		}
+/******/ 		if(runtime) runtime(__nccwpck_require__);
+/******/ 		for(;i < ids.length; i++) {
+/******/ 			chunkId = ids[i];
+/******/ 			if(__nccwpck_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 				installedChunks[chunkId][0]();
+/******/ 			}
+/******/ 			installedChunks[ids[i]] = 0;
+/******/ 		}
+/******/ 	
+/******/ 	}
+/******/ 	
+/******/ 	__nccwpck_require__.f.j = (chunkId, promises) => {
+/******/ 			// import() chunk loading for javascript
+/******/ 			var installedChunkData = __nccwpck_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+/******/ 			if(installedChunkData !== 0) { // 0 means "already installed".
+/******/ 	
+/******/ 				// a Promise means "currently loading".
+/******/ 				if(installedChunkData) {
+/******/ 					promises.push(installedChunkData[1]);
+/******/ 				} else {
+/******/ 					if(true) { // all chunks have JS
+/******/ 						// setup Promise in chunk cache
+/******/ 						var promise = import("./" + __nccwpck_require__.u(chunkId)).then(installChunk, (e) => {
+/******/ 							if(installedChunks[chunkId] !== 0) installedChunks[chunkId] = undefined;
+/******/ 							throw e;
+/******/ 						});
+/******/ 						var promise = Promise.race([promise, new Promise((resolve) => (installedChunkData = installedChunks[chunkId] = [resolve]))])
+/******/ 						promises.push(installedChunkData[1] = promise);
+/******/ 					} else installedChunks[chunkId] = 0;
+/******/ 				}
+/******/ 			}
+/******/ 	};
+/******/ 	
+/******/ 	// no external install chunk
+/******/ 	
+/******/ 	// no on chunks loaded
+/******/ })();
 /******/ 
 /************************************************************************/
 var __webpack_exports__ = {};
@@ -183666,16 +183750,33 @@ async function cleanup() {
 }
 cleanup();
 /**
+ * isGhes mirrors the detection used by `@actions/artifact` v2+
+ * (packages/artifact/src/internal/shared/config.ts) so we never call the
+ * v2 client on a host where it would throw GHESNotSupportedError. We
+ * intentionally branch BEFORE constructing the v2 client to keep GHES
+ * runs free of `GHESNotSupportedError` annotations.
+ */
+function cleanup_isGhes() {
+    const ghUrl = new URL(process.env.GITHUB_SERVER_URL || "https://github.com");
+    const host = ghUrl.hostname.trim().toUpperCase();
+    return (host !== "GITHUB.COM" &&
+        !host.endsWith(".GHE.COM") &&
+        !host.endsWith(".LOCALHOST"));
+}
+/**
  * Uploads the trace JSONL file as a GitHub Artifact.
  * Uses GITHUB_JOB for the base name.
  * Falls back to GITHUB_JOB if unset. Appends a random suffix every time to
  * avoid name conflicts (GitHub's API does not allow overwriting artifacts).
+ *
+ * SaaS uses `@actions/artifact` v6 (Artifacts v4 backend). GHES still
+ * ships only the legacy v1 backend, so on GHES we use `@actions/artifact@1.1.2`
+ * via the `@actions/artifact-legacy` npm alias.
  */
 async function uploadTraceArtifact() {
     const jobId = process.env.GITHUB_JOB || "unknown";
     const suffix = external_crypto_.randomBytes(3).toString("hex");
     const artifactName = `boost-trace-${jobId}-${suffix}`;
-    const artifactClient = new DefaultArtifactClient();
     const tracePath = resolveTraceArtifactPath();
     if (tracePath === undefined) {
         core.debug("No trace file to upload (missing or empty at expected paths)");
@@ -183683,14 +183784,33 @@ async function uploadTraceArtifact() {
     }
     const files = [tracePath];
     const rootDirectory = external_path_.dirname(files[0]);
-    const options = { retentionDays: 30 };
     try {
-        const { id, size } = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-        core.info(`Uploaded trace artifact "${artifactName}" (id: ${id}, size: ${size} bytes)`);
+        if (cleanup_isGhes()) {
+            await uploadViaLegacyClient(artifactName, files, rootDirectory);
+        }
+        else {
+            await uploadViaV2Client(artifactName, files, rootDirectory);
+        }
     }
     catch (error) {
         core.warning(`Failed to upload trace artifact: ${error}`);
     }
+}
+async function uploadViaV2Client(artifactName, files, rootDirectory) {
+    const client = new DefaultArtifactClient();
+    const { id, size } = await client.uploadArtifact(artifactName, files, rootDirectory, { retentionDays: 30 });
+    core.info(`Uploaded trace artifact "${artifactName}" (id: ${id}, size: ${size} bytes)`);
+}
+async function uploadViaLegacyClient(artifactName, files, rootDirectory) {
+    // Dynamic import keeps the legacy bundle out of the SaaS hot path and
+    // avoids paying its parse cost on github.com.
+    const legacy = (await __nccwpck_require__.e(/* import() */ 75).then(__nccwpck_require__.bind(__nccwpck_require__, 81075)));
+    const client = legacy.create();
+    const { size, failedItems } = await client.uploadArtifact(artifactName, files, rootDirectory, { retentionDays: 30, continueOnError: false });
+    if (failedItems.length > 0) {
+        core.warning(`Trace artifact uploaded with ${failedItems.length} failed item(s)`);
+    }
+    core.info(`Uploaded trace artifact "${artifactName}" via legacy client (size: ${size} bytes)`);
 }
 
 })();
