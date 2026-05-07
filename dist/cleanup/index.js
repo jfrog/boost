@@ -130103,6 +130103,9 @@ module.exports = JSON.parse('{"name":"@actions/artifact","version":"6.2.1","prev
 /******/ 	return module.exports;
 /******/ }
 /******/ 
+/******/ // expose the modules object (__webpack_modules__)
+/******/ __nccwpck_require__.m = __webpack_modules__;
+/******/ 
 /************************************************************************/
 /******/ /* webpack/runtime/compat get default export */
 /******/ (() => {
@@ -130158,6 +130161,28 @@ module.exports = JSON.parse('{"name":"@actions/artifact","version":"6.2.1","prev
 /******/ 	};
 /******/ })();
 /******/ 
+/******/ /* webpack/runtime/ensure chunk */
+/******/ (() => {
+/******/ 	__nccwpck_require__.f = {};
+/******/ 	// This file contains only the entry chunk.
+/******/ 	// The chunk loading function for additional chunks
+/******/ 	__nccwpck_require__.e = (chunkId) => {
+/******/ 		return Promise.all(Object.keys(__nccwpck_require__.f).reduce((promises, key) => {
+/******/ 			__nccwpck_require__.f[key](chunkId, promises);
+/******/ 			return promises;
+/******/ 		}, []));
+/******/ 	};
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/get javascript chunk filename */
+/******/ (() => {
+/******/ 	// This function allow to reference async chunks
+/******/ 	__nccwpck_require__.u = (chunkId) => {
+/******/ 		// return url for filenames based on template
+/******/ 		return "" + chunkId + ".index.js";
+/******/ 	};
+/******/ })();
+/******/ 
 /******/ /* webpack/runtime/hasOwnProperty shorthand */
 /******/ (() => {
 /******/ 	__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
@@ -130186,6 +130211,65 @@ module.exports = JSON.parse('{"name":"@actions/artifact","version":"6.2.1","prev
 /******/ /* webpack/runtime/compat */
 /******/ 
 /******/ if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = new URL('.', import.meta.url).pathname.slice(import.meta.url.match(/^file:\/\/\/\w:/) ? 1 : 0, -1) + "/";
+/******/ 
+/******/ /* webpack/runtime/import chunk loading */
+/******/ (() => {
+/******/ 	// no baseURI
+/******/ 	
+/******/ 	// object to store loaded and loading chunks
+/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 	// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
+/******/ 	var installedChunks = {
+/******/ 		179: 0
+/******/ 	};
+/******/ 	
+/******/ 	var installChunk = (data) => {
+/******/ 		var {ids, modules, runtime} = data;
+/******/ 		// add "modules" to the modules object,
+/******/ 		// then flag all "ids" as loaded and fire callback
+/******/ 		var moduleId, chunkId, i = 0;
+/******/ 		for(moduleId in modules) {
+/******/ 			if(__nccwpck_require__.o(modules, moduleId)) {
+/******/ 				__nccwpck_require__.m[moduleId] = modules[moduleId];
+/******/ 			}
+/******/ 		}
+/******/ 		if(runtime) runtime(__nccwpck_require__);
+/******/ 		for(;i < ids.length; i++) {
+/******/ 			chunkId = ids[i];
+/******/ 			if(__nccwpck_require__.o(installedChunks, chunkId) && installedChunks[chunkId]) {
+/******/ 				installedChunks[chunkId][0]();
+/******/ 			}
+/******/ 			installedChunks[ids[i]] = 0;
+/******/ 		}
+/******/ 	
+/******/ 	}
+/******/ 	
+/******/ 	__nccwpck_require__.f.j = (chunkId, promises) => {
+/******/ 			// import() chunk loading for javascript
+/******/ 			var installedChunkData = __nccwpck_require__.o(installedChunks, chunkId) ? installedChunks[chunkId] : undefined;
+/******/ 			if(installedChunkData !== 0) { // 0 means "already installed".
+/******/ 	
+/******/ 				// a Promise means "currently loading".
+/******/ 				if(installedChunkData) {
+/******/ 					promises.push(installedChunkData[1]);
+/******/ 				} else {
+/******/ 					if(true) { // all chunks have JS
+/******/ 						// setup Promise in chunk cache
+/******/ 						var promise = import("./" + __nccwpck_require__.u(chunkId)).then(installChunk, (e) => {
+/******/ 							if(installedChunks[chunkId] !== 0) installedChunks[chunkId] = undefined;
+/******/ 							throw e;
+/******/ 						});
+/******/ 						var promise = Promise.race([promise, new Promise((resolve) => (installedChunkData = installedChunks[chunkId] = [resolve]))])
+/******/ 						promises.push(installedChunkData[1] = promise);
+/******/ 					} else installedChunks[chunkId] = 0;
+/******/ 				}
+/******/ 			}
+/******/ 	};
+/******/ 	
+/******/ 	// no external install chunk
+/******/ 	
+/******/ 	// no on chunks loaded
+/******/ })();
 /******/ 
 /************************************************************************/
 var __webpack_exports__ = {};
@@ -144673,7 +144757,25 @@ class Matcher {
     return this._view;
   }
 }
+;// CONCATENATED MODULE: ./node_modules/fast-xml-builder/src/util.js
+
+
+function safeComment(val) {
+  return String(val)
+    .replace(/--/g, '- -')   // -- is illegal anywhere in comment content
+    .replace(/--/g, '- -')   // handle the scenario when 2 consiucative dashes appears 
+    .replace(/-$/, '- ');    // trailing - would form -- with the closing -->
+}
+
+function safeCdata(val) {
+  return String(val).replace(/\]\]>/g, ']]]]><![CDATA[>')
+}
+
+function escapeAttribute(val) {
+  return String(val).replace(/"/g, '&quot;').replace(/'/g, '&apos;')
+}
 ;// CONCATENATED MODULE: ./node_modules/fast-xml-builder/src/orderedJs2Xml.js
+
 
 
 const EOL = "\n";
@@ -144686,7 +144788,7 @@ const EOL = "\n";
  */
 function toXml(jArray, options) {
     let indentation = "";
-    if (options.format && options.indentBy.length > 0) {
+    if (options.format) {
         indentation = EOL;
     }
 
@@ -144759,16 +144861,14 @@ function arrToStr(arr, options, indentation, matcher, stopNodeExpressions) {
                 xmlStr += indentation;
             }
             const val = tagObj[tagName][0][options.textNodeName];
-            const safeVal = String(val).replace(/\]\]>/g, ']]]]><![CDATA[>');
+            const safeVal = safeCdata(val);
             xmlStr += `<![CDATA[${safeVal}]]>`;
             isPreviousElementTag = false;
             matcher.pop();
             continue;
         } else if (tagName === options.commentPropName) {
             const val = tagObj[tagName][0][options.textNodeName]
-            const safeVal = String(val)
-                .replace(/--/g, '- -')   // -- is illegal anywhere in comment content
-                .replace(/-$/, '- ');    // trailing - would form -- with the closing -->
+            const safeVal = safeComment(val)
             xmlStr += indentation + `<!--${safeVal}-->`;
             isPreviousElementTag = true;
             matcher.pop();
@@ -144776,9 +144876,9 @@ function arrToStr(arr, options, indentation, matcher, stopNodeExpressions) {
         } else if (tagName[0] === "?") {
             const attStr = attr_to_str(tagObj[":@"], options, isStopNode);
             const tempInd = tagName === "?xml" ? "" : indentation;
-            let piTextNodeName = tagObj[tagName][0][options.textNodeName];
-            piTextNodeName = piTextNodeName.length !== 0 ? " " + piTextNodeName : ""; //remove extra spacing
-            xmlStr += tempInd + `<${tagName}${piTextNodeName}${attStr}?>`;
+            // Text node content on PI/XML declaration tags is intentionally ignored.
+            // Only attributes are valid on these tags per the XML spec.
+            xmlStr += tempInd + `<${tagName}${attStr}?>`;
             isPreviousElementTag = true;
             matcher.pop();
             continue;
@@ -144843,7 +144943,7 @@ function extractAttributeValues(attrMap, options) {
         const cleanAttrName = attr.startsWith(options.attributeNamePrefix)
             ? attr.substr(options.attributeNamePrefix.length)
             : attr;
-        attrValues[cleanAttrName] = attrMap[attr];
+        attrValues[cleanAttrName] = escapeAttribute(attrMap[attr]);
         hasAttrs = true;
     }
 
@@ -144910,7 +145010,7 @@ function attr_to_str_raw(attrMap, options) {
             if (attrVal === true && options.suppressBooleanAttributes) {
                 attrStr += ` ${attr.substr(options.attributeNamePrefix.length)}`;
             } else {
-                attrStr += ` ${attr.substr(options.attributeNamePrefix.length)}="${attrVal}"`;
+                attrStr += ` ${attr.substr(options.attributeNamePrefix.length)}="${escapeAttribute(attrVal)}"`;
             }
         }
     }
@@ -144945,7 +145045,7 @@ function attr_to_str(attrMap, options, isStopNode) {
             if (attrVal === true && options.suppressBooleanAttributes) {
                 attrStr += ` ${attr.substr(options.attributeNamePrefix.length)}`;
             } else {
-                attrStr += ` ${attr.substr(options.attributeNamePrefix.length)}="${attrVal}"`;
+                attrStr += ` ${attr.substr(options.attributeNamePrefix.length)}="${escapeAttribute(attrVal)}"`;
             }
         }
     }
@@ -145002,6 +145102,7 @@ function getIgnoreAttributesFn(ignoreAttributes) {
 ;// CONCATENATED MODULE: ./node_modules/fast-xml-builder/src/fxb.js
 
 //parse Empty Node as self closing node
+
 
 
 
@@ -145134,7 +145235,7 @@ Builder.prototype.j2x = function (jObj, level, matcher) {
       // null attribute should be ignored by the attribute list, but should not cause the tag closing
       if (this.isAttribute(key)) {
         val += '';
-      } else if (key === this.options.cdataPropName) {
+      } else if (key === this.options.cdataPropName || key === this.options.commentPropName) {
         val += '';
       } else if (key[0] === '?') {
         val += this.indentate(level) + '<' + key + '?' + this.tagEndChar;
@@ -145253,7 +145354,7 @@ Builder.prototype.buildAttrPairStr = function (attrName, val, isStopNode) {
   }
   if (this.options.suppressBooleanAttributes && val === "true") {
     return ' ' + attrName;
-  } else return ' ' + attrName + '="' + val + '"';
+  } else return ' ' + attrName + '="' + escapeAttribute(val) + '"';
 }
 
 function processTextOrObjNode(object, key, level, matcher) {
@@ -145278,7 +145379,11 @@ function processTextOrObjNode(object, key, level, matcher) {
   // Pop tag from matcher after recursion
   matcher.pop();
 
-  if (object[this.options.textNodeName] !== undefined && Object.keys(object).length === 1) {
+  // PI/XML-declaration tags must never emit text content — route through
+  // buildTextValNode which correctly ignores the text node for "?" tags.
+  if (key[0] === '?') {
+    return this.buildTextValNode('', key, result.attrStr, level, matcher);
+  } else if (object[this.options.textNodeName] !== undefined && Object.keys(object).length === 1) {
     return this.buildTextValNode(object[this.options.textNodeName], key, result.attrStr, level, matcher);
   } else {
     return this.buildObjectNode(result.val, key, result.attrStr, level);
@@ -145301,7 +145406,7 @@ Builder.prototype.extractAttributes = function (obj) {
       const cleanKey = attrKey.startsWith(this.options.attributeNamePrefix)
         ? attrKey.substring(this.options.attributeNamePrefix.length)
         : attrKey;
-      attrValues[cleanKey] = attrGroup[attrKey];
+      attrValues[cleanKey] = escapeAttribute(attrGroup[attrKey]);
       hasAttrs = true;
     }
   } else {
@@ -145310,7 +145415,7 @@ Builder.prototype.extractAttributes = function (obj) {
       if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
       const attr = this.isAttribute(key);
       if (attr) {
-        attrValues[attr] = obj[key];
+        attrValues[attr] = escapeAttribute(obj[key]);
         hasAttrs = true;
       }
     }
@@ -145427,8 +145532,10 @@ Builder.prototype.buildObjectNode = function (val, key, attrStr, level) {
     else {
       return this.indentate(level) + '<' + key + attrStr + this.closeTag(key) + this.tagEndChar;
     }
+  } else if (key[0] === "?") {
+    // PI/XML-declaration tags never have body content — treat them like empty.
+    return this.indentate(level) + '<' + key + attrStr + '?' + this.tagEndChar;
   } else {
-
     let tagEndExp = '</' + key + this.tagEndChar;
     let piClosingChar = "";
 
@@ -145488,12 +145595,10 @@ function buildEmptyObjNode(val, key, attrStr, level) {
 
 Builder.prototype.buildTextValNode = function (val, key, attrStr, level, matcher) {
   if (this.options.cdataPropName !== false && key === this.options.cdataPropName) {
-    const safeVal = String(val).replace(/\]\]>/g, ']]]]><![CDATA[>');
+    const safeVal = safeCdata(val);
     return this.indentate(level) + `<![CDATA[${safeVal}]]>` + this.newLine;
   } else if (this.options.commentPropName !== false && key === this.options.commentPropName) {
-    const safeVal = String(val)
-      .replace(/--/g, '- -')   // -- is illegal anywhere in comment content
-      .replace(/-$/, '- ');    // trailing - would form -- with the closing -->
+    const safeVal = safeComment(val);
     return this.indentate(level) + `<!--${safeVal}-->` + this.newLine;
   } else if (key[0] === "?") {//PI tag
     return this.indentate(level) + '<' + key + attrStr + '?' + this.tagEndChar;
@@ -146656,14 +146761,14 @@ function validateEntityName(name) {
 }
 ;// CONCATENATED MODULE: ./node_modules/strnum/strnum.js
 const hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
+const binRegex = /^0b[01]+$/;
+const octRegex = /^0o[0-7]+$/;
 const numRegex = /^([\-\+])?(0*)([0-9]*(\.[0-9]*)?)$/;
-// const octRegex = /^0x[a-z0-9]+/;
-// const binRegex = /0x[a-z0-9]+/;
-
 
 const consider = {
     hex: true,
-    // oct: false,
+    binary: false,
+    octal: false,
     leadingZeros: true,
     decimalPoint: "\.",
     eNotation: true,
@@ -146682,14 +146787,14 @@ function toNumber(str, options = {}) {
     else if (trimmedStr === "0") return 0;
     else if (options.hex && hexRegex.test(trimmedStr)) {
         return parse_int(trimmedStr, 16);
-        // }else if (options.oct && octRegex.test(str)) {
-        //     return Number.parseInt(val, 8);
+    } else if (options.binary && binRegex.test(trimmedStr)) {
+        return parse_int(trimmedStr, 2);
+    } else if (options.octal && octRegex.test(trimmedStr)) {
+        return parse_int(trimmedStr, 8);
     } else if (!isFinite(trimmedStr)) { //Infinity
         return handleInfinity(str, Number(trimmedStr), options);
     } else if (trimmedStr.includes('e') || trimmedStr.includes('E')) { //eNotation
         return resolveEnotation(str, trimmedStr, options);
-        // }else if (options.parseBin && binRegex.test(str)) {
-        //     return Number.parseInt(val, 2);
     } else {
         //separate negative sign, leading zeros, and rest number
         const match = numRegex.exec(trimmedStr);
@@ -146787,11 +146892,13 @@ function trimZeros(numStr) {
 }
 
 function parse_int(numStr, base) {
-    //polyfill
+    const str = numStr.trim();
+    if (base === 2 || base === 8) numStr = str.substring(2);
+
     if (parseInt) return parseInt(numStr, base);
     else if (Number.parseInt) return Number.parseInt(numStr, base);
     else if (window && window.parseInt) return window.parseInt(numStr, base);
-    else throw new Error("parseInt, Number.parseInt, window.parseInt are not supported")
+    else throw new Error("parseInt, Number.parseInt, window.parseInt are not supported");
 }
 
 /**
@@ -149547,7 +149654,7 @@ function readStopNodeData(xmlData, tagName, i) {
         const closeIndex = findClosingIndex(xmlData, "]]>", i, "StopNode is not closed.") - 2;
         i = closeIndex;
       } else {
-        const tagData = readTagExp(xmlData, i, '>')
+        const tagData = readTagExp(xmlData, i, false)
 
         if (tagData) {
           const openTagName = tagData && tagData.tagName;
@@ -149682,6 +149789,10 @@ function compress(arr, options, matcher, readonlyMatcher) {
 
       let val = compress(tagObj[property], options, matcher, readonlyMatcher);
       const isLeaf = isLeafTag(val, options);
+
+      if (Object.keys(val).length === 0 && options.alwaysCreateTextNode) {
+        val[options.textNodeName] = "";
+      }
 
       if (tagObj[":@"]) {
         assignAttributes(val, tagObj[":@"], readonlyMatcher, options);
@@ -183666,16 +183777,33 @@ async function cleanup() {
 }
 cleanup();
 /**
+ * isGhes mirrors the detection used by `@actions/artifact` v2+
+ * (packages/artifact/src/internal/shared/config.ts) so we never call the
+ * v2 client on a host where it would throw GHESNotSupportedError. We
+ * intentionally branch BEFORE constructing the v2 client to keep GHES
+ * runs free of `GHESNotSupportedError` annotations.
+ */
+function cleanup_isGhes() {
+    const ghUrl = new URL(process.env.GITHUB_SERVER_URL || "https://github.com");
+    const host = ghUrl.hostname.trim().toUpperCase();
+    return (host !== "GITHUB.COM" &&
+        !host.endsWith(".GHE.COM") &&
+        !host.endsWith(".LOCALHOST"));
+}
+/**
  * Uploads the trace JSONL file as a GitHub Artifact.
  * Uses GITHUB_JOB for the base name.
  * Falls back to GITHUB_JOB if unset. Appends a random suffix every time to
  * avoid name conflicts (GitHub's API does not allow overwriting artifacts).
+ *
+ * SaaS uses `@actions/artifact` v6 (Artifacts v4 backend). GHES still
+ * ships only the legacy v1 backend, so on GHES we use `@actions/artifact@1.1.2`
+ * via the `@actions/artifact-legacy` npm alias.
  */
 async function uploadTraceArtifact() {
     const jobId = process.env.GITHUB_JOB || "unknown";
     const suffix = external_crypto_.randomBytes(3).toString("hex");
     const artifactName = `boost-trace-${jobId}-${suffix}`;
-    const artifactClient = new DefaultArtifactClient();
     const tracePath = resolveTraceArtifactPath();
     if (tracePath === undefined) {
         core.debug("No trace file to upload (missing or empty at expected paths)");
@@ -183683,14 +183811,33 @@ async function uploadTraceArtifact() {
     }
     const files = [tracePath];
     const rootDirectory = external_path_.dirname(files[0]);
-    const options = { retentionDays: 30 };
     try {
-        const { id, size } = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options);
-        core.info(`Uploaded trace artifact "${artifactName}" (id: ${id}, size: ${size} bytes)`);
+        if (cleanup_isGhes()) {
+            await uploadViaLegacyClient(artifactName, files, rootDirectory);
+        }
+        else {
+            await uploadViaV2Client(artifactName, files, rootDirectory);
+        }
     }
     catch (error) {
         core.warning(`Failed to upload trace artifact: ${error}`);
     }
+}
+async function uploadViaV2Client(artifactName, files, rootDirectory) {
+    const client = new DefaultArtifactClient();
+    const { id, size } = await client.uploadArtifact(artifactName, files, rootDirectory, { retentionDays: 30 });
+    core.info(`Uploaded trace artifact "${artifactName}" (id: ${id}, size: ${size} bytes)`);
+}
+async function uploadViaLegacyClient(artifactName, files, rootDirectory) {
+    // Dynamic import keeps the legacy bundle out of the SaaS hot path and
+    // avoids paying its parse cost on github.com.
+    const legacy = (await __nccwpck_require__.e(/* import() */ 75).then(__nccwpck_require__.bind(__nccwpck_require__, 81075)));
+    const client = legacy.create();
+    const { size, failedItems } = await client.uploadArtifact(artifactName, files, rootDirectory, { retentionDays: 30, continueOnError: false });
+    if (failedItems.length > 0) {
+        core.warning(`Trace artifact uploaded with ${failedItems.length} failed item(s)`);
+    }
+    core.info(`Uploaded trace artifact "${artifactName}" via legacy client (size: ${size} bytes)`);
 }
 
 })();
