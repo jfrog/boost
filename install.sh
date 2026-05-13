@@ -76,14 +76,7 @@ case ":${PATH:-}:" in
 esac
 
 echo
-echo "→ Boost is installed! Choose your next step:"
+echo "→ Boost is installed! Run this next:"
 echo
-echo "→ Accelerate your local agents by running in your terminal:"
-echo
-echo "   $ $BOOST_CMD init"
-echo
-echo "→ Accelerate your agents in a specific repository by running:"
-echo
-echo "   $ cd /path/to/your-repo"
 echo "   $ $BOOST_CMD init"
 
