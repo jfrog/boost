@@ -1,6 +1,6 @@
 name: "Boost CI"
 description: "Enhance CI performance and observability with Boost"
-author: "FastCI Team @ JFrog"
+author: "Boost Team @ JFrog"
 
 inputs:
   version:
@@ -9,7 +9,7 @@ inputs:
       action ref (e.g. jfrog/boost@v0.5.0) when omitted.
       Ignored when boost_binary_path is set.
     required: false
-    default: "v0.6.0"
+    default: "v0.6.5"
 
   boost_binary_path:
     description: >
