@@ -2,7 +2,9 @@
 set -euo pipefail
 
 REPO="jfrog/boost"
-INSTALL_DIR="${BOOST_INSTALL_DIR:-/usr/local/bin}"
+# Default to a user-owned directory so install AND `boost update` work without
+# sudo. Set BOOST_INSTALL_DIR to override (e.g. /usr/local/bin for system-wide).
+INSTALL_DIR="${BOOST_INSTALL_DIR:-$HOME/.local/bin}"
 SUDO=()
 
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
@@ -60,23 +62,109 @@ curl -fsSL "https://github.com/$REPO/releases/download/$TAG/$ARCHIVE" -o "$TMP/$
 tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
 [ -f "$TMP/boost" ] || { echo "archive missing 'boost' binary" >&2; exit 1; }
 
-"${SUDO[@]}" mkdir -p "$INSTALL_DIR"
-"${SUDO[@]}" install -m 0755 "$TMP/boost" "$INSTALL_DIR/boost"
+# Use the "${arr[@]+"${arr[@]}"}" idiom so an empty SUDO array doesn't
+# trip `set -u` on macOS's stock bash 3.2 (a known bash 3.2 bug fixed in
+# bash 4.4). Before the ~/.local/bin default this path was rarely empty
+# because /usr/local/bin almost always needed sudo; now that the default
+# is user-writable, the empty case is the common one.
+"${SUDO[@]+"${SUDO[@]}"}" mkdir -p "$INSTALL_DIR"
+"${SUDO[@]+"${SUDO[@]}"}" install -m 0755 "$TMP/boost" "$INSTALL_DIR/boost"
 echo "→ Installed: $("$INSTALL_DIR/boost" version 2>/dev/null || echo unknown) to $INSTALL_DIR/boost"
 
-# Warn (don't fail) when the install dir is off PATH so the user knows to fix
-# the current shell and future shell sessions.
+# patch_shell_rc appends a `PATH` export to the user's shell rc file so future
+# terminals find the installed binary. Idempotent via a marker comment that
+# includes the install directory; explicit BOOST_INSTALL_DIR overrides get
+# their own entry. We pick the most appropriate rc file per shell:
+#   - zsh:   ~/.zshrc
+#   - bash:  first existing of ~/.bashrc / ~/.bash_profile / ~/.profile (else ~/.profile)
+#   - fish:  ~/.config/fish/config.fish (uses fish_add_path)
+#   - other: ~/.profile (POSIX sh fallback)
+patch_shell_rc() {
+  local dir="$1" shell_name rc_file line marker
+  shell_name="$(basename "${SHELL:-}")"
+  marker="# added by boost installer ($dir)"
+
+  case "$shell_name" in
+    fish)
+      mkdir -p "$HOME/.config/fish"
+      rc_file="$HOME/.config/fish/config.fish"
+      line="fish_add_path -gP $dir  $marker"
+      ;;
+    zsh)
+      rc_file="$HOME/.zshrc"
+      line="export PATH=\"$dir:\$PATH\"  $marker"
+      ;;
+    bash)
+      if [ -f "$HOME/.bashrc" ]; then
+        rc_file="$HOME/.bashrc"
+      elif [ -f "$HOME/.bash_profile" ]; then
+        rc_file="$HOME/.bash_profile"
+      else
+        rc_file="$HOME/.profile"
+      fi
+      line="export PATH=\"$dir:\$PATH\"  $marker"
+      ;;
+    *)
+      rc_file="$HOME/.profile"
+      line="export PATH=\"$dir:\$PATH\"  $marker"
+      ;;
+  esac
+
+  BOOST_SHELL_RC="$rc_file"
+  BOOST_SHELL_KIND="$shell_name"
+
+  if [ -f "$rc_file" ] && grep -Fq "$marker" "$rc_file" 2>/dev/null; then
+    return 0
+  fi
+
+  printf '\n%s\n' "$line" >> "$rc_file"
+  echo "→ Added $dir to PATH in $rc_file"
+}
+
+# Ensure the install dir is on PATH for current and future shells. When it's
+# already on PATH (e.g. distro-default ~/.local/bin on Ubuntu/Debian, or a
+# system path the user already set up), we skip the rc patch entirely.
+INSTALL_DIR_ON_PATH=false
+case ":${PATH:-}:" in *":$INSTALL_DIR:"*) INSTALL_DIR_ON_PATH=true ;; esac
+
+BOOST_SHELL_RC=""
+BOOST_SHELL_KIND=""
+PATCH_SHELL_RC_OK=false
 BOOST_CMD="boost"
-case ":${PATH:-}:" in
-  *":$INSTALL_DIR:"*) ;;
-  *)
-    echo "⚠ $INSTALL_DIR is not on PATH. Run now and add to your shell rc: export PATH=\"$INSTALL_DIR:\$PATH\"" >&2
+
+if ! $INSTALL_DIR_ON_PATH; then
+  if patch_shell_rc "$INSTALL_DIR"; then
+    PATCH_SHELL_RC_OK=true
+  else
+    echo "⚠ Could not update shell rc. Add to PATH manually: export PATH=\"$INSTALL_DIR:\$PATH\"" >&2
+  fi
+  # This script runs in its own bash process (e.g. curl … | bash); exporting
+  # PATH here does not update the user's interactive shell — see next steps.
+  export PATH="$INSTALL_DIR:${PATH:-}"
+  if ! $PATCH_SHELL_RC_OK; then
     BOOST_CMD="\"$INSTALL_DIR/boost\""
-    ;;
-esac
+  fi
+fi
 
 echo
-echo "→ Boost is installed! Run this next:"
+echo "→ Boost is installed!"
+if ! $INSTALL_DIR_ON_PATH && [ -n "${BOOST_SHELL_RC:-}" ]; then
+  echo
+  case "${BOOST_SHELL_KIND:-}" in
+    fish)
+      echo "Add Boost to PATH in this terminal (fish):"
+      echo
+      echo "   fish_add_path -gP \"$INSTALL_DIR\""
+      ;;
+    *)
+      echo "Add Boost to PATH in this terminal:"
+      echo
+      echo "   source \"$BOOST_SHELL_RC\""
+      ;;
+  esac
+  echo
+fi
+echo "Then run:"
 echo
 echo "   $ $BOOST_CMD init"
 

@@ -52790,180 +52790,180 @@ module.exports = parseParams
 
 /***/ }),
 
-/***/ 7263:
-/***/ ((module) => {
+/***/ 939:
+/***/ ((__unused_webpack_module, exports) => {
 
 var __webpack_unused_export__;
 
-
-const NullObject = function NullObject () { }
-NullObject.prototype = Object.create(null)
-
-/**
- * RegExp to match *( ";" parameter ) in RFC 7231 sec 3.1.1.1
- *
- * parameter     = token "=" ( token / quoted-string )
- * token         = 1*tchar
- * tchar         = "!" / "#" / "$" / "%" / "&" / "'" / "*"
- *               / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
- *               / DIGIT / ALPHA
- *               ; any VCHAR, except delimiters
- * quoted-string = DQUOTE *( qdtext / quoted-pair ) DQUOTE
- * qdtext        = HTAB / SP / %x21 / %x23-5B / %x5D-7E / obs-text
- * obs-text      = %x80-FF
- * quoted-pair   = "\" ( HTAB / SP / VCHAR / obs-text )
+/*!
+ * content-type
+ * Copyright(c) 2015 Douglas Christopher Wilson
+ * MIT Licensed
  */
-const paramRE = /; *([!#$%&'*+.^\w`|~-]+)=("(?:[\v\u0020\u0021\u0023-\u005b\u005d-\u007e\u0080-\u00ff]|\\[\v\u0020-\u00ff])*"|[!#$%&'*+.^\w`|~-]+) */gu
-
+__webpack_unused_export__ = ({ value: true });
+__webpack_unused_export__ = format;
+exports.Qc = parse;
+const TEXT_REGEXP = /^[\u0009\u0020-\u007e\u0080-\u00ff]*$/;
+const TOKEN_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
 /**
- * RegExp to match quoted-pair in RFC 7230 sec 3.2.6
- *
- * quoted-pair = "\" ( HTAB / SP / VCHAR / obs-text )
- * obs-text    = %x80-FF
+ * RegExp to match chars that must be quoted-pair in RFC 9110 sec 5.6.4
  */
-const quotedPairRE = /\\([\v\u0020-\u00ff])/gu
-
+const QUOTE_REGEXP = /[\\"]/g;
 /**
- * RegExp to match type in RFC 7231 sec 3.1.1.1
+ * RegExp to match type in RFC 9110 sec 8.3.1
  *
  * media-type = type "/" subtype
  * type       = token
  * subtype    = token
  */
-const mediaTypeRE = /^[!#$%&'*+.^\w|~-]+\/[!#$%&'*+.^\w|~-]+$/u
-
-// default ContentType to prevent repeated object creation
-const defaultContentType = { type: '', parameters: new NullObject() }
-Object.freeze(defaultContentType.parameters)
-Object.freeze(defaultContentType)
-
+const TYPE_REGEXP = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+\/[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
 /**
- * Parse media type to object.
- *
- * @param {string|object} header
- * @return {Object}
- * @public
+ * Null object perf optimization. Faster than `Object.create(null)` and `{ __proto__: null }`.
  */
-
-function parse (header) {
-  if (typeof header !== 'string') {
-    throw new TypeError('argument header is required and must be a string')
-  }
-
-  let index = header.indexOf(';')
-  const type = index !== -1
-    ? header.slice(0, index).trim()
-    : header.trim()
-
-  if (mediaTypeRE.test(type) === false) {
-    throw new TypeError('invalid media type')
-  }
-
-  const result = {
-    type: type.toLowerCase(),
-    parameters: new NullObject()
-  }
-
-  // parse parameters
-  if (index === -1) {
-    return result
-  }
-
-  let key
-  let match
-  let value
-
-  paramRE.lastIndex = index
-
-  while ((match = paramRE.exec(header))) {
-    if (match.index !== index) {
-      throw new TypeError('invalid parameter format')
+const NullObject = /* @__PURE__ */ (() => {
+    const C = function () { };
+    C.prototype = Object.create(null);
+    return C;
+})();
+/**
+ * Format an object into a `Content-Type` header.
+ */
+function format(obj) {
+    const { type, parameters } = obj;
+    if (!type || !TYPE_REGEXP.test(type)) {
+        throw new TypeError(`Invalid type: ${type}`);
     }
-
-    index += match[0].length
-    key = match[1].toLowerCase()
-    value = match[2]
-
-    if (value[0] === '"') {
-      // remove quotes and escapes
-      value = value
-        .slice(1, value.length - 1)
-
-      quotedPairRE.test(value) && (value = value.replace(quotedPairRE, '$1'))
+    let result = type;
+    if (parameters) {
+        for (const param of Object.keys(parameters)) {
+            if (!TOKEN_REGEXP.test(param)) {
+                throw new TypeError(`Invalid parameter name: ${param}`);
+            }
+            result += `; ${param}=${qstring(parameters[param])}`;
+        }
     }
-
-    result.parameters[key] = value
-  }
-
-  if (index !== header.length) {
-    throw new TypeError('invalid parameter format')
-  }
-
-  return result
+    return result;
 }
-
-function safeParse (header) {
-  if (typeof header !== 'string') {
-    return defaultContentType
-  }
-
-  let index = header.indexOf(';')
-  const type = index !== -1
-    ? header.slice(0, index).trim()
-    : header.trim()
-
-  if (mediaTypeRE.test(type) === false) {
-    return defaultContentType
-  }
-
-  const result = {
-    type: type.toLowerCase(),
-    parameters: new NullObject()
-  }
-
-  // parse parameters
-  if (index === -1) {
-    return result
-  }
-
-  let key
-  let match
-  let value
-
-  paramRE.lastIndex = index
-
-  while ((match = paramRE.exec(header))) {
-    if (match.index !== index) {
-      return defaultContentType
-    }
-
-    index += match[0].length
-    key = match[1].toLowerCase()
-    value = match[2]
-
-    if (value[0] === '"') {
-      // remove quotes and escapes
-      value = value
-        .slice(1, value.length - 1)
-
-      quotedPairRE.test(value) && (value = value.replace(quotedPairRE, '$1'))
-    }
-
-    result.parameters[key] = value
-  }
-
-  if (index !== header.length) {
-    return defaultContentType
-  }
-
-  return result
+/**
+ * Parse a `Content-Type` header.
+ */
+function parse(header, options) {
+    const len = header.length;
+    let index = skipOWS(header, 0, len);
+    const valueStart = index;
+    index = skipValue(header, index, len);
+    const valueEnd = trailingOWS(header, valueStart, index);
+    const type = header.slice(valueStart, valueEnd).toLowerCase();
+    const parameters = options?.parameters === false
+        ? new NullObject()
+        : parseParameters(header, index, len);
+    return { type, parameters };
 }
-
-__webpack_unused_export__ = { parse, safeParse }
-__webpack_unused_export__ = parse
-module.exports.As = safeParse
-__webpack_unused_export__ = defaultContentType
-
+const SP = 32; // " "
+const HTAB = 9; // "\t"
+const SEMI = 59; // ";"
+const EQ = 61; // "="
+const DQUOTE = 34; // '"'
+const BSLASH = 92; // "\\"
+/**
+ * Parses the parameters of a `Content-Type` header starting at the given index.
+ */
+function parseParameters(header, index, len) {
+    const parameters = new NullObject();
+    parameter: while (index < len) {
+        index = skipOWS(header, index + 1 /* Skip over ; */, len);
+        const keyStart = index;
+        while (index < len) {
+            const code = header.charCodeAt(index);
+            if (code === SEMI)
+                continue parameter;
+            if (code === EQ) {
+                const keyEnd = trailingOWS(header, keyStart, index);
+                const key = header.slice(keyStart, keyEnd).toLowerCase();
+                index = skipOWS(header, index + 1, len);
+                if (index < len && header.charCodeAt(index) === DQUOTE) {
+                    index++;
+                    let value = "";
+                    while (index < len) {
+                        const code = header.charCodeAt(index++);
+                        if (code === DQUOTE) {
+                            index = skipValue(header, index, len);
+                            if (parameters[key] === undefined)
+                                parameters[key] = value;
+                            break;
+                        }
+                        if (code === BSLASH && index < len) {
+                            value += header[index++];
+                            continue;
+                        }
+                        value += String.fromCharCode(code);
+                    }
+                    continue parameter;
+                }
+                const valueStart = index;
+                index = skipValue(header, index, len);
+                if (parameters[key] === undefined) {
+                    const valueEnd = trailingOWS(header, valueStart, index);
+                    parameters[key] = header.slice(valueStart, valueEnd);
+                }
+                continue parameter;
+            }
+            index++;
+        }
+    }
+    return parameters;
+}
+/**
+ * Skip over characters until a semicolon.
+ */
+function skipValue(str, index, len) {
+    while (index < len) {
+        const char = str.charCodeAt(index);
+        if (char === SEMI)
+            break;
+        index++;
+    }
+    return index;
+}
+/**
+ * Skip optional whitespace (OWS) in an HTTP header value.
+ *
+ * OWS is defined in RFC 9110 sec 5.6.3 as SP (" ") or HTAB ("\t").
+ */
+function skipOWS(header, index, len) {
+    while (index < len) {
+        const char = header.charCodeAt(index);
+        if (char !== SP && char !== HTAB)
+            break;
+        index++;
+    }
+    return index;
+}
+/**
+ * Trim optional whitespace (OWS) from the end of a substring.
+ *
+ * OWS is defined in RFC 9110 sec 5.6.3 as SP (" ") or HTAB ("\t").
+ */
+function trailingOWS(header, start, end) {
+    while (end > start) {
+        const char = header.charCodeAt(end - 1);
+        if (char !== SP && char !== HTAB)
+            break;
+        end--;
+    }
+    return end;
+}
+/**
+ * Serialize a parameter value.
+ */
+function qstring(str) {
+    if (TOKEN_REGEXP.test(str))
+        return str;
+    if (TEXT_REGEXP.test(str))
+        return `"${str.replace(QUOTE_REGEXP, "\\$&")}"`;
+    throw new TypeError(`Invalid parameter value: ${str}`);
+}
+//# sourceMappingURL=index.js.map
 
 /***/ })
 
@@ -53555,8 +53555,8 @@ function withDefaults(oldDefaults, newDefaults) {
 var endpoint = withDefaults(null, DEFAULTS);
 
 
-// EXTERNAL MODULE: ./node_modules/fast-content-type-parse/index.js
-var fast_content_type_parse = __nccwpck_require__(7263);
+// EXTERNAL MODULE: ./node_modules/content-type/dist/index.js
+var dist = __nccwpck_require__(939);
 ;// CONCATENATED MODULE: ./node_modules/json-with-bigint/json-with-bigint.js
 const intRegex = /^-?\d+$/;
 const noiseValue = /^-?\d+n+$/; // Noise - strings that match the custom format before being converted to it
@@ -53823,7 +53823,7 @@ class RequestError extends Error {
 
 
 // pkg/dist-src/version.js
-var dist_bundle_VERSION = "10.0.8";
+var dist_bundle_VERSION = "10.0.9";
 
 // pkg/dist-src/defaults.js
 var defaults_default = {
@@ -53952,7 +53952,7 @@ async function getResponseData(response) {
   if (!contentType) {
     return response.text().catch(noop);
   }
-  const mimetype = (0,fast_content_type_parse/* safeParse */.As)(contentType);
+  const mimetype = (0,dist/* parse */.Qc)(contentType);
   if (isJSONResponse(mimetype)) {
     let text = "";
     try {
@@ -57278,6 +57278,11 @@ function getAssetName() {
 function getTempBinaryPath() {
     return external_path_default().join(external_os_default().tmpdir(), "boost-action-bootstrap", "boost");
 }
+// Bootstrap path for the CI-only binary that hosts ci-setup / finalize-traces.
+// Lives next to the main boost binary under the same bootstrap directory.
+function getTempBoostCIBinaryPath() {
+    return external_path_default().join(external_os_default().tmpdir(), "boost-action-bootstrap", "boost-ci");
+}
 function getGHServerUrl() {
     return process.env.GITHUB_SERVER_URL || 'https://github.com';
 }
@@ -57295,7 +57300,7 @@ async function downloadAsset(assetUrl, path, githubToken) {
     const tempPath = await tool_cache.downloadTool(assetUrl, path, undefined, headers);
     return tempPath;
 }
-async function DonwloadReleaseAssets(tag, fullRepoName = 'jfrog-fastci/fastci') {
+async function DonwloadReleaseAssets(tag, fullRepoName = 'jfrog/boost') {
     const serverUrl = getGHServerUrl();
     let octokit;
     if (serverUrl.includes('github.com')) {
@@ -57317,6 +57322,7 @@ async function DonwloadReleaseAssets(tag, fullRepoName = 'jfrog-fastci/fastci') 
     });
     const boostCliAssetName = getAssetName();
     const binaryPath = getTempBinaryPath();
+    const ciBinaryPath = getTempBoostCIBinaryPath();
     await external_fs_.promises.mkdir(external_path_default().dirname(binaryPath), { recursive: true });
     const downloadPromises = release.data.assets.map(async (asset) => {
         core.debug(`Checking asset ${asset.name}`);
@@ -57328,21 +57334,26 @@ async function DonwloadReleaseAssets(tag, fullRepoName = 'jfrog-fastci/fastci') 
             const extracted = external_path_default().join(extractDir, "boost");
             await external_fs_.promises.copyFile(extracted, binaryPath);
             await external_fs_.promises.chmod(binaryPath, 0o755);
+            // boost-ci is a sibling binary in the same tarball. Older release
+            // tarballs may not contain it (pre-split releases); fall back to
+            // using the boost binary for both paths so older versions keep
+            // working until the release ships a tarball with both binaries.
+            const extractedCI = external_path_default().join(extractDir, "boost-ci");
+            try {
+                await external_fs_.promises.copyFile(extractedCI, ciBinaryPath);
+                await external_fs_.promises.chmod(ciBinaryPath, 0o755);
+            }
+            catch (e) {
+                core.warning(`boost-ci binary missing from release ${tag}; falling back to 'boost' for CI dispatch. Update to a release that ships boost-ci. Details: ${e}`);
+                await external_fs_.promises.copyFile(extracted, ciBinaryPath);
+                await external_fs_.promises.chmod(ciBinaryPath, 0o755);
+            }
         }
     });
     // Wait for all downloads to complete
     await Promise.all(downloadPromises);
     core.debug(`boost downloaded successfully`);
-    // check if the binaries are downloaded and make them executable
-    /*
-    const files = fs.readdirSync(getFastCliToolsDir());
-    core.debug(`Files in tools: ${files}`);
-    for (const file of files) {
-        const pathToChmod = path.join(getFastCliToolsDir(), file);
-        await fs.promises.chmod(pathToChmod, 0o755);
-        core.debug(`${file} is present and chmodded at: ${pathToChmod}`);
-    }*/
-    return binaryPath;
+    return { boost: binaryPath, boostCi: ciBinaryPath };
 }
 
 ;// CONCATENATED MODULE: ./src/resolve-binary.ts
@@ -57351,21 +57362,35 @@ async function DonwloadReleaseAssets(tag, fullRepoName = 'jfrog-fastci/fastci') 
 
 
 /**
- * Resolves the boost binary path from inputs (local path or release download).
- * Shared by main (ci-setup) and post (finalize-traces).
+ * Resolves both binary paths for this action: the main `boost` binary and
+ * the dedicated `boost-ci` binary that hosts `ci-setup` / `finalize-traces`
+ * and owns symlink interception.
+ *
+ * If `boost_binary_path` is provided as an input, it's treated as the path
+ * to a local `boost` binary; `boost-ci` is expected to live next to it
+ * (same directory, named `boost-ci`). When that sibling is missing we fall
+ * back to using the same path for both so local fork testing still works.
+ *
+ * Otherwise both binaries are downloaded together from the GitHub release.
  */
-async function resolveBoostBinaryPath() {
+async function resolveBoostBinaryPaths() {
     const localInput = core.getInput("boost_binary_path").trim();
     if (localInput) {
         const binaryPath = external_path_.resolve(localInput);
-        await external_fs_.promises.access(binaryPath, external_fs_.constants.F_OK).catch(() => {
-            throw new Error(`boost_binary_path not found: ${binaryPath}`);
-        });
-        await external_fs_.promises.access(binaryPath, external_fs_.constants.X_OK).catch(async () => {
-            await external_fs_.promises.chmod(binaryPath, 0o755);
-        });
+        await assertExecutable(binaryPath);
         core.info(`Using local boost binary at ${binaryPath}`);
-        return binaryPath;
+        const siblingCI = external_path_.join(external_path_.dirname(binaryPath), "boost-ci");
+        let boostCiPath = binaryPath;
+        try {
+            await external_fs_.promises.access(siblingCI, external_fs_.constants.F_OK);
+            await assertExecutable(siblingCI);
+            boostCiPath = siblingCI;
+            core.info(`Using local boost-ci binary at ${siblingCI}`);
+        }
+        catch {
+            core.warning(`boost-ci binary not found next to ${binaryPath}; falling back to ${binaryPath} for CI dispatch. Build cmd/boost-ci alongside cmd/boost.`);
+        }
+        return { boost: binaryPath, boostCi: boostCiPath };
     }
     const version = core.getInput("version") || process.env.GITHUB_ACTION_REF || "";
     const repo = core.getInput("repo") || "jfrog/boost";
@@ -57374,8 +57399,21 @@ async function resolveBoostBinaryPath() {
             "(e.g. uses: jfrog/boost@v0.5.0) or pass the 'version' input explicitly, " +
             "or set boost_binary_path for local/CI testing.");
     }
-    const binaryPath = await DonwloadReleaseAssets(version, repo);
-    return binaryPath;
+    return await DonwloadReleaseAssets(version, repo);
+}
+async function assertExecutable(binaryPath) {
+    await external_fs_.promises.access(binaryPath, external_fs_.constants.F_OK).catch(() => {
+        throw new Error(`binary not found: ${binaryPath}`);
+    });
+    await external_fs_.promises.access(binaryPath, external_fs_.constants.X_OK).catch(async () => {
+        await external_fs_.promises.chmod(binaryPath, 0o755);
+    });
+}
+// Backward-compatible single-path export. Returns only the main boost binary
+// path. Prefer resolveBoostBinaryPaths for new code that also needs boost-ci.
+async function resolveBoostBinaryPath() {
+    const { boost } = await resolveBoostBinaryPaths();
+    return boost;
 }
 
 ;// CONCATENATED MODULE: ./src/utils/config-fetch.ts
@@ -57546,10 +57584,10 @@ function exposeActionEnvToDocker() {
     }
 }
 async function setup() {
-    const binaryPath = await resolveBoostBinaryPath();
+    const { boostCi: binaryCIPath } = await resolveBoostBinaryPaths();
     const args = ["ci-setup"];
     const acceptTerms = core.getInput("accept_terms").trim();
-    if (acceptTerms.length > 0) {
+    if (acceptTerms == "y" || acceptTerms == "yes") {
         args.push("--accept-terms", acceptTerms);
     }
     args.push("github");
@@ -57563,7 +57601,9 @@ async function setup() {
     core.exportVariable("BOOST_RUNNER_NODE_DIR", nodeBaseDir);
     core.debug(`Runner node base dir: ${nodeBaseDir} (from ${process.execPath})`);
     exposeActionEnvToDocker();
-    await (0,exec.exec)(binaryPath, args);
+    // ci-setup is owned by the boost-ci binary (not boost). The boost binary
+    // is intentionally CI-unaware and no longer registers the ci-setup command.
+    await (0,exec.exec)(binaryCIPath, args);
 }
 async function run() {
     if (process.platform !== "linux") {
