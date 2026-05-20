@@ -135,6 +135,10 @@ boost update
 
 See the [full documentation](https://jfrog.github.io/boost) for commands, configuration, OpenTelemetry export, and CI recipes.
 
+### Troubleshooting
+
+- [`boost ci sync` permission denied on `/tmp/boost`](docs/troubleshooting/ci-sync-permissions.md) — root cause, `--dir` workaround, and suggested CLI default-directory fix for maintainers.
+
 ## Security & Privacy
 
 - **Local-first.** Command history and raw OTel traces stay on your machine.
