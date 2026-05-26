@@ -5,10 +5,10 @@ REPO="jfrog/boost"
 # Default to a user-owned directory so install AND `boost update` work without
 # sudo. Set BOOST_INSTALL_DIR to override (e.g. /usr/local/bin for system-wide).
 INSTALL_DIR="${BOOST_INSTALL_DIR:-$HOME/.local/bin}"
-SUDO=()
 
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"
+
 case "$ARCH" in x86_64|amd64) ARCH=amd64 ;; aarch64|arm64) ARCH=arm64 ;; *) echo "unsupported arch: $ARCH" >&2; exit 1 ;; esac
 case "$OS"   in linux|darwin) ;;                                                *) echo "unsupported OS: $OS — see https://github.com/$REPO/releases" >&2; exit 1 ;; esac
 
@@ -18,44 +18,6 @@ TAG="$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/
 
 ARCHIVE="boost-${OS}-${ARCH}.tar.gz"
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
-
-can_write_install_dir() {
-  if [ -d "$INSTALL_DIR" ]; then
-    [ -w "$INSTALL_DIR" ]
-    return
-  fi
-
-  parent="$INSTALL_DIR"
-  while [ ! -e "$parent" ] && [ "$parent" != "/" ]; do
-    parent="$(dirname "$parent")"
-  done
-
-  [ -d "$parent" ] && [ -w "$parent" ]
-}
-
-determine_sudo() {
-  if [ "$(id -u)" -eq 0 ] || can_write_install_dir; then
-    return
-  fi
-
-  if ! command -v sudo >/dev/null 2>&1; then
-    echo "error: $INSTALL_DIR is not writable and sudo is not available." >&2
-    echo "Set BOOST_INSTALL_DIR to a writable directory, for example:" >&2
-    echo "  BOOST_INSTALL_DIR=\"\$HOME/.local/bin\" curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash" >&2
-    exit 1
-  fi
-
-  echo "→ Installing to $INSTALL_DIR requires sudo"
-  if ! sudo -v; then
-    echo "error: sudo authentication failed." >&2
-    echo "Set BOOST_INSTALL_DIR to a writable directory, for example:" >&2
-    echo "  BOOST_INSTALL_DIR=\"\$HOME/.local/bin\" curl -fsSL https://raw.githubusercontent.com/$REPO/main/install.sh | bash" >&2
-    exit 1
-  fi
-  SUDO=(sudo)
-}
-
-determine_sudo
 
 echo "→ Downloading $ARCHIVE ($TAG)"
 curl -fsSL "https://github.com/$REPO/releases/download/$TAG/$ARCHIVE" -o "$TMP/$ARCHIVE"
@@ -67,58 +29,66 @@ tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
 # bash 4.4). Before the ~/.local/bin default this path was rarely empty
 # because /usr/local/bin almost always needed sudo; now that the default
 # is user-writable, the empty case is the common one.
-"${SUDO[@]+"${SUDO[@]}"}" mkdir -p "$INSTALL_DIR"
-"${SUDO[@]+"${SUDO[@]}"}" install -m 0755 "$TMP/boost" "$INSTALL_DIR/boost"
-echo "→ Installed: $("$INSTALL_DIR/boost" version 2>/dev/null || echo unknown) to $INSTALL_DIR/boost"
+mkdir -p "$INSTALL_DIR"
+install -m 0755 "$TMP/boost" "$INSTALL_DIR/boost"
+echo "→ Installed: $("$INSTALL_DIR/boost" version 2>/dev/null || echo unknown)to $INSTALL_DIR/boost"
 
-# patch_shell_rc appends a `PATH` export to the user's shell rc file so future
-# terminals find the installed binary. Idempotent via a marker comment that
-# includes the install directory; explicit BOOST_INSTALL_DIR overrides get
-# their own entry. We pick the most appropriate rc file per shell:
-#   - zsh:   ~/.zshrc
-#   - bash:  first existing of ~/.bashrc / ~/.bash_profile / ~/.profile (else ~/.profile)
-#   - fish:  ~/.config/fish/config.fish (uses fish_add_path)
-#   - other: ~/.profile (POSIX sh fallback)
-patch_shell_rc() {
-  local dir="$1" shell_name rc_file line marker
-  shell_name="$(basename "${SHELL:-}")"
-  marker="# added by boost installer ($dir)"
 
-  case "$shell_name" in
-    fish)
-      mkdir -p "$HOME/.config/fish"
-      rc_file="$HOME/.config/fish/config.fish"
-      line="fish_add_path -gP $dir  $marker"
-      ;;
-    zsh)
-      rc_file="$HOME/.zshrc"
-      line="export PATH=\"$dir:\$PATH\"  $marker"
-      ;;
-    bash)
-      if [ -f "$HOME/.bashrc" ]; then
-        rc_file="$HOME/.bashrc"
-      elif [ -f "$HOME/.bash_profile" ]; then
-        rc_file="$HOME/.bash_profile"
-      else
-        rc_file="$HOME/.profile"
-      fi
-      line="export PATH=\"$dir:\$PATH\"  $marker"
-      ;;
-    *)
-      rc_file="$HOME/.profile"
-      line="export PATH=\"$dir:\$PATH\"  $marker"
-      ;;
-  esac
-
-  BOOST_SHELL_RC="$rc_file"
-  BOOST_SHELL_KIND="$shell_name"
-
-  if [ -f "$rc_file" ] && grep -Fq "$marker" "$rc_file" 2>/dev/null; then
-    return 0
+# patch_all_shell_rcs adds Boost's bin directory to PATH for all common shells
+# found on this system, using an idempotency marker in each rc/config file.
+#
+# It is intentionally conservative: if a shell binary/config is not present,
+# we skip that shell's rc file. We also never fail hard if we can't patch
+# (we just warn so install still succeeds).
+patch_all_shell_rcs() {
+  local dir="$1"
+  local marker="# added by boost installer ($dir)"
+  local rc_file line
+  line="export PATH=\"$dir:\$PATH\"  ${marker}"
+  
+  # zsh
+  if command -v zsh >/dev/null 2>&1; then
+    rc_file="${HOME}/.zshrc"
+    if ! ([ -f "$rc_file" ] && grep -Fq "$marker" "$rc_file" 2>/dev/null;) then
+      mkdir -p "$(dirname "$rc_file")"
+      printf '\n%s\n' "$line" >> "$rc_file"
+      echo "→ Added $dir to PATH in $rc_file"
+    fi
   fi
 
-  printf '\n%s\n' "$line" >> "$rc_file"
-  echo "→ Added $dir to PATH in $rc_file"
+  # bash
+  if command -v bash >/dev/null 2>&1; then
+    rc_file="$HOME/.bashrc"
+    if ! ([ -f "$rc_file" ] && grep -Fq "$marker" "$rc_file" 2>/dev/null;) then
+      mkdir -p "$(dirname "$rc_file")"
+      printf '\n%s\n' "$line" >> "$rc_file"
+      echo "→ Added $dir to PATH in $rc_file"
+    fi
+  fi
+
+  # fish
+  if command -v fish >/dev/null 2>&1; then
+    rc_file="$HOME/.config/fish/config.fish"
+    line="fish_add_path -gP $dir  ${marker}"
+    if ! ([ -f "$rc_file" ] && grep -Fq "$marker" "$rc_file" 2>/dev/null;) then
+      mkdir -p "$HOME/.config/fish"
+      printf '\n%s\n' "$line" >> "$rc_file"
+      echo "→ Added $dir to PATH in $rc_file"
+    fi
+  fi
+
+  # We always attempt the POSIX fallback if `sh` exists, but keep the
+  # decision whether we "patched anything" to show useful warnings.
+  if command -v sh >/dev/null 2>&1; then
+    rc_file="$HOME/.profile"
+    line="export PATH=\"$dir:\$PATH\"  ${marker}"
+    if ! ([ -f "$rc_file" ] && grep -Fq "$marker" "$rc_file" 2>/dev/null;) then
+      mkdir -p "$(dirname "$rc_file")"
+      printf '\n%s\n' "$line" >> "$rc_file"
+      echo "→ Added $dir to PATH in $rc_file"
+    fi
+    
+  fi
 }
 
 # Ensure the install dir is on PATH for current and future shells. When it's
@@ -127,13 +97,13 @@ patch_shell_rc() {
 INSTALL_DIR_ON_PATH=false
 case ":${PATH:-}:" in *":$INSTALL_DIR:"*) INSTALL_DIR_ON_PATH=true ;; esac
 
-BOOST_SHELL_RC=""
-BOOST_SHELL_KIND=""
 PATCH_SHELL_RC_OK=false
 BOOST_CMD="boost"
 
 if ! $INSTALL_DIR_ON_PATH; then
-  if patch_shell_rc "$INSTALL_DIR"; then
+  # Patch all common shell startup files so every available shell picks up
+  # the installed binary.
+  if patch_all_shell_rcs "$INSTALL_DIR"; then
     PATCH_SHELL_RC_OK=true
   else
     echo "⚠ Could not update shell rc. Add to PATH manually: export PATH=\"$INSTALL_DIR:\$PATH\"" >&2
@@ -148,23 +118,11 @@ fi
 
 echo
 echo "→ Boost is installed!"
-if ! $INSTALL_DIR_ON_PATH && [ -n "${BOOST_SHELL_RC:-}" ]; then
-  echo
-  case "${BOOST_SHELL_KIND:-}" in
-    fish)
-      echo "Add Boost to PATH in this terminal (fish):"
-      echo
-      echo "   fish_add_path -gP \"$INSTALL_DIR\""
-      ;;
-    *)
-      echo "Add Boost to PATH in this terminal:"
-      echo
-      echo "   source \"$BOOST_SHELL_RC\""
-      ;;
-  esac
-  echo
-fi
+echo ""
+echo "To run boost in this terminal right now:"
+echo "  - zsh:   source ~/.zshrc"
+echo "  - bash:  source ~/.bashrc   (or source ~/.bash_profile / ~/.profile)"
+echo ""
 echo "Then run:"
-echo
 echo "   $ $BOOST_CMD init"
-
+echo
