@@ -2,6 +2,10 @@
 set -euo pipefail
 
 REPO="jfrog/boost"
+# BOOST_INSTALL_FROM — where to get the platform archive (default: latest).
+#   latest              — newest GitHub release (default)
+#   v1.2.3              — a specific release tag
+#   /path/to/archive    — local .tar.gz (CI or offline testing)
 # Default to a user-owned directory so install AND `boost update` work without
 # sudo. Set BOOST_INSTALL_DIR to override (e.g. /usr/local/bin for system-wide).
 INSTALL_DIR="${BOOST_INSTALL_DIR:-$HOME/.local/bin}"
@@ -12,15 +16,24 @@ ARCH="$(uname -m)"
 case "$ARCH" in x86_64|amd64) ARCH=amd64 ;; aarch64|arm64) ARCH=arm64 ;; *) echo "unsupported arch: $ARCH" >&2; exit 1 ;; esac
 case "$OS"   in linux|darwin) ;;                                                *) echo "unsupported OS: $OS — see https://github.com/$REPO/releases" >&2; exit 1 ;; esac
 
-# Resolve latest tag via the redirect — no auth, no rate limits.
-TAG="$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest" | sed 's#.*/tag/##')"
-[ -n "$TAG" ] || { echo "could not resolve latest release tag" >&2; exit 1; }
-
 ARCHIVE="boost-${OS}-${ARCH}.tar.gz"
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
+FROM="${BOOST_INSTALL_FROM:-latest}"
 
-echo "→ Downloading $ARCHIVE ($TAG)"
-curl -fsSL "https://github.com/$REPO/releases/download/$TAG/$ARCHIVE" -o "$TMP/$ARCHIVE"
+if [ -f "$FROM" ]; then
+  echo "→ Installing from local archive: $FROM"
+  cp "$FROM" "$TMP/$ARCHIVE"
+else
+  if [ "$FROM" = "latest" ]; then
+    # Resolve latest tag via the redirect — no auth, no rate limits.
+    TAG="$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest" | sed 's#.*/tag/##')"
+    [ -n "$TAG" ] || { echo "could not resolve latest release tag" >&2; exit 1; }
+  else
+    TAG="$FROM"
+  fi
+  echo "→ Downloading $ARCHIVE ($TAG)"
+  curl -fsSL "https://github.com/$REPO/releases/download/$TAG/$ARCHIVE" -o "$TMP/$ARCHIVE"
+fi
 tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
 [ -f "$TMP/boost" ] || { echo "archive missing 'boost' binary" >&2; exit 1; }
 
