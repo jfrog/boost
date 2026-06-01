@@ -2,8 +2,9 @@
 set -euo pipefail
 
 REPO="jfrog/boost"
-# BOOST_INSTALL_FROM — where to get the platform archive (default: latest).
-#   latest              — newest GitHub release (default)
+JFROG_BASE="https://jfrogboost.jfrog.io/public/generic/boost-binaries"
+# BOOST_INSTALL_FROM — where to get the platform binary (default: latest).
+#   latest              — newest release (default)
 #   v1.2.3              — a specific release tag
 #   /path/to/archive    — local .tar.gz (CI or offline testing)
 # Default to a user-owned directory so install AND `boost update` work without
@@ -16,26 +17,40 @@ ARCH="$(uname -m)"
 case "$ARCH" in x86_64|amd64) ARCH=amd64 ;; aarch64|arm64) ARCH=arm64 ;; *) echo "unsupported arch: $ARCH" >&2; exit 1 ;; esac
 case "$OS"   in linux|darwin) ;;                                                *) echo "unsupported OS: $OS — see https://github.com/$REPO/releases" >&2; exit 1 ;; esac
 
+BINARY="boost-${OS}-${ARCH}"
 ARCHIVE="boost-${OS}-${ARCH}.tar.gz"
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 FROM="${BOOST_INSTALL_FROM:-latest}"
 
 if [ -f "$FROM" ]; then
+  # CI path: local .tar.gz artifact.
   echo "→ Installing from local archive: $FROM"
   cp "$FROM" "$TMP/$ARCHIVE"
+  tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
+  [ -f "$TMP/boost" ] || { echo "archive missing 'boost' binary" >&2; exit 1; }
 else
   if [ "$FROM" = "latest" ]; then
-    # Resolve latest tag via the redirect — no auth, no rate limits.
     TAG="$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$REPO/releases/latest" | sed 's#.*/tag/##')"
     [ -n "$TAG" ] || { echo "could not resolve latest release tag" >&2; exit 1; }
   else
     TAG="$FROM"
   fi
-  echo "→ Downloading $ARCHIVE ($TAG)"
-  curl -fsSL "https://github.com/$REPO/releases/download/$TAG/$ARCHIVE" -o "$TMP/$ARCHIVE"
+  echo "→ Downloading $BINARY ($TAG)"
+  JFROG_URL="${JFROG_BASE}/${TAG}/${BINARY}"
+  if curl -fsSL "$JFROG_URL" -o "$TMP/boost"; then
+    chmod +x "$TMP/boost"
+    echo "→ Downloaded successfully from JFrog Fly ($JFROG_URL)"
+  else
+    GITHUB_URL="https://github.com/$REPO/releases/download/$TAG/$ARCHIVE"
+    echo "→ JFrog Fly download failed, trying GitHub releases..."
+    curl -fsSL "$GITHUB_URL" -o "$TMP/$ARCHIVE"
+    tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
+    [ -f "$TMP/boost" ] || { echo "archive missing 'boost' binary" >&2; exit 1; }
+    chmod +x "$TMP/boost"
+    echo "→ Downloaded successfully from GitHub releases ($GITHUB_URL)"
+  fi
 fi
-tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
-[ -f "$TMP/boost" ] || { echo "archive missing 'boost' binary" >&2; exit 1; }
+[ -f "$TMP/boost" ] || { echo "download failed: binary not found" >&2; exit 1; }
 
 # Use the "${arr[@]+"${arr[@]}"}" idiom so an empty SUDO array doesn't
 # trip `set -u` on macOS's stock bash 3.2 (a known bash 3.2 bug fixed in
