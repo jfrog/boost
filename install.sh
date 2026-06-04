@@ -22,6 +22,23 @@ ARCHIVE="boost-${OS}-${ARCH}.tar.gz"
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 FROM="${BOOST_INSTALL_FROM:-latest}"
 
+print_happy_boosting_banner() {
+  local green="" pink="" reset=""
+  if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
+    green=$'\033[32m'
+    pink=$'\033[38;5;217m'
+    reset=$'\033[0m'
+  fi
+
+  printf '\n'
+  printf '        %s████    ████%s\n' "$green" "$reset"
+  printf '        %s█  █    █  █%s\n' "$green" "$reset"
+  printf '       %s██████████████%s%s▬▬▬%s  Happy Boosting!\n' "$green" "$reset" "$pink" "$reset"
+  printf '       %s██████████████%s\n' "$green" "$reset"
+  printf '        %s███      ███%s\n' "$green" "$reset"
+  printf '\n'
+}
+
 if [ -f "$FROM" ]; then
   # CI path: local .tar.gz artifact.
   echo "→ Installing from local archive: $FROM"
@@ -145,6 +162,7 @@ if ! $INSTALL_DIR_ON_PATH; then
 fi
 
 echo
+print_happy_boosting_banner
 echo "→ Boost is installed!"
 echo ""
 echo "To run boost in this terminal right now:"

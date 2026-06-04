@@ -87537,7 +87537,7 @@ class ReadableState {
   }
 
   pipe(pipeTo, cb) {
-    if (this.pipeTo !== null) throw new Error('Can only pipe to one destination')
+    if (this.pipeTo !== null) throw StreamError.BAD_ARGUMENT('Can only pipe to one destination')
     if (typeof cb !== 'function') cb = null
 
     this.stream._duplexState |= READ_PIPE_DRAINED
@@ -87772,7 +87772,7 @@ class Pipeline {
 
       if (this.from !== null) {
         if ((this.from._duplexState & READ_DONE) === 0 || !this.pipeToFinished) {
-          this.from.destroy(this.error || new Error('Writable stream closed prematurely'))
+          this.from.destroy(this.error || StreamError.PREMATURE_CLOSE('Writable stream closed'))
         }
         return
       }
@@ -87783,7 +87783,7 @@ class Pipeline {
 
       if (this.to !== null) {
         if ((stream._duplexState & READ_DONE) === 0) {
-          this.to.destroy(this.error || new Error('Readable stream closed before ending'))
+          this.to.destroy(this.error || StreamError.PREMATURE_CLOSE('Readable stream closed'))
         }
         return
       }
@@ -88418,7 +88418,7 @@ function pipeline(stream, ...streams) {
   const all = Array.isArray(stream) ? [...stream, ...streams] : [stream, ...streams]
   const done = all.length && typeof all[all.length - 1] === 'function' ? all.pop() : null
 
-  if (all.length < 2) throw new Error('Pipeline requires at least 2 streams')
+  if (all.length < 2) throw StreamError.BAD_ARGUMENT('Pipeline requires at least 2 streams')
 
   let src = all[0]
   let dest = null
@@ -88599,6 +88599,10 @@ module.exports = class StreamError extends Error {
     return err && err.code === 'ABORTED'
   }
 
+  static isBadArgument(err) {
+    return err && err.code === 'BAD_ARGUMENT'
+  }
+
   get name() {
     return 'StreamError'
   }
@@ -88607,12 +88611,16 @@ module.exports = class StreamError extends Error {
     return new StreamError('Stream was destroyed', 'STREAM_DESTROYED', StreamError.STREAM_DESTROYED)
   }
 
-  static PREMATURE_CLOSE() {
-    return new StreamError('Premature close', 'PREMATURE_CLOSE', StreamError.PREMATURE_CLOSE)
+  static PREMATURE_CLOSE(msg = 'Premature close') {
+    return new StreamError(msg, 'PREMATURE_CLOSE', StreamError.PREMATURE_CLOSE)
   }
 
   static ABORTED() {
     return new StreamError('Stream aborted', 'ABORTED', StreamError.ABORTED)
+  }
+
+  static BAD_ARGUMENT(msg = 'Bad argument') {
+    return new StreamError(msg, 'BAD_ARGUMENT', StreamError.BAD_ARGUMENT)
   }
 }
 
@@ -120033,7 +120041,7 @@ module.exports = __WEBPACK_EXTERNAL_createRequire(import.meta.url)("zlib");
 
 /***/ }),
 
-/***/ 35429:
+/***/ 42323:
 /***/ ((__unused_webpack_module, exports) => {
 
 var __webpack_unused_export__;
@@ -120048,7 +120056,7 @@ exports.S = void 0;
 exports.S = {
     operationRequestMap: new WeakMap(),
 };
-//# sourceMappingURL=state-cjs.cjs.map
+//# sourceMappingURL=state-cjs.js.map
 
 /***/ }),
 
@@ -135871,11 +135879,61 @@ function log(message, ...args) {
     external_node_process_namespaceObject.stderr.write(`${external_node_util_.format(message, ...args)}${external_node_os_namespaceObject.EOL}`);
 }
 //# sourceMappingURL=log.js.map
+;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/env.js
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+/**
+ * Returns the value of the specified environment variable.
+ *
+ * @internal
+ */
+function getEnvironmentVariable(name) {
+    return external_node_process_namespaceObject.env[name];
+}
+/**
+ * Emits a Node.js process warning.
+ *
+ * @internal
+ */
+function env_emitNodeWarning(warning) {
+    process.emitWarning(warning);
+}
+/**
+ * A constant that indicates whether the environment the code is running is a Web Browser.
+ */
+const isBrowser = false;
+/**
+ * A constant that indicates whether the environment the code is running is a Web Worker.
+ */
+const isWebWorker = false;
+/**
+ * A constant that indicates whether the environment the code is running is Deno.
+ */
+const isDeno = typeof external_node_process_namespaceObject.versions.deno === "string" && external_node_process_namespaceObject.versions.deno.length > 0;
+/**
+ * A constant that indicates whether the environment the code is running is Bun.sh.
+ */
+const isBun = typeof external_node_process_namespaceObject.versions.bun === "string" && external_node_process_namespaceObject.versions.bun.length > 0;
+/**
+ * A constant that indicates whether the environment the code is running is a Node.js compatible environment.
+ */
+const env_isNodeLike = true;
+/**
+ * A constant that indicates whether the environment the code is running is Node.JS.
+ */
+const isNodeRuntime = !isBun && !isDeno;
+/**
+ * A constant that indicates whether the environment the code is running is in React-Native.
+ */
+const isReactNative = false;
+//# sourceMappingURL=env.js.map
 ;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/logger/debug.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-const debugEnvVariable = (typeof process !== "undefined" && process.env && process.env.DEBUG) || undefined;
+
+const debugEnvVariable = getEnvironmentVariable("DEBUG");
 let enabledString;
 let enabledNamespaces = [];
 let skippedNamespaces = [];
@@ -136061,6 +136119,7 @@ function extend(namespace) {
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+
 const TYPESPEC_RUNTIME_LOG_LEVELS = ["verbose", "info", "warning", "error"];
 const levelMap = {
     verbose: 400,
@@ -136083,8 +136142,7 @@ function isTypeSpecRuntimeLogLevel(level) {
  */
 function createLoggerContext(options) {
     const registeredLoggers = new Set();
-    const logLevelFromEnv = (typeof process !== "undefined" && process.env && process.env[options.logLevelEnvVarName]) ||
-        undefined;
+    const logLevelFromEnv = getEnvironmentVariable(options.logLevelEnvVarName);
     let logLevel;
     const clientLogger = logger_debug(options.namespace);
     clientLogger.log = (...args) => {
@@ -136189,6 +136247,16 @@ function createClientLogger(namespace) {
 function normalizeName(name) {
     return name.toLowerCase();
 }
+/**
+ * Removes CR and LF characters from a header value to prevent obs-fold
+ * (line folding) sequences, as forbidden by RFC 7230 §3.2.4.
+ * @param value - The header value to sanitize.
+ */
+function normalizeValue(value) {
+    return String(value)
+        .trim()
+        .replace(/[\r\n]/g, "");
+}
 function* headerIterator(map) {
     for (const entry of map.values()) {
         yield [entry.name, entry.value];
@@ -136211,7 +136279,7 @@ class HttpHeadersImpl {
      * @param value - The value of the header to set.
      */
     set(name, value) {
-        this._headersMap.set(normalizeName(name), { name, value: String(value).trim() });
+        this._headersMap.set(normalizeName(name), { name, value: normalizeValue(value) });
     }
     /**
      * Get the header value for the provided header name, or undefined if no header exists in this
@@ -137113,7 +137181,9 @@ class NodeHttpClient {
                     req.end(body);
                 }
                 else if (isArrayBuffer(body)) {
-                    req.end(ArrayBuffer.isView(body) ? Buffer.from(body.buffer) : Buffer.from(body));
+                    req.end(ArrayBuffer.isView(body)
+                        ? Buffer.from(body.buffer, body.byteOffset, body.byteLength)
+                        : Buffer.from(body));
                 }
                 else {
                     log_logger.error("Unrecognized body type", body);
@@ -137295,68 +137365,6 @@ function logPolicy_logPolicy(options = {}) {
     };
 }
 //# sourceMappingURL=logPolicy.js.map
-;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/policies/redirectPolicy.js
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
-
-/**
- * The programmatic identifier of the redirectPolicy.
- */
-const redirectPolicyName = "redirectPolicy";
-/**
- * Methods that are allowed to follow redirects 301 and 302
- */
-const allowedRedirect = ["GET", "HEAD"];
-/**
- * A policy to follow Location headers from the server in order
- * to support server-side redirection.
- * In the browser, this policy is not used.
- * @param options - Options to control policy behavior.
- */
-function redirectPolicy_redirectPolicy(options = {}) {
-    const { maxRetries = 20, allowCrossOriginRedirects = false } = options;
-    return {
-        name: redirectPolicyName,
-        async sendRequest(request, next) {
-            const response = await next(request);
-            return handleRedirect(next, response, maxRetries, allowCrossOriginRedirects);
-        },
-    };
-}
-async function handleRedirect(next, response, maxRetries, allowCrossOriginRedirects, currentRetries = 0) {
-    const { request, status, headers } = response;
-    const locationHeader = headers.get("location");
-    if (locationHeader &&
-        (status === 300 ||
-            (status === 301 && allowedRedirect.includes(request.method)) ||
-            (status === 302 && allowedRedirect.includes(request.method)) ||
-            (status === 303 && request.method === "POST") ||
-            status === 307) &&
-        currentRetries < maxRetries) {
-        const url = new URL(locationHeader, request.url);
-        // Only follow redirects to the same origin by default.
-        if (!allowCrossOriginRedirects) {
-            const originalUrl = new URL(request.url);
-            if (url.origin !== originalUrl.origin) {
-                log_logger.verbose(`Skipping cross-origin redirect from ${originalUrl.origin} to ${url.origin}.`);
-                return response;
-            }
-        }
-        request.url = url.toString();
-        // POST request with Status code 303 should be converted into a
-        // redirected GET request if the redirect url is present in the location header
-        if (status === 303) {
-            request.method = "GET";
-            request.headers.delete("Content-Length");
-            delete request.body;
-        }
-        request.headers.delete("Authorization");
-        const res = await next(request);
-        return handleRedirect(next, res, maxRetries, allowCrossOriginRedirects, currentRetries + 1);
-    }
-    return response;
-}
-//# sourceMappingURL=redirectPolicy.js.map
 ;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/util/userAgentPlatform.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -137389,6 +137397,7 @@ async function userAgentPlatform_setPlatformSpecificData(map) {
 ;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/util/userAgent.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 
 
 function userAgent_getUserAgentString(telemetryInfo) {
@@ -137688,7 +137697,7 @@ function isSystemError(err) {
 ;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/constants.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-const constants_SDK_VERSION = "0.3.5";
+const constants_SDK_VERSION = "0.3.6";
 const constants_DEFAULT_RETRY_POLICY_COUNT = 3;
 //# sourceMappingURL=constants.js.map
 ;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/policies/retryPolicy.js
@@ -137845,48 +137854,33 @@ function bytesEncoding_stringToUint8Array(value, format) {
     return Buffer.from(value, format);
 }
 //# sourceMappingURL=bytesEncoding.js.map
-;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/util/checkEnvironment.js
+;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/formData.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 /**
- * A constant that indicates whether the environment the code is running is a Web Browser.
+ * If the request body is a native FormData, convert it to our FormDataMap
+ * representation and clear the body. Node.js's HTTP stack doesn't handle
+ * FormData natively, so the pipeline must serialize it later.
+ *
+ * @internal
  */
-// eslint-disable-next-line @azure/azure-sdk/ts-no-window
-const isBrowser = typeof window !== "undefined" && typeof window.document !== "undefined";
-/**
- * A constant that indicates whether the environment the code is running is a Web Worker.
- */
-const isWebWorker = typeof self === "object" &&
-    typeof self?.importScripts === "function" &&
-    (self.constructor?.name === "DedicatedWorkerGlobalScope" ||
-        self.constructor?.name === "ServiceWorkerGlobalScope" ||
-        self.constructor?.name === "SharedWorkerGlobalScope");
-/**
- * A constant that indicates whether the environment the code is running is Deno.
- */
-const isDeno = typeof Deno !== "undefined" &&
-    typeof Deno.version !== "undefined" &&
-    typeof Deno.version.deno !== "undefined";
-/**
- * A constant that indicates whether the environment the code is running is Bun.sh.
- */
-const isBun = typeof Bun !== "undefined" && typeof Bun.version !== "undefined";
-/**
- * A constant that indicates whether the environment the code is running is a Node.js compatible environment.
- */
-const checkEnvironment_isNodeLike = typeof globalThis.process !== "undefined" &&
-    Boolean(globalThis.process.version) &&
-    Boolean(globalThis.process.versions?.node);
-/**
- * A constant that indicates whether the environment the code is running is Node.JS.
- */
-const isNodeRuntime = checkEnvironment_isNodeLike && !isBun && !isDeno;
-/**
- * A constant that indicates whether the environment the code is running is in React-Native.
- */
-// https://github.com/facebook/react-native/blob/main/packages/react-native/Libraries/Core/setUpNavigator.js
-const isReactNative = typeof navigator !== "undefined" && navigator?.product === "ReactNative";
-//# sourceMappingURL=checkEnvironment.js.map
+function convertBodyToFormDataMap(body) {
+    if (typeof FormData !== "undefined" && body instanceof FormData) {
+        const formDataMap = {};
+        for (const [key, value] of body.entries()) {
+            const existing = formDataMap[key];
+            if (Array.isArray(existing)) {
+                existing.push(value);
+            }
+            else {
+                formDataMap[key] = existing !== undefined ? [existing, value] : [value];
+            }
+        }
+        return formDataMap;
+    }
+    return undefined;
+}
+//# sourceMappingURL=formData.js.map
 ;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/policies/formDataPolicy.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -137897,14 +137891,6 @@ const isReactNative = typeof navigator !== "undefined" && navigator?.product ===
  * The programmatic identifier of the formDataPolicy.
  */
 const formDataPolicyName = "formDataPolicy";
-function formDataToFormDataMap(formData) {
-    const formDataMap = {};
-    for (const [key, value] of formData.entries()) {
-        formDataMap[key] ??= [];
-        formDataMap[key].push(value);
-    }
-    return formDataMap;
-}
 /**
  * A policy that encodes FormData on the request into the body.
  */
@@ -137912,8 +137898,9 @@ function formDataPolicy_formDataPolicy() {
     return {
         name: formDataPolicyName,
         async sendRequest(request, next) {
-            if (checkEnvironment_isNodeLike && typeof FormData !== "undefined" && request.body instanceof FormData) {
-                request.formData = formDataToFormDataMap(request.body);
+            const converted = convertBodyToFormDataMap(request.body);
+            if (converted) {
+                request.formData = converted;
                 request.body = undefined;
             }
             if (request.formData) {
@@ -138178,33 +138165,141 @@ function proxyPolicy_proxyPolicy(proxySettings, options) {
     };
 }
 //# sourceMappingURL=proxyPolicy.js.map
+;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/policies/redirectPolicy.js
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+/**
+ * The programmatic identifier of the redirectPolicy.
+ */
+const redirectPolicyName = "redirectPolicy";
+/**
+ * Methods that are allowed to follow redirects 301 and 302
+ */
+const allowedRedirect = ["GET", "HEAD"];
+/**
+ * A policy to follow Location headers from the server in order
+ * to support server-side redirection.
+ * In the browser, this policy is not used.
+ * @param options - Options to control policy behavior.
+ */
+function redirectPolicy_redirectPolicy(options = {}) {
+    const { maxRetries = 20, allowCrossOriginRedirects = false } = options;
+    return {
+        name: redirectPolicyName,
+        async sendRequest(request, next) {
+            const response = await next(request);
+            return handleRedirect(next, response, maxRetries, allowCrossOriginRedirects);
+        },
+    };
+}
+async function handleRedirect(next, response, maxRetries, allowCrossOriginRedirects, currentRetries = 0) {
+    const { request, status, headers } = response;
+    const locationHeader = headers.get("location");
+    if (locationHeader &&
+        (status === 300 ||
+            (status === 301 && allowedRedirect.includes(request.method)) ||
+            (status === 302 && allowedRedirect.includes(request.method)) ||
+            (status === 303 && request.method === "POST") ||
+            status === 307) &&
+        currentRetries < maxRetries) {
+        const url = new URL(locationHeader, request.url);
+        // Only follow redirects to the same origin by default.
+        if (!allowCrossOriginRedirects) {
+            const originalUrl = new URL(request.url);
+            if (url.origin !== originalUrl.origin) {
+                log_logger.verbose(`Skipping cross-origin redirect from ${originalUrl.origin} to ${url.origin}.`);
+                return response;
+            }
+        }
+        request.url = url.toString();
+        // POST request with Status code 303 should be converted into a
+        // redirected GET request if the redirect url is present in the location header
+        if (status === 303) {
+            request.method = "GET";
+            request.headers.delete("Content-Length");
+            delete request.body;
+        }
+        request.headers.delete("Authorization");
+        const res = await next(request);
+        return handleRedirect(next, res, maxRetries, allowCrossOriginRedirects, currentRetries + 1);
+    }
+    return response;
+}
+//# sourceMappingURL=redirectPolicy.js.map
+;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/policies/platformPolicies.js
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+
+
+
+
+/**
+ * Add platform-specific policies to the pipeline.
+ *
+ * On Node.js, this adds agent, TLS, proxy, decompression, and redirect
+ * policies. On browser and React Native these concerns are handled
+ * natively by the runtime, so this is a no-op.
+ *
+ * @internal
+ */
+function platformPolicies_addPlatformPolicies(pipeline, options) {
+    if (options.agent) {
+        pipeline.addPolicy(agentPolicy(options.agent));
+    }
+    if (options.tlsOptions) {
+        pipeline.addPolicy(tlsPolicy(options.tlsOptions));
+    }
+    pipeline.addPolicy(proxyPolicy(options.proxyOptions));
+    pipeline.addPolicy(decompressResponsePolicy());
+    // Both XHR and Fetch expect to handle redirects automatically,
+    // so this only takes effect on Node.
+    pipeline.addPolicy(redirectPolicy(options.redirectOptions), { afterPhase: "Retry" });
+}
+//# sourceMappingURL=platformPolicies.js.map
+// EXTERNAL MODULE: external "stream"
+var external_stream_ = __nccwpck_require__(12781);
+;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/util/typeGuards-node.js
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+/**
+ * Checks if the given value is a Node.js readable stream.
+ *
+ * @internal
+ */
+function typeGuards_node_isNodeReadableStream(x) {
+    return x instanceof Readable;
+}
+/**
+ * Checks if the given value is a web ReadableStream.
+ *
+ * @internal
+ */
+function typeGuards_node_isWebReadableStream(x) {
+    return x instanceof ReadableStream;
+}
+//# sourceMappingURL=typeGuards-node.js.map
 ;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/util/typeGuards.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-function isNodeReadableStream(x) {
-    return Boolean(x && typeof x["pipe"] === "function");
-}
-function isWebReadableStream(x) {
-    return Boolean(x &&
-        typeof x.getReader === "function" &&
-        typeof x.tee === "function");
-}
+
+
 function typeGuards_isBinaryBody(body) {
     return (body !== undefined &&
         (body instanceof Uint8Array ||
             typeGuards_isReadableStream(body) ||
             typeof body === "function" ||
-            (typeof Blob !== "undefined" && body instanceof Blob)));
+            body instanceof Blob));
 }
 function typeGuards_isReadableStream(x) {
     return isNodeReadableStream(x) || isWebReadableStream(x);
 }
 function typeGuards_isBlob(x) {
-    return typeof Blob !== "undefined" && x instanceof Blob;
+    return x instanceof Blob;
 }
 //# sourceMappingURL=typeGuards.js.map
-// EXTERNAL MODULE: external "stream"
-var external_stream_ = __nccwpck_require__(12781);
 ;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/util/concat.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -138333,6 +138428,10 @@ async function buildRequestBody(request, parts, boundary) {
     if (contentLength) {
         request.headers.set("Content-Length", contentLength);
     }
+    // The public BodyPart.body type uses Uint8Array (= Uint8Array<ArrayBufferLike>) for
+    // backward compatibility. Internally, concat requires Uint8Array<ArrayBuffer> to ensure
+    // SharedArrayBuffer-backed arrays don't flow into Blob construction. In practice, HTTP
+    // request bodies are always ArrayBuffer-backed, so this narrowing is safe.
     request.body = await concat(sources);
 }
 /**
@@ -138397,27 +138496,13 @@ function multipartPolicy_multipartPolicy() {
 
 
 
-
-
-
-
-
 /**
  * Create a new pipeline with a default set of customizable policies.
  * @param options - Options to configure a custom pipeline.
  */
 function createPipelineFromOptions_createPipelineFromOptions(options) {
     const pipeline = createEmptyPipeline();
-    if (isNodeLike) {
-        if (options.agent) {
-            pipeline.addPolicy(agentPolicy(options.agent));
-        }
-        if (options.tlsOptions) {
-            pipeline.addPolicy(tlsPolicy(options.tlsOptions));
-        }
-        pipeline.addPolicy(proxyPolicy(options.proxyOptions));
-        pipeline.addPolicy(decompressResponsePolicy());
-    }
+    addPlatformPolicies(pipeline, options);
     pipeline.addPolicy(formDataPolicy(), { beforePolicies: [multipartPolicyName] });
     pipeline.addPolicy(userAgentPolicy(options.userAgentOptions));
     // The multipart policy is added after policies with no phase, so that
@@ -138425,11 +138510,6 @@ function createPipelineFromOptions_createPipelineFromOptions(options) {
     // properties (e.g., making the boundary constant in recorded tests).
     pipeline.addPolicy(multipartPolicy(), { afterPhase: "Deserialize" });
     pipeline.addPolicy(defaultRetryPolicy(options.retryOptions), { phase: "Retry" });
-    if (isNodeLike) {
-        // Both XHR and Fetch expect to handle redirects automatically,
-        // so only include this policy when we're in Node.
-        pipeline.addPolicy(redirectPolicy(options.redirectOptions), { afterPhase: "Retry" });
-    }
     pipeline.addPolicy(logPolicy(options.loggingOptions), { afterPhase: "Sign" });
     return pipeline;
 }
@@ -138437,6 +138517,7 @@ function createPipelineFromOptions_createPipelineFromOptions(options) {
 ;// CONCATENATED MODULE: ./node_modules/@typespec/ts-http-runtime/dist/esm/policies/auth/checkInsecureConnection.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 
 // Ensure the warining is only emitted once
 let insecureConnectionWarningEmmitted = false;
@@ -138465,9 +138546,9 @@ function allowInsecureConnection(request, options) {
 function emitInsecureConnectionWarning() {
     const warning = "Sending token over insecure transport. Assume any token issued is compromised.";
     logger.warning(warning);
-    if (typeof process?.emitWarning === "function" && !insecureConnectionWarningEmmitted) {
+    if (!insecureConnectionWarningEmmitted) {
         insecureConnectionWarningEmmitted = true;
-        process.emitWarning(warning);
+        emitNodeWarning(warning);
     }
 }
 /**
@@ -138873,22 +138954,23 @@ function buildPipelineRequest(method, url, options = {}) {
             "content-type": requestContentType,
         }),
     });
-    return createPipelineRequest({
+    const { allowInsecureConnection, abortSignal, onUploadProgress, onDownloadProgress, timeout, responseAsStream, url: _url, method: _method, body: _body, multipartBody: _multiBody, headers: _headers, ...rest } = options;
+    const request = createPipelineRequest({
         url,
         method,
         body,
         multipartBody,
         headers,
-        allowInsecureConnection: options.allowInsecureConnection,
-        abortSignal: options.abortSignal,
-        onUploadProgress: options.onUploadProgress,
-        onDownloadProgress: options.onDownloadProgress,
-        timeout: options.timeout,
+        allowInsecureConnection,
+        abortSignal,
+        onUploadProgress,
+        onDownloadProgress,
+        timeout,
         enableBrowserStreams: true,
-        streamResponseStatusCodes: options.responseAsStream
-            ? new Set([Number.POSITIVE_INFINITY])
-            : undefined,
+        streamResponseStatusCodes: responseAsStream ? new Set([Number.POSITIVE_INFINITY]) : undefined,
     });
+    Object.assign(request, rest);
+    return request;
 }
 /**
  * Prepares the body before sending the request
@@ -138910,7 +138992,9 @@ function getRequestBody(body, contentType = "") {
         return { body: body };
     }
     if (ArrayBuffer.isView(body)) {
-        return { body: body instanceof Uint8Array ? body : JSON.stringify(body) };
+        return {
+            body: body instanceof Uint8Array ? body : JSON.stringify(body),
+        };
     }
     const firstType = contentType.split(";")[0];
     switch (firstType) {
@@ -139072,11 +139156,12 @@ function createRestError(messageOrResponse, response) {
         response: toPipelineResponse(resp),
     });
 }
-function toPipelineResponse(response) {
+function toPipelineResponse(errorResponse) {
     return {
-        headers: createHttpHeaders(response.headers),
-        request: response.request,
-        status: statusCodeToNumber(response.status) ?? -1,
+        headers: createHttpHeaders(errorResponse.headers),
+        request: errorResponse.request,
+        status: statusCodeToNumber(errorResponse.status) ?? -1,
+        ...(typeof errorResponse.body === "string" ? { bodyAsText: errorResponse.body } : {}),
     };
 }
 function statusCodeToNumber(statusCode) {
@@ -139748,11 +139833,11 @@ const esm_isDeno = isDeno;
  *
  * Use `isNodeLike` instead.
  */
-const isNode = checkEnvironment_isNodeLike;
+const isNode = env_isNodeLike;
 /**
  * A constant that indicates whether the environment the code is running is a Node.js compatible environment.
  */
-const esm_isNodeLike = checkEnvironment_isNodeLike;
+const esm_isNodeLike = env_isNodeLike;
 /**
  * A constant that indicates whether the environment the code is running is Node.JS.
  */
@@ -139772,7 +139857,7 @@ const esm_isWebWorker = isWebWorker;
  * @returns a string of the encoded string
  */
 function esm_uint8ArrayToString(bytes, format) {
-    return tspRuntime.uint8ArrayToString(bytes, format);
+    return bytesEncoding_uint8ArrayToString(bytes, format);
 }
 /**
  * The helper that transforms string to specific character encoded bytes array.
@@ -139781,7 +139866,7 @@ function esm_uint8ArrayToString(bytes, format) {
  * @returns a uint8array
  */
 function esm_stringToUint8Array(value, format) {
-    return tspRuntime.stringToUint8Array(value, format);
+    return bytesEncoding_stringToUint8Array(value, format);
 }
 //# sourceMappingURL=index.js.map
 ;// CONCATENATED MODULE: ./node_modules/@azure/core-rest-pipeline/dist/esm/util/file.js
@@ -141374,22 +141459,22 @@ function pipelineContainsDisableKeepAlivePolicy(pipeline) {
 ;// CONCATENATED MODULE: ./node_modules/@azure/core-client/dist/esm/base64.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 /**
  * Encodes a string in base64 format.
  * @param value - the string to encode
  * @internal
  */
 function encodeString(value) {
-    return Buffer.from(value).toString("base64");
+    return uint8ArrayToString(stringToUint8Array(value, "utf-8"), "base64");
 }
 /**
  * Encodes a byte array in base64 format.
- * @param value - the Uint8Aray to encode
+ * @param value - the Uint8Array to encode
  * @internal
  */
 function encodeByteArray(value) {
-    const bufferValue = value instanceof Buffer ? value : Buffer.from(value.buffer);
-    return bufferValue.toString("base64");
+    return esm_uint8ArrayToString(value, "base64");
 }
 /**
  * Decodes a base64 string into a byte array.
@@ -141397,7 +141482,7 @@ function encodeByteArray(value) {
  * @internal
  */
 function decodeString(value) {
-    return Buffer.from(value, "base64");
+    return esm_stringToUint8Array(value, "base64");
 }
 /**
  * Decodes a base64 string into a string.
@@ -141405,7 +141490,7 @@ function decodeString(value) {
  * @internal
  */
 function base64_decodeStringToString(value) {
-    return Buffer.from(value, "base64").toString();
+    return uint8ArrayToString(stringToUint8Array(value, "base64"), "utf-8");
 }
 //# sourceMappingURL=base64.js.map
 ;// CONCATENATED MODULE: ./node_modules/@azure/core-client/dist/esm/interfaces.js
@@ -141987,8 +142072,8 @@ function serializeSequenceType(serializer, mapper, object, objectName, isXml, op
     }
     let elementType = mapper.type.element;
     if (!elementType || typeof elementType !== "object") {
-        throw new Error(`element" metadata for an Array must be defined in the ` +
-            `mapper and it must of type "object" in ${objectName}.`);
+        throw new Error(`"element" metadata for an Array must be defined in the ` +
+            `mapper and it must be of type "object" in ${objectName}.`);
     }
     // Quirk: Composite mappers referenced by `element` might
     // not have *all* properties declared (like uberParent),
@@ -142167,10 +142252,15 @@ function serializeCompositeType(serializer, mapper, object, objectName, isXml, o
         const additionalPropertiesMapper = resolveAdditionalProperties(serializer, mapper, objectName);
         if (additionalPropertiesMapper) {
             const propNames = Object.keys(modelProps);
-            for (const clientPropName in object) {
+            for (const clientPropName of Object.keys(object)) {
                 const isAdditionalProperty = propNames.every((pn) => pn !== clientPropName);
                 if (isAdditionalProperty) {
-                    payload[clientPropName] = serializer.serialize(additionalPropertiesMapper, object[clientPropName], objectName + '["' + clientPropName + '"]', options);
+                    Object.defineProperty(payload, clientPropName, {
+                        value: serializer.serialize(additionalPropertiesMapper, object[clientPropName], objectName + '["' + clientPropName + '"]', options),
+                        enumerable: true,
+                        configurable: true,
+                        writable: true,
+                    });
                 }
             }
         }
@@ -142265,7 +142355,12 @@ function deserializeCompositeType(serializer, mapper, responseBody, objectName, 
                     */
                     const wrapped = responseBody[xmlName];
                     const elementList = wrapped?.[xmlElementName] ?? [];
-                    instance[key] = serializer.deserialize(propertyMapper, elementList, propertyObjectName, options);
+                    Object.defineProperty(instance, key, {
+                        value: serializer.deserialize(propertyMapper, elementList, propertyObjectName, options),
+                        enumerable: true,
+                        configurable: true,
+                        writable: true,
+                    });
                     handledPropertyNames.push(xmlName);
                 }
                 else {
@@ -142330,7 +142425,7 @@ function deserializeCompositeType(serializer, mapper, responseBody, objectName, 
     const additionalPropertiesMapper = mapper.type.additionalProperties;
     if (additionalPropertiesMapper) {
         const isAdditionalProperty = (responsePropName) => {
-            for (const clientPropName in modelProps) {
+            for (const clientPropName of Object.keys(modelProps)) {
                 const paths = splitSerializeName(modelProps[clientPropName].serializedName);
                 if (paths[0] === responsePropName) {
                     return false;
@@ -142338,9 +142433,15 @@ function deserializeCompositeType(serializer, mapper, responseBody, objectName, 
             }
             return true;
         };
-        for (const responsePropName in responseBody) {
+        for (const responsePropName of Object.keys(responseBody)) {
             if (isAdditionalProperty(responsePropName)) {
-                instance[responsePropName] = serializer.deserialize(additionalPropertiesMapper, responseBody[responsePropName], objectName + '["' + responsePropName + '"]', options);
+                const deserializedValue = serializer.deserialize(additionalPropertiesMapper, responseBody[responsePropName], objectName + '["' + responsePropName + '"]', options);
+                Object.defineProperty(instance, responsePropName, {
+                    value: deserializedValue,
+                    enumerable: true,
+                    configurable: true,
+                    writable: true,
+                });
             }
         }
     }
@@ -142349,7 +142450,12 @@ function deserializeCompositeType(serializer, mapper, responseBody, objectName, 
             if (instance[key] === undefined &&
                 !handledPropertyNames.includes(key) &&
                 !isSpecialXmlProperty(key, options)) {
-                instance[key] = responseBody[key];
+                Object.defineProperty(instance, key, {
+                    value: responseBody[key],
+                    enumerable: true,
+                    configurable: true,
+                    writable: true,
+                });
             }
         }
     }
@@ -142374,8 +142480,8 @@ function deserializeDictionaryType(serializer, mapper, responseBody, objectName,
 function deserializeSequenceType(serializer, mapper, responseBody, objectName, options) {
     let element = mapper.type.element;
     if (!element || typeof element !== "object") {
-        throw new Error(`element" metadata for an Array must be defined in the ` +
-            `mapper and it must of type "object" in ${objectName}`);
+        throw new Error(`"element" metadata for an Array must be defined in the ` +
+            `mapper and it must be of type "object" in ${objectName}`);
     }
     if (responseBody) {
         if (!Array.isArray(responseBody)) {
@@ -142471,8 +142577,8 @@ const MapperTypeNames = {
     UnixTime: "UnixTime",
 };
 //# sourceMappingURL=serializer.js.map
-// EXTERNAL MODULE: ./node_modules/@azure/core-client/dist/commonjs/state.js
-var dist_commonjs_state = __nccwpck_require__(35429);
+// EXTERNAL MODULE: ./node_modules/@azure/core-client/dist/commonjs/state-cjs.js
+var state_cjs = __nccwpck_require__(42323);
 ;// CONCATENATED MODULE: ./node_modules/@azure/core-client/dist/esm/state.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -142482,7 +142588,7 @@ var dist_commonjs_state = __nccwpck_require__(35429);
 /**
  * Defines the shared state between CJS and ESM by re-exporting the CJS state.
  */
-const esm_state_state = dist_commonjs_state/* state */.S;
+const esm_state_state = state_cjs/* state */.S;
 //# sourceMappingURL=state.js.map
 ;// CONCATENATED MODULE: ./node_modules/@azure/core-client/dist/esm/operationHelpers.js
 // Copyright (c) Microsoft Corporation.
@@ -142527,9 +142633,8 @@ function getOperationArgumentValueFromParameter(operationArguments, parameter, f
         if (parameterMapper.required) {
             value = {};
         }
-        for (const propertyName in parameterPath) {
+        for (const [propertyName, propertyPath] of Object.entries(parameterPath)) {
             const propertyMapper = parameterMapper.type.modelProperties[propertyName];
-            const propertyPath = parameterPath[propertyName];
             const propertyValue = getOperationArgumentValueFromParameter(operationArguments, {
                 parameterPath: propertyPath,
                 mapper: propertyMapper,
@@ -142538,7 +142643,12 @@ function getOperationArgumentValueFromParameter(operationArguments, parameter, f
                 if (!value) {
                     value = {};
                 }
-                value[propertyName] = propertyValue;
+                Object.defineProperty(value, propertyName, {
+                    value: propertyValue,
+                    enumerable: true,
+                    configurable: true,
+                    writable: true,
+                });
             }
         }
     }
@@ -142820,8 +142930,7 @@ async function parse(jsonContentTypes, xmlContentTypes, operationResponse, opts,
  */
 function getStreamingResponseStatusCodes(operationSpec) {
     const result = new Set();
-    for (const statusCode in operationSpec.responses) {
-        const operationResponse = operationSpec.responses[statusCode];
+    for (const [statusCode, operationResponse] of Object.entries(operationSpec.responses)) {
         if (operationResponse.bodyMapper &&
             operationResponse.bodyMapper.type.name === MapperTypeNames.Stream) {
             result.add(Number(statusCode));
@@ -142869,7 +142978,7 @@ function serializationPolicy_serializationPolicy(options = {}) {
     const stringifyXML = options.stringifyXML;
     return {
         name: serializationPolicyName,
-        async sendRequest(request, next) {
+        sendRequest(request, next) {
             const operationInfo = getOperationRequestInfo(request);
             const operationSpec = operationInfo?.operationSpec;
             const operationArguments = operationInfo?.operationArguments;
@@ -143135,7 +143244,8 @@ function appendPath(url, pathToAppend) {
     else {
         newPath = newPath + pathToAppend;
     }
-    parsedUrl.pathname = newPath;
+    // Use Object.assign to bypass react-native's incorrect readonly URL.pathname declaration
+    Object.assign(parsedUrl, { pathname: newPath });
     return parsedUrl.toString();
 }
 function calculateQueryParameters(operationSpec, operationArguments, fallbackObject) {
@@ -143345,7 +143455,7 @@ class ServiceClient {
     /**
      * Send the provided httpRequest.
      */
-    async sendRequest(request) {
+    sendRequest(request) {
         return this.pipeline.sendRequest(this._httpClient, request);
     }
     /**
@@ -143448,7 +143558,7 @@ function getCredentialScopes(options) {
     if (options.baseUri) {
         return `${options.baseUri}/.default`;
     }
-    if (options.credential && !options.credentialScopes) {
+    if (options.credential) {
         throw new Error(`When using credentials, the ServiceClientOptions must contain either a endpoint or a credentialScopes. Unable to create a bearerTokenAuthenticationPolicy`);
     }
     return undefined;
@@ -143599,8 +143709,7 @@ function buildScopes(challengeOptions, challengeInfo) {
         return challengeOptions.scopes;
     }
     const challengeScopes = new URL(challengeInfo.resource_id);
-    challengeScopes.pathname = Constants.DefaultScope;
-    let scope = challengeScopes.toString();
+    let scope = new URL(Constants.DefaultScope, challengeScopes.origin).toString();
     if (scope === "https://disk.azure.com/.default") {
         // the extra slash is required by the service
         scope = "https://disk.azure.com//.default";
