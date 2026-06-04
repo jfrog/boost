@@ -33,6 +33,23 @@
 
 ---
 
+**Frogi, our mascot, appears when you run just `boost`.**
+
+```text
+··································································
+  ,    ,      *          ,        *        ,            ,
+ \|/  *          *            *         *        ▆     ▆
+ \|/    ████    ████       *           ▆         █     █
+ \|/    █  █    █  █            *      █    *     █     █
+ \|/   ██████████████    *            █          █     █
+ \|/   ██████████████▬▬▬▬▬▬▬  *       █     *    █     █
+ \|/   ██████████████   *        ▆    █          █     █
+ \|/    ███      ███          *  █    █      *   █     █
+~~~~<≈≈≈≈≈≈≈≈≈≈≈≈>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~<≈≈≈>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+··································································
+```
+
 **Boost** wraps the commands your agents and CI already run, save tokens, turns noisy logs into compact, structured context. Agents keep the signal: errors, timings, changed counts, cache hits, and next useful clues. Repeated package logs, progress bars, and CI noise stay out of the prompt.
 
 your **terminal** — prefix any command with boost
