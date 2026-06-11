@@ -31,11 +31,10 @@ print_happy_boosting_banner() {
   fi
 
   printf '\n'
-  printf '        %s████    ████%s\n' "$green" "$reset"
-  printf '        %s█  █    █  █%s\n' "$green" "$reset"
-  printf '       %s██████████████%s%s▬▬▬%s  Happy Boosting!\n' "$green" "$reset" "$pink" "$reset"
-  printf '       %s██████████████%s\n' "$green" "$reset"
-  printf '        %s███      ███%s\n' "$green" "$reset"
+  printf '        %s███  ███%s\n' "$green" "$reset"
+  printf '        %s█ █  █ █%s\n' "$green" "$reset"
+  printf '       %s██████████%s%s▬▬▬%s  Happy Boosting!\n' "$green" "$reset" "$pink" "$reset"
+  printf '        %s██    ██%s\n' "$green" "$reset"
   printf '\n'
 }
 
