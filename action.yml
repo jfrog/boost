@@ -9,7 +9,7 @@ inputs:
       action ref (e.g. jfrog/boost@v0.5.0) when omitted.
       Ignored when boost_binary_path is set.
     required: false
-    default: "v0.7.5"
+    default: "v0.7.19"
 
   boost_binary_path:
     description: >

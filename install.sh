@@ -15,7 +15,7 @@ OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
 ARCH="$(uname -m)"
 
 case "$ARCH" in x86_64|amd64) ARCH=amd64 ;; aarch64|arm64) ARCH=arm64 ;; *) echo "unsupported arch: $ARCH" >&2; exit 1 ;; esac
-case "$OS"   in linux|darwin) ;;                                                *) echo "unsupported OS: $OS — see https://github.com/$REPO/releases" >&2; exit 1 ;; esac
+case "$OS"   in linux|darwin) ;; windows*) echo "unsupported OS: $OS — run in PowerShell: irm https://raw.githubusercontent.com/jfrog/boost/main/install.ps1 | iex" >&2; exit 1 ;; *) echo "unsupported OS: $OS — see https://github.com/$REPO/releases" >&2; exit 1 ;; esac
 
 BINARY="boost-${OS}-${ARCH}"
 ARCHIVE="boost-${OS}-${ARCH}.tar.gz"
