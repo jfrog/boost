@@ -9,7 +9,7 @@ inputs:
       action ref (e.g. jfrog/boost@v0.5.0) when omitted.
       Ignored when boost_binary_path is set.
     required: false
-    default: "v0.7.23"
+    default: "milestone-gh-action-no-op-7383403-1318"
 
   boost_binary_path:
     description: >
@@ -40,6 +40,7 @@ inputs:
     required: false
 
 runs:
-  using: "node24"
-  main: "dist/index.js"
-  post: "dist/cleanup/index.js"
+  using: "composite"
+  steps:
+    - shell: bash
+      run: "true"
