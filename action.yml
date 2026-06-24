@@ -9,7 +9,7 @@ inputs:
       action ref (e.g. jfrog/boost@v0.5.0) when omitted.
       Ignored when boost_binary_path is set.
     required: false
-    default: "v0.7.25"
+    default: "v0.7.26"
 
   boost_binary_path:
     description: >
@@ -40,8 +40,6 @@ inputs:
     required: false
 
 runs:
-  using: "composite"
-  steps:
-    - shell: bash
-      run: |
-        :
+  using: "node24"
+  main: "dist/index.js"
+  post: "dist/cleanup/index.js"
