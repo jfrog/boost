@@ -4,12 +4,24 @@ Copyright (c) 2026 JFrog Ltd.
 
 This software and associated documentation files (the "Software") are the
 exclusive property of JFrog Ltd. Use of the Software is governed by the
-JFrog Online Beta Agreement available at BETA_AGREEMENT.md in this repository
-and at https://github.com/jfrog/boost/blob/main/BETA_AGREEMENT.md.
+JFrog Online Preview Agreement available at PREVIEW_AGREEMENT.md in this repository
+and at https://github.com/jfrog/boost/blob/main/PREVIEW_AGREEMENT.md.
 
 No permission is granted to use, copy, modify, merge, publish, distribute,
 sublicense, or sell copies of the Software except as expressly permitted
-under the JFrog Online Beta Agreement.
+under the JFrog Online Preview Agreement.
+
+---
+
+Feedback welcome
+
+We want Boost to work well for you. If something is broken, confusing, or
+missing, you are welcome to open an issue at any time:
+
+  https://github.com/jfrog/boost/issues
+
+Complaints, bug reports, and feature requests are all fair game — we read
+them and use your feedback to improve the product.
 
 Files located under the skills/ directory (when present) are licensed
 separately under the MIT License. See the LICENSE file within that
