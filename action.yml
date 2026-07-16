@@ -9,7 +9,7 @@ inputs:
       action ref (e.g. jfrog/boost@v0.5.0) when omitted.
       Ignored when boost_binary_path is set.
     required: false
-    default: "v0.7.25"
+    default: "v0.9.9"
 
   boost_binary_path:
     description: >
@@ -34,7 +34,7 @@ inputs:
 
   accept_terms:
     description: >
-      Accept the JFrog Online Beta Agreement for this CI setup when no
+      Accept the JFrog Online Preview Agreement for this CI setup when no
       .boost/config.toml is present. Required outside JFrog-owned GitHub
       repositories. Accepted values: yes, y, no, n.
     required: false
