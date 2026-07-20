@@ -91,16 +91,13 @@ try {
     if (-not $version) { $version = 'unknown' }
     Write-Host "→ Installed: $version to $(Join-Path $InstallDir 'boost.exe')"
 
+    $userPathParts = ([Environment]::GetEnvironmentVariable('Path', 'User') -split ';' | Where-Object { $_ -ne '' })
+    if ($userPathParts -notcontains $InstallDir) {
+        [Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'User') + ";$InstallDir", 'User')
+        Write-Host "→ Added $InstallDir to user PATH"
+    }
     $pathParts = ($env:PATH -split ';' | Where-Object { $_ -ne '' })
     if ($pathParts -notcontains $InstallDir) {
-        $marker = '# added by boost installer'
-        $profile = Join-Path $env:USERPROFILE 'Documents\PowerShell\Microsoft.PowerShell_profile.ps1'
-        if (-not (Test-Path -LiteralPath $profile) -or -not (Select-String -LiteralPath $profile -Pattern $marker -Quiet)) {
-            $profileDir = Split-Path -Parent $profile
-            New-Item -ItemType Directory -Force -Path $profileDir | Out-Null
-            Add-Content -LiteralPath $profile -Value "`n`$env:PATH = '$InstallDir;' + `$env:PATH  $marker`n"
-            Write-Host "→ Added $InstallDir to PATH in $profile"
-        }
         $env:PATH = "$InstallDir;$env:PATH"
     }
 
