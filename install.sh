@@ -2,7 +2,6 @@
 set -euo pipefail
 
 REPO="jfrog/boost"
-JFROG_BASE="https://jfrogboost.jfrog.io/public/generic/boost-binaries"
 # BOOST_INSTALL_FROM — where to get the platform binary (default: latest).
 #   latest              — newest release (default)
 #   v1.2.3              — a specific release tag
@@ -17,7 +16,6 @@ ARCH="$(uname -m)"
 case "$ARCH" in x86_64|amd64) ARCH=amd64 ;; aarch64|arm64) ARCH=arm64 ;; *) echo "unsupported arch: $ARCH" >&2; exit 1 ;; esac
 case "$OS"   in linux|darwin) ;; windows*) echo "unsupported OS: $OS — run in PowerShell: irm https://raw.githubusercontent.com/jfrog/boost/main/install.ps1 | iex" >&2; exit 1 ;; *) echo "unsupported OS: $OS — see https://github.com/$REPO/releases" >&2; exit 1 ;; esac
 
-BINARY="boost-${OS}-${ARCH}"
 ARCHIVE="boost-${OS}-${ARCH}.tar.gz"
 TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
 FROM="${BOOST_INSTALL_FROM:-latest}"
@@ -51,20 +49,13 @@ else
   else
     TAG="$FROM"
   fi
-  echo "→ Downloading $BINARY ($TAG)"
-  JFROG_URL="${JFROG_BASE}/${TAG}/${BINARY}"
-  if curl -fsSL "$JFROG_URL" -o "$TMP/boost"; then
-    chmod +x "$TMP/boost"
-    echo "→ Downloaded successfully from JFrog Fly ($JFROG_URL)"
-  else
-    GITHUB_URL="https://github.com/$REPO/releases/download/$TAG/$ARCHIVE"
-    echo "→ JFrog Fly download failed, trying GitHub releases..."
-    curl -fsSL "$GITHUB_URL" -o "$TMP/$ARCHIVE"
-    tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
-    [ -f "$TMP/boost" ] || { echo "archive missing 'boost' binary" >&2; exit 1; }
-    chmod +x "$TMP/boost"
-    echo "→ Downloaded successfully from GitHub releases ($GITHUB_URL)"
-  fi
+  GITHUB_URL="https://github.com/$REPO/releases/download/$TAG/$ARCHIVE"
+  echo "→ Downloading $ARCHIVE ($TAG)"
+  curl -fsSL "$GITHUB_URL" -o "$TMP/$ARCHIVE"
+  tar -xzf "$TMP/$ARCHIVE" -C "$TMP"
+  [ -f "$TMP/boost" ] || { echo "archive missing 'boost' binary" >&2; exit 1; }
+  chmod +x "$TMP/boost"
+  echo "→ Downloaded successfully from GitHub releases ($GITHUB_URL)"
 fi
 [ -f "$TMP/boost" ] || { echo "download failed: binary not found" >&2; exit 1; }
 
