@@ -155,10 +155,18 @@ echo
 print_happy_boosting_banner
 echo "→ Boost is installed!"
 echo ""
-echo "To run boost in this terminal right now:"
-echo "  - zsh:   source ~/.zshrc"
-echo "  - bash:  source ~/.bashrc   (or source ~/.bash_profile / ~/.profile)"
-echo ""
-echo "Then run:"
-echo "   $ $BOOST_CMD init"
-echo
+# Only auto-run init when INSTALL_DIR was already on PATH (so `boost` resolves
+# the same way the caller's shell would). Off-PATH installs still need the user
+# to source their rc — keep today's message verbatim in that case. The temporary
+# `export PATH` above must not count as "on PATH" for this decision.
+if $INSTALL_DIR_ON_PATH && command -v boost >/dev/null 2>&1; then
+  boost init
+else
+  echo "To run boost in this terminal right now:"
+  echo "  - zsh:   source ~/.zshrc"
+  echo "  - bash:  source ~/.bashrc   (or source ~/.bash_profile / ~/.profile)"
+  echo ""
+  echo "Then run:"
+  echo "   $ $BOOST_CMD init"
+  echo
+fi
