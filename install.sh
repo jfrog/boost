@@ -159,8 +159,19 @@ echo ""
 # the same way the caller's shell would). Off-PATH installs still need the user
 # to source their rc — keep today's message verbatim in that case. The temporary
 # `export PATH` above must not count as "on PATH" for this decision.
+#
+# Reattach stdin to the controlling TTY when present: `curl … | bash` leaves
+# stdin as the curl pipe (already drained), so without this redirect `boost init`
+# would see EOF on the terms prompt. Go also opens /dev/tty as a fallback.
+run_boost_init() {
+  if [ -r /dev/tty ]; then
+    boost init </dev/tty
+  else
+    boost init
+  fi
+}
 if $INSTALL_DIR_ON_PATH && command -v boost >/dev/null 2>&1; then
-  boost init
+  run_boost_init
 else
   echo "To run boost in this terminal right now:"
   echo "  - zsh:   source ~/.zshrc"
