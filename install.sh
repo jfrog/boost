@@ -24,7 +24,11 @@ print_happy_boosting_banner() {
   local green="" pink="" reset=""
   if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
     green=$'\033[32m'
-    pink=$'\033[38;5;217m'
+    # Bright magenta (palette index 13) — terminals theme this for contrast on
+    # both light and dark backgrounds. Fixed pastels (#F28AB2 / 217) vanished on
+    # white; a single darkened hex then looked muddy on dark. Keep in sync with
+    # frogTongueStyle (ANSIColor 13) in internal/ui/frog.go.
+    pink=$'\033[95m'
     reset=$'\033[0m'
   fi
 
