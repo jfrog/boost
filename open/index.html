@@ -1,0 +1,534 @@
+<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="description" content="Redirecting to your IDE..."><meta name="generator" content="Astro v7.3.1"><meta name="author" content="JFrog"><meta name="application-name" content="Boost"><meta name="keywords" content="boost cli, boost jfrog, jfrog boost, save tokens, maximize context, cursor, claude code, github copilot, codex, coding agents, ai coding agents, ci optimization, docker build, npm, gh cli, go test, token reduction, token optimization"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0A0A0A"><link rel="icon" type="image/png" sizes="512x512" href="/favicon.png"><link rel="canonical" href="https://boost.jfrog.com/open/"><link rel="alternate" type="text/markdown" href="https://boost.jfrog.com/llms.txt" title="Boost for agents"><link rel="describedby" type="text/plain" href="https://boost.jfrog.com/agents.txt"><link rel="describedby" type="application/json" href="https://boost.jfrog.com/.well-known/agent-skills/index.json"><!--
+      Fonts are self-hosted via @fontsource (see src/styles/global.css), so no
+      preconnect to fonts.googleapis.com / fonts.gstatic.com is needed. Only the
+      Navbar's GitHub stars fetch still hits a third party.
+    --><link rel="preconnect" href="https://api.github.com"><!-- Open Graph: Facebook, LinkedIn, Slack, WhatsApp, Telegram, Discord, iMessage, etc. --><meta property="og:type" content="website"><meta property="og:locale" content="en_US"><meta property="og:site_name" content="Boost"><meta property="og:title" content="Opening IDE - Boost"><meta property="og:description" content="Redirecting to your IDE..."><meta property="og:url" content="https://boost.jfrog.com/open/"><meta property="og:image" content="https://boost.jfrog.com/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Opening IDE - Boost"><meta property="og:image:type" content="image/png"><!-- Twitter / X --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@jfrog"><meta name="twitter:creator" content="@jfrog"><meta name="twitter:title" content="Opening IDE - Boost"><meta name="twitter:description" content="Redirecting to your IDE..."><meta name="twitter:image" content="https://boost.jfrog.com/og-image.png"><meta name="twitter:image:alt" content="Opening IDE - Boost"><title>Opening IDE - Boost</title><link rel="stylesheet" href="/_astro/Layout.DIXjWvoZ.css"></head><body><div id="release-banner-root" data-release-banner-root data-release-version="v0.13.7" data-release-default-variant="top-bar" data-astro-cid-tc2wthqa><div data-release-banner-variant="top-bar" class="release-banner-hidden fixed inset-x-0 top-0 z-[60] border-b border-brand-700/50 bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white shadow-[0_8px_30px_rgba(18,63,20,0.45)] backdrop-blur-md pt-[env(safe-area-inset-top,0px)]" role="region" aria-label="Release announcement" data-astro-cid-tc2wthqa><div class="mx-auto flex h-11 max-w-7xl items-center gap-3 px-4 sm:h-12 sm:px-6 lg:px-8" data-astro-cid-tc2wthqa><a href="/docs/en/changelog#download-latest" class="group flex min-w-0 flex-1 items-center gap-2 sm:gap-3" data-astro-cid-tc2wthqa><span class="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/30 bg-white/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white sm:text-[11px]" data-astro-cid-tc2wthqa><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true" data-astro-cid-tc2wthqa><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" data-astro-cid-tc2wthqa></path></svg>0.13.7</span><span class="truncate text-[13px] font-semibold text-white sm:text-sm" data-astro-cid-tc2wthqa>New version of Boost released</span><span class="hidden truncate text-[13px] text-white/90 sm:inline" data-astro-cid-tc2wthqa><span aria-hidden="true" data-astro-cid-tc2wthqa>·</span> install the latest in one line.</span></a><a href="/docs/en/changelog#download-latest" class="hidden shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-[12px] font-semibold text-brand-700 shadow-sm transition-all duration-200 hover:bg-brand-50 hover:text-brand-800 sm:inline-flex" data-astro-cid-tc2wthqa>Download the latest<svg class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true" data-astro-cid-tc2wthqa><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" data-astro-cid-tc2wthqa></path></svg></a><button type="button" data-release-banner-dismiss class="-mr-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" aria-label="Dismiss release announcement" data-astro-cid-tc2wthqa><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true" data-astro-cid-tc2wthqa><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" data-astro-cid-tc2wthqa></path></svg></button></div></div><div data-release-banner-variant="floating-card" class="release-banner-hidden fixed inset-x-3 z-[55] sm:inset-x-0 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 top-[calc(4rem+env(safe-area-inset-top,0px)+0.75rem)] md:top-[calc(5rem+env(safe-area-inset-top,0px)+0.75rem)] sm:w-[min(44rem,calc(100vw-2rem))]" role="region" aria-label="Release announcement" data-astro-cid-tc2wthqa><style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><script>(()=>{var g=Object.defineProperty;var w=(a,s,c)=>s in a?g(a,s,{enumerable:!0,configurable:!0,writable:!0,value:c}):a[s]=c;var l=(a,s,c)=>w(a,typeof s!="symbol"?s+"":s,c);var E=new Set(["__proto__","constructor","prototype"]);{let a={0:t=>y(t),1:t=>c(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(c(t)),5:t=>new Set(c(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>Number.POSITIVE_INFINITY*t},s=t=>{let[p,e]=t;return p in a?a[p](e):void 0},c=t=>t.map(s),y=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([p,e])=>[p,s(e)]));class f extends HTMLElement{constructor(){super(...arguments);l(this,"Component");l(this,"hydrator");l(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let r=this.querySelectorAll("astro-slot"),n={},d=this.querySelectorAll("template[data-astro-template]");for(let o of d){let i=o.closest(this.tagName);i!=null&&i.isSameNode(this)&&(n[o.getAttribute("data-astro-template")||"default"]=o.innerHTML,o.remove())}for(let o of r){let i=o.closest(this.tagName);i!=null&&i.isSameNode(this)&&(n[o.getAttribute("name")||"default"]=o.innerHTML)}let u;try{u=this.hasAttribute("props")?y(JSON.parse(this.getAttribute("props"))):{}}catch(o){let i=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&&(i+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${i}`,this.getAttribute("props"),o),o}let h;await this.hydrator(this)(this.Component,u,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});l(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),r.disconnect(),this.childrenConnectedCallback()},r=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue==="astro:end"&&(this.lastChild.remove(),e())});r.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}getRetryImportUrl(e){let r=new URL(e,document.baseURI);return r.searchParams.set("astro-retry",Date.now().toString()),r.toString()}async importWithRetry(e){try{return await import(e)}catch(r){return await new Promise(n=>setTimeout(n,1e3)),import(this.getRetryImportUrl(e))}}handleHydrationError(e){let r=this.getAttribute("component-url"),n=new CustomEvent("astro:hydration-error",{cancelable:!0,bubbles:!0,composed:!0,detail:{error:e,componentUrl:r}});this.dispatchEvent(n)&&console.error(`[astro-island] Error hydrating ${r}`,e)}async start(){let e=JSON.parse(this.getAttribute("opts")),r=this.getAttribute("client");if(Astro[r]===void 0){window.addEventListener(`astro:${r}`,()=>this.start(),{once:!0});return}try{await Astro[r](async()=>{let n=this.getAttribute("renderer-url");try{let[d,{default:u}]=await Promise.all([this.importWithRetry(this.getAttribute("component-url")),n?this.importWithRetry(n):Promise.resolve({default:()=>()=>{}})]),h=this.getAttribute("component-export")||"default";if(h.includes(".")){this.Component=d;for(let m of h.split(".")){if(E.has(m)||!this.Component||typeof this.Component!="object"&&typeof this.Component!="function"||!Object.hasOwn(this.Component,m))throw new Error(`Invalid component export path: ${h}`);this.Component=this.Component[m]}}else{if(E.has(h))throw new Error(`Invalid component export path: ${h}`);this.Component=d[h]}return this.hydrator=u,this.hydrate}catch(d){return this.handleHydrationError(d),()=>{}}},e,this)}catch(n){this.handleHydrationError(n)}}attributeChangedCallback(){this.hydrate()}}l(f,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",f)}})();</script><astro-island uid="1SSPlF" prefix="r1" component-url="/_astro/ReleaseAnnouncementCard.BMDmHoEV.js" component-export="default" renderer-url="/_astro/client.tJ05cBRt.js" props="{&quot;version&quot;:[0,&quot;v0.13.7&quot;],&quot;displayVersion&quot;:[0,&quot;0.13.7&quot;],&quot;date&quot;:[0,&quot;Sep 2, 2026&quot;],&quot;title&quot;:[0,&quot;More reliable workspace indexing and hooks&quot;],&quot;headline&quot;:[0,&quot;New version of Boost released&quot;],&quot;badgeLabel&quot;:[0,&quot;New release&quot;],&quot;ctaLabel&quot;:[0,&quot;Download the latest&quot;],&quot;releaseNotesLabel&quot;:[0,&quot;Release notes&quot;],&quot;dismissLabel&quot;:[0,&quot;Dismiss release announcement&quot;],&quot;downloadHref&quot;:[0,&quot;/docs/en/changelog#download-latest&quot;],&quot;releaseUrl&quot;:[0,&quot;https://github.com/jfrog/boost/releases/tag/v0.13.7&quot;],&quot;installCommand&quot;:[0,&quot;curl -fsSL https://boost.jfrog.com/install.sh | bash&quot;],&quot;data-astro-cid-tc2wthqa&quot;:[0,true]}" ssr client="load" opts="{&quot;name&quot;:&quot;ReleaseAnnouncementCard&quot;,&quot;value&quot;:true}" await-children><style>
+@property --beam-angle-_r1R_0_ {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: true;
+}
+
+@property --beam-opacity-_r1R_0_ {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+[data-beam="_r1R_0_"] {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+[data-beam="_r1R_0_"][data-active] {
+  animation:
+    beam-spin-_r1R_0_ 6s linear infinite,
+    beam-fade-in-_r1R_0_ 0.6s ease forwards;
+}
+
+[data-beam="_r1R_0_"][data-fading] {
+  animation:
+    beam-spin-_r1R_0_ 6s linear infinite,
+    beam-fade-out-_r1R_0_ 0.5s ease forwards;
+}
+
+[data-beam="_r1R_0_"][data-active]::after,
+[data-beam="_r1R_0_"][data-fading]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  padding: 1px;
+  clip-path: inset(0 round 16px);
+  background: conic-gradient(
+        from var(--beam-angle-_r1R_0_),
+        transparent 0%, transparent 54%,
+        rgba(255, 255, 255, 0.1) 57%,
+        rgba(255, 255, 255, 0.3) 60%,
+        rgba(255, 255, 255, 0.6) 63%,
+        rgba(255, 255, 255, 0.75) 66%,
+        rgba(255, 255, 255, 0.6) 69%,
+        rgba(255, 255, 255, 0.3) 72%,
+        rgba(255, 255, 255, 0.1) 75%,
+        transparent 78%, transparent 100%
+      ),radial-gradient(ellipse 70px 40px at 33% -7.4%, rgb(255, 50, 100), transparent),
+    radial-gradient(ellipse 60px 35px at 12% -5%, rgb(40, 140, 255), transparent),
+    radial-gradient(ellipse 40px 70px at 2.1% 68.3%, rgb(50, 200, 80), transparent),
+    radial-gradient(ellipse 20px 35px at 2.1% 68.3%, rgb(30, 185, 170), transparent),
+    radial-gradient(ellipse 180px 32px at 74.4% 100%, rgb(100, 70, 255), transparent),
+    radial-gradient(ellipse 85px 26px at 55% 100%, rgb(40, 140, 255), transparent),
+    radial-gradient(ellipse 74px 32px at 93.9% 0%, rgb(255, 120, 40), transparent),
+    radial-gradient(ellipse 26px 42px at 100% 27.1%, rgb(240, 50, 180), transparent),
+    radial-gradient(ellipse 52px 48px at 100% 27.1%, rgb(180, 40, 240), transparent);
+  -webkit-mask:
+    conic-gradient(
+      from var(--beam-angle-_r1R_0_),
+      transparent 0%, transparent 30%,
+      rgba(255, 255, 255, 0.1) 36%, rgba(255, 255, 255, 0.35) 44%,
+      white 52%, white 80%,
+      rgba(255, 255, 255, 0.35) 86%, rgba(255, 255, 255, 0.1) 92%,
+      transparent 95%, transparent 100%
+    ),
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: source-in, xor;
+  mask:
+    conic-gradient(
+      from var(--beam-angle-_r1R_0_),
+      transparent 0%, transparent 30%,
+      rgba(255, 255, 255, 0.1) 36%, rgba(255, 255, 255, 0.35) 44%,
+      white 52%, white 80%,
+      rgba(255, 255, 255, 0.35) 86%, rgba(255, 255, 255, 0.1) 92%,
+      transparent 95%, transparent 100%
+    ),
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: intersect, exclude;
+  pointer-events: none;
+  z-index: 2;
+  opacity: calc(var(--beam-opacity-_r1R_0_) * 0.26 * var(--beam-stroke-opacity, 1) * var(--beam-strength, 1));
+  animation: beam-hue-shift-_r1R_0_ 12s ease-in-out infinite;
+}
+
+[data-beam="_r1R_0_"][data-active]::before,
+[data-beam="_r1R_0_"][data-fading]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: radial-gradient(ellipse 63px 36px at 33% -7.4%, rgba(255, 50, 100, 0.45), transparent),
+    radial-gradient(ellipse 54px 32px at 12% -5%, rgba(40, 140, 255, 0.45), transparent),
+    radial-gradient(ellipse 36px 63px at 2.1% 68.3%, rgba(50, 200, 80, 0.45), transparent),
+    radial-gradient(ellipse 18px 32px at 2.1% 68.3%, rgba(30, 185, 170, 0.45), transparent),
+    radial-gradient(ellipse 162px 29px at 74.4% 100%, rgba(100, 70, 255, 0.45), transparent),
+    radial-gradient(ellipse 77px 23px at 55% 100%, rgba(40, 140, 255, 0.45), transparent),
+    radial-gradient(ellipse 67px 29px at 93.9% 0%, rgba(255, 120, 40, 0.45), transparent),
+    radial-gradient(ellipse 23px 38px at 100% 27.1%, rgba(240, 50, 180, 0.45), transparent),
+    radial-gradient(ellipse 47px 43px at 100% 27.1%, rgba(180, 40, 240, 0.45), transparent);
+  box-shadow: inset 0 0 9px 1px rgba(255, 255, 255, 0.27);
+  -webkit-mask-image:
+    conic-gradient(
+      from var(--beam-angle-_r1R_0_),
+      transparent 0%, transparent 30%,
+      rgba(255, 255, 255, 0.1) 36%, rgba(255, 255, 255, 0.35) 44%,
+      white 52%, white 80%,
+      rgba(255, 255, 255, 0.35) 86%, rgba(255, 255, 255, 0.1) 92%,
+      transparent 95%, transparent 100%
+    ),
+    linear-gradient(white, transparent 28px, transparent calc(100% - 28px), white),
+    linear-gradient(to right, white, transparent 28px, transparent calc(100% - 28px), white);
+  -webkit-mask-composite: source-in, source-over;
+  mask-image:
+    conic-gradient(
+      from var(--beam-angle-_r1R_0_),
+      transparent 0%, transparent 30%,
+      rgba(255, 255, 255, 0.1) 36%, rgba(255, 255, 255, 0.35) 44%,
+      white 52%, white 80%,
+      rgba(255, 255, 255, 0.35) 86%, rgba(255, 255, 255, 0.1) 92%,
+      transparent 95%, transparent 100%
+    ),
+    linear-gradient(white, transparent 28px, transparent calc(100% - 28px), white),
+    linear-gradient(to right, white, transparent 28px, transparent calc(100% - 28px), white);
+  mask-composite: intersect, add;
+  pointer-events: none;
+  z-index: 1;
+  opacity: calc(var(--beam-opacity-_r1R_0_) * 0.42 * var(--beam-inner-opacity, 1) * var(--beam-strength, 1));
+  clip-path: inset(0 round 16px);
+  animation: beam-hue-shift-_r1R_0_ 12s ease-in-out infinite;
+}
+
+[data-beam="_r1R_0_"] [data-beam-bloom] {
+  display: none;
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  clip-path: inset(0 round 16px);
+  background: conic-gradient(
+        from var(--beam-angle-_r1R_0_),
+        transparent 0%, transparent 58%,
+        rgba(255, 255, 255, 0.03) 62%,
+        rgba(255, 255, 255, 0.08) 65%,
+        rgba(255, 255, 255, 0.2) 67%,
+        rgba(255, 255, 255, 0.45) 69%,
+        rgba(255, 255, 255, 0.85) 70%,
+        rgba(255, 255, 255, 0.85) 70.5%,
+        rgba(255, 255, 255, 0.45) 71.5%,
+        rgba(255, 255, 255, 0.2) 73%,
+        rgba(255, 255, 255, 0.08) 75%,
+        rgba(255, 255, 255, 0.03) 78%,
+        transparent 82%
+      );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+  filter: blur(8px) brightness(1.30) saturate(1.20);
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+}
+
+[data-beam="_r1R_0_"][data-active] [data-beam-bloom],
+[data-beam="_r1R_0_"][data-fading] [data-beam-bloom] {
+  display: block;
+  opacity: calc(var(--beam-opacity-_r1R_0_) * 0.24 * var(--beam-bloom-opacity, 1) * var(--beam-strength, 1));
+}
+
+@keyframes beam-spin-_r1R_0_ {
+  to { --beam-angle-_r1R_0_: 360deg; }
+}
+
+@keyframes beam-fade-in-_r1R_0_ {
+  to { --beam-opacity-_r1R_0_: 1; }
+}
+
+@keyframes beam-fade-out-_r1R_0_ {
+  from { --beam-opacity-_r1R_0_: 1; }
+  to { --beam-opacity-_r1R_0_: 0; }
+}
+
+@keyframes beam-hue-shift-_r1R_0_ {
+  0% { filter: hue-rotate(calc(var(--beam-hue-base, 0deg) - 30deg)) brightness(1.30) saturate(1.20); }
+  50% { filter: hue-rotate(calc(var(--beam-hue-base, 0deg) + 30deg)) brightness(1.30) saturate(1.20); }
+  100% { filter: hue-rotate(calc(var(--beam-hue-base, 0deg) - 30deg)) brightness(1.30) saturate(1.20); }
+}
+
+[data-beam="_r1R_0_"][data-paused],
+[data-beam="_r1R_0_"][data-paused]::after,
+[data-beam="_r1R_0_"][data-paused]::before,
+[data-beam="_r1R_0_"][data-paused] [data-beam-bloom] {
+  animation-play-state: paused !important;
+}
+</style><div data-beam="_r1R_0_" data-active="" class="w-full min-w-0 max-w-full rounded-2xl" style="--beam-strength:0.9"><div class="relative w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-brand-400/35 bg-gradient-to-br from-brand-500/[0.18] via-brand-400/[0.10] to-white/[0.04] shadow-[0_0_70px_rgba(54,161,59,0.22)] ring-1 ring-brand-300/15 backdrop-blur-xl"><div aria-hidden="true" class="pointer-events-none absolute -top-20 -left-16 h-48 w-48 rounded-full bg-brand-500/30 blur-3xl"></div><div aria-hidden="true" class="pointer-events-none absolute -bottom-24 -right-12 h-56 w-56 rounded-full bg-brand-400/20 blur-3xl"></div><div class="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-stretch sm:p-6"><div class="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-brand-400/30 bg-brand-500/15 text-brand-200 shadow-[0_0_24px_rgba(54,161,59,0.25)] sm:flex"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><span class="inline-flex items-center gap-1.5 rounded-full border border-brand-400/40 bg-brand-500/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-200 shadow-[0_0_24px_rgba(54,161,59,0.18)] sm:text-[11px]"><span class="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-300" aria-hidden="true"></span>New release</span><span class="font-mono text-[12px] font-semibold text-white sm:text-[13px]">v0.13.7</span><span class="text-[12px] text-gray-400 sm:text-[13px]"><span class="mx-1 text-gray-600" aria-hidden="true">·</span>Sep 2, 2026</span></div><h3 class="mt-2 text-[15px] font-semibold leading-tight text-white sm:text-[17px]">New version of Boost released<span class="ml-1 font-normal text-gray-300">— <!-- -->More reliable workspace indexing and hooks</span></h3><div class="mt-3 hidden min-w-0 items-center gap-1.5 overflow-x-auto rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 font-mono text-[11px] sm:flex"><span class="tb-prompt shrink-0 select-none text-brand-300">$</span><code class="min-w-0 flex-1 truncate text-gray-200">curl -fsSL https://boost.jfrog.com/install.sh | bash</code></div><div class="mt-4 flex flex-wrap items-center gap-2.5"><a href="/docs/en/changelog#download-latest" class="group inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-4 py-2 text-[12px] font-semibold text-white shadow-[0_0_24px_rgba(54,161,59,0.35)] transition-all duration-200 hover:bg-brand-400 hover:shadow-[0_0_32px_rgba(54,161,59,0.55)] sm:text-[13px]">Download the latest<svg class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></a><a href="https://github.com/jfrog/boost/releases/tag/v0.13.7" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-2 text-[12px] font-medium text-gray-200 transition-colors hover:border-white/30 hover:bg-white/[0.06] hover:text-white sm:text-[13px]">Release notes</a></div></div><button type="button" data-release-banner-dismiss="true" class="absolute right-3 top-3 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/10 hover:text-white sm:relative sm:right-0 sm:top-0 sm:-mr-1 sm:-mt-1" aria-label="Dismiss release announcement"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button></div></div><div data-beam-bloom="true"></div></div><!--astro:end--></astro-island></div></div><script>(function(){const version = "v0.13.7";
+
+  (() => {
+    const STORAGE_KEY = 'boost_release_banner_dismissed_version';
+    const VARIANT_PARAM = 'releaseBanner';
+    const TOP_BAR_HEIGHT_VAR = '--release-banner-height';
+
+    const root = document.querySelector('[data-release-banner-root]');
+    if (!root) return;
+
+    const variants = root.querySelectorAll('[data-release-banner-variant]');
+    if (!variants.length) return;
+
+    const defaultVariant = root.getAttribute('data-release-default-variant') || 'top-bar';
+
+    const getRequestedVariant = () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const requested = params.get(VARIANT_PARAM);
+        if (requested === 'top-bar' || requested === 'floating-card' || requested === 'none') {
+          return requested;
+        }
+      } catch {
+        // ignore
+      }
+      return null;
+    };
+
+    const getDismissedVersion = () => {
+      try {
+        return window.localStorage.getItem(STORAGE_KEY);
+      } catch {
+        return null;
+      }
+    };
+
+    const setDismissedVersion = (value) => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, value);
+      } catch {
+        // storage unavailable — accept that the banner returns next visit
+      }
+    };
+
+    const setTopBarHeight = (variantEl) => {
+      // Measure on next frame so layout is settled. Reserve top space for
+      // the fixed top bar so the navbar (which uses
+      // var(--release-banner-height)) and hero/docs offsets shift down.
+      requestAnimationFrame(() => {
+        const height = variantEl.getBoundingClientRect().height;
+        document.documentElement.style.setProperty(
+          TOP_BAR_HEIGHT_VAR,
+          `${Math.round(height)}px`,
+        );
+      });
+    };
+
+    const clearTopBarHeight = () => {
+      document.documentElement.style.setProperty(TOP_BAR_HEIGHT_VAR, '0px');
+    };
+
+    const showVariant = (name) => {
+      let shown = null;
+      variants.forEach((el) => {
+        if (el.getAttribute('data-release-banner-variant') === name) {
+          el.classList.remove('release-banner-hidden');
+          shown = el;
+        } else {
+          el.classList.add('release-banner-hidden');
+        }
+      });
+      if (shown && name === 'top-bar') {
+        setTopBarHeight(shown);
+      } else {
+        clearTopBarHeight();
+      }
+    };
+
+    const hideAll = () => {
+      variants.forEach((el) => el.classList.add('release-banner-hidden'));
+      clearTopBarHeight();
+    };
+
+    const requested = getRequestedVariant();
+    const dismissedVersion = getDismissedVersion();
+
+    if (requested === 'none') {
+      hideAll();
+    } else if (requested) {
+      // Preview override always wins, regardless of dismissal state.
+      showVariant(requested);
+    } else if (dismissedVersion === version) {
+      hideAll();
+    } else {
+      showVariant(defaultVariant);
+    }
+
+    // Event delegation so dismissal works across SSR markup AND the
+    // hydrated React island that renders the floating-card content.
+    root.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const dismiss = target.closest('[data-release-banner-dismiss]');
+      if (!dismiss || !root.contains(dismiss)) return;
+      event.preventDefault();
+      setDismissedVersion(version);
+      hideAll();
+    });
+
+    window.addEventListener('resize', () => {
+      const visibleTopBar = root.querySelector(
+        '[data-release-banner-variant="top-bar"]:not(.release-banner-hidden)',
+      );
+      if (visibleTopBar) {
+        setTopBarHeight(visibleTopBar);
+      }
+    });
+  })();
+})();</script><div id="redirect-container" style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Open Sans',sans-serif;color:#e5e7eb;text-align:center;padding:2rem;"><div><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 37 30" fill="#36a13b" style="margin:0 auto 1.5rem;"><path d="M27.05.73h.01c1.6 0 3.12.63 4.18 1.73 1.88 1.92 5.1 6.14 5.1 12.7 0 6.06-2.7 10.03-4.95 12.3-2.17 2.13-5.93 2.25-8.18.13l-.23-.22-5.24-6.15 2.99-2.68 5.3 6.27c.73.66 2.14.65 2.87-.05 1.56-1.56 3.65-4.5 3.65-9.6 0-4.65-2.13-7.84-3.91-9.62-.34-.35-.84-.54-1.37-.54h-.01c-.53 0-1.01.18-1.33.5l-6.79 7.7c1.1 0 1.98.91 1.98 2.04 0 1.12-.89 2.03-1.98 2.03h-4.38c-.78 0-1.49-.47-1.81-1.2-.32-.73-.19-1.58.31-2.18l9.56-11.14.09-.09C24.43 1.37 25.95.73 27.05.73z"></path><path d="M9.95 29.27h-.01c-1.6 0-3.12-.63-4.18-1.73C3.88 25.62.71 21.4.71 14.84.71 8.79 3.4 4.81 5.66 2.55c2.17-2.13 5.93-2.25 8.18-.13l.23.22 5.24 6.15-2.99 2.68-5.3-6.27c-.73-.66-2.14-.65-2.87.05-1.56 1.56-3.65 4.5-3.65 9.6 0 4.65 2.13 7.84 3.91 9.62.34.35.84.54 1.37.54h.01c.53 0 1.01-.18 1.33-.5l6.79-7.7c-1.1 0-1.98-.91-1.98-2.04 0-1.12.89-2.03 1.98-2.03h4.38c.78 0 1.49.47 1.81 1.2.32.73.19 1.58-.31 2.18l-9.56 11.14-.09.09c-1.07 1.1-2.59 1.73-3.69 1.73z"></path></svg><h2 id="status-text" style="font-size:1.25rem;font-weight:600;margin-bottom:0.75rem;">Opening your IDE...</h2><p id="status-detail" style="color:#9ca3af;font-size:0.9rem;margin-bottom:1.5rem;">If nothing happens, click the link below.</p><a id="manual-link" href="#" style="color:#36a13b;text-decoration:underline;font-size:0.9rem;">Open manually</a></div></div><div id="cookie-consent" class="fixed inset-x-0 bottom-0 z-50 hidden px-4 pb-4 sm:px-6 sm:pb-6" data-cookie-consent-root role="region" aria-label="Your privacy choices"><div class="mx-auto max-w-6xl rounded-2xl border border-white/10 bg-surface-950/95 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:px-5 sm:py-4"><div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"><p class="min-w-0 text-xs leading-4 text-gray-300 sm:leading-5 lg:max-w-3xl lg:flex-1">This site uses Google Analytics cookies to understand what content is useful. Do you accept?</p><div class="flex flex-wrap items-center gap-2 lg:shrink-0"><button type="button" class="min-h-11 rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-gray-200 transition-colors hover:border-white/25 hover:bg-white/[0.14] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300" data-cookie-reject>Required only</button><button type="button" class="min-h-11 rounded-lg border border-brand-500/60 bg-brand-500 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" data-cookie-accept>Accept</button><button type="button" class="min-h-11 rounded-lg px-4 py-2 text-xs font-semibold text-brand-200 transition-colors hover:bg-brand-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300" data-cookie-customize>Cookie settings</button></div></div></div></div><div id="cookie-preferences" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm" data-cookie-preferences role="dialog" aria-modal="true" aria-labelledby="cookie-preferences-title"><div class="w-full max-w-lg rounded-2xl border border-white/10 bg-surface-950 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.55)]"><div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-300">Privacy choices</p><h2 id="cookie-preferences-title" class="mt-2 text-xl font-semibold text-white">Cookie settings</h2></div><button type="button" class="min-h-11 rounded-full border border-white/10 px-3 py-2 text-sm text-gray-300 transition-colors hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300" data-cookie-close aria-label="Close: Cookie settings">Close</button></div><div class="mt-6 space-y-4"><div class="rounded-xl border border-white/10 bg-white/[0.03] p-4"><div class="flex items-center justify-between gap-4"><div><h3 class="font-semibold text-white">Necessary cookies</h3><p class="mt-1 text-sm leading-5 text-gray-400">Required for the website to function.</p></div><span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-gray-300">Always on</span></div></div><label class="block cursor-pointer rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-brand-500/30"><span class="flex items-center justify-between gap-4"><span><span class="block font-semibold text-white">Analytics cookies</span><span class="mt-1 block text-sm leading-5 text-gray-400">Helps us improve useful pages and installation paths. No advertising or personalization.</span></span><input type="checkbox" class="h-5 w-5 shrink-0 accent-brand-500" data-cookie-analytics-toggle></span></label></div><div class="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end"><button type="button" class="rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-gray-200 transition-colors hover:border-white/25 hover:bg-white/[0.04]" data-cookie-save-reject>Required only</button><button type="button" class="rounded-lg border border-brand-500/60 bg-brand-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-400" data-cookie-save>Confirm my settings</button></div></div></div><script>(function(){const gaMeasurementId = "G-0VT297SJRS";
+
+  (() => {
+    const STORAGE_KEY = 'boost_cookie_consent_v1';
+    const CONSENT_ACCEPTED = 'accepted';
+    const CONSENT_REJECTED = 'rejected';
+
+    const banner = document.querySelector('[data-cookie-consent-root]');
+    const preferences = document.querySelector('[data-cookie-preferences]');
+    const analyticsToggle = document.querySelector('[data-cookie-analytics-toggle]');
+    const settingsButton = document.getElementById('cookie_settings');
+    const gaDisableKey = `ga-disable-${gaMeasurementId}`;
+    let analyticsLoaded = false;
+
+    const getConsent = () => {
+      try {
+        const storedConsent = window.localStorage.getItem(STORAGE_KEY);
+        return storedConsent === CONSENT_ACCEPTED || storedConsent === CONSENT_REJECTED
+          ? storedConsent
+          : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const setConsent = (value) => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, value);
+      } catch {
+        // If storage is unavailable, keep the current page compliant and avoid GA.
+      }
+    };
+
+    const show = (element) => {
+      element?.classList.remove('hidden');
+      if (element === preferences) {
+        element.classList.add('flex');
+      }
+    };
+
+    const hide = (element) => {
+      element?.classList.add('hidden');
+      if (element === preferences) {
+        element.classList.remove('flex');
+      }
+    };
+
+    const setAnalyticsDisabled = (disabled) => {
+      if (gaMeasurementId) {
+        window[gaDisableKey] = disabled;
+      }
+    };
+
+    const updateGoogleConsent = (analyticsStorage) => {
+      if (typeof window.gtag !== 'function') {
+        return;
+      }
+
+      window.gtag('consent', 'update', {
+        analytics_storage: analyticsStorage,
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+      });
+    };
+
+    const deleteCookie = (name) => {
+      const expire = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+      document.cookie = expire;
+
+      const hostParts = window.location.hostname.split('.');
+      for (let index = 0; index < hostParts.length - 1; index += 1) {
+        document.cookie = `${expire}; domain=.${hostParts.slice(index).join('.')}`;
+      }
+    };
+
+    const deleteAnalyticsCookies = () => {
+      deleteCookie('_ga');
+      deleteCookie('_gid');
+      deleteCookie('_gat');
+      deleteCookie(`_ga_${gaMeasurementId.replace(/^G-/, '')}`);
+    };
+
+    const loadGoogleAnalytics = () => {
+      if (!gaMeasurementId) {
+        return;
+      }
+
+      setAnalyticsDisabled(false);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function gtag() {
+        window.dataLayer.push(arguments);
+      };
+
+      updateGoogleConsent('granted');
+
+      if (analyticsLoaded) {
+        window.gtag('config', gaMeasurementId);
+        return;
+      }
+
+      analyticsLoaded = true;
+      window.gtag('js', new Date());
+      window.gtag('config', gaMeasurementId);
+
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`;
+      document.head.appendChild(script);
+    };
+
+    const disableGoogleAnalytics = () => {
+      setAnalyticsDisabled(true);
+      updateGoogleConsent('denied');
+      deleteAnalyticsCookies();
+    };
+
+    const applyConsent = (value) => {
+      if (value === CONSENT_ACCEPTED) {
+        loadGoogleAnalytics();
+        return;
+      }
+
+      disableGoogleAnalytics();
+    };
+
+    const saveConsent = (value) => {
+      setConsent(value);
+      hide(banner);
+      hide(preferences);
+      applyConsent(value);
+    };
+
+    document.querySelector('[data-cookie-accept]')?.addEventListener('click', () => {
+      saveConsent(CONSENT_ACCEPTED);
+    });
+
+    document.querySelector('[data-cookie-reject]')?.addEventListener('click', () => {
+      saveConsent(CONSENT_REJECTED);
+    });
+
+    document.querySelector('[data-cookie-customize]')?.addEventListener('click', () => {
+      if (analyticsToggle instanceof HTMLInputElement) {
+        analyticsToggle.checked = getConsent() === CONSENT_ACCEPTED;
+      }
+      show(preferences);
+    });
+
+    document.querySelector('[data-cookie-save]')?.addEventListener('click', () => {
+      const analyticsAccepted = analyticsToggle instanceof HTMLInputElement && analyticsToggle.checked;
+      saveConsent(analyticsAccepted ? CONSENT_ACCEPTED : CONSENT_REJECTED);
+    });
+
+    document.querySelector('[data-cookie-save-reject]')?.addEventListener('click', () => {
+      if (analyticsToggle instanceof HTMLInputElement) {
+        analyticsToggle.checked = false;
+      }
+      saveConsent(CONSENT_REJECTED);
+    });
+
+    document.querySelector('[data-cookie-close]')?.addEventListener('click', () => {
+      hide(preferences);
+    });
+
+    preferences?.addEventListener('click', (event) => {
+      if (event.target === preferences) {
+        hide(preferences);
+      }
+    });
+
+    settingsButton?.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (analyticsToggle instanceof HTMLInputElement) {
+        analyticsToggle.checked = getConsent() === CONSENT_ACCEPTED;
+      }
+      show(preferences);
+    });
+
+    const currentConsent = getConsent();
+    applyConsent(currentConsent);
+    if (!currentConsent) {
+      show(banner);
+    }
+  })();
+})();</script></body></html><script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var ide = params.get('ide');
+  var prompt = params.get('prompt') || '';
+
+  var targetUrl = null;
+
+  if (ide === 'copilot') {
+    targetUrl = 'vscode://GitHub.Copilot-Chat/chat?agent=agent&prompt=' + encodeURIComponent(prompt);
+  } else if (ide === 'cursor') {
+    targetUrl = 'https://cursor.com/link/prompt?text=' + encodeURIComponent(prompt);
+  }
+
+  var manualLink = document.getElementById('manual-link');
+  var statusText = document.getElementById('status-text');
+  var statusDetail = document.getElementById('status-detail');
+
+  if (targetUrl) {
+    manualLink.href = targetUrl;
+    manualLink.textContent = 'Open in ' + (ide === 'copilot' ? 'GitHub Copilot' : 'Cursor');
+    window.location.href = targetUrl;
+  } else {
+    statusText.textContent = 'Invalid link';
+    statusDetail.textContent = 'This redirect link is missing required parameters.';
+    manualLink.style.display = 'none';
+  }
+})();
+</script>

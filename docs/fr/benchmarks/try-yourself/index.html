@@ -1,0 +1,605 @@
+<!DOCTYPE html><html lang="fr" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="description" content="Guide pas à pas pour lancer Terminal-Bench 2.0 avec Boost via le fork harbor-boost."><meta name="generator" content="Astro v7.3.1"><meta name="author" content="JFrog"><meta name="application-name" content="Boost"><meta name="keywords" content="boost cli, boost jfrog, jfrog boost, économiser des tokens, maximiser le contexte, cursor, claude code, github copilot, codex, agents de code, agents de code IA, optimisation CI, docker build, npm, gh cli, go test, réduction des tokens, optimisation des tokens"><meta name="robots" content="index,follow,max-image-preview:large"><meta name="theme-color" content="#0A0A0A"><link rel="icon" type="image/png" sizes="512x512" href="/favicon.png"><link rel="canonical" href="https://boost.jfrog.com/docs/fr/benchmarks/try-yourself/"><link rel="alternate" hreflang="en" href="https://boost.jfrog.com/docs/en/benchmarks/try-yourself/"><link rel="alternate" hreflang="es" href="https://boost.jfrog.com/docs/es/benchmarks/try-yourself/"><link rel="alternate" hreflang="fr" href="https://boost.jfrog.com/docs/fr/benchmarks/try-yourself/"><link rel="alternate" hreflang="de" href="https://boost.jfrog.com/docs/de/benchmarks/try-yourself/"><link rel="alternate" hreflang="ja" href="https://boost.jfrog.com/docs/ja/benchmarks/try-yourself/"><link rel="alternate" hreflang="he" href="https://boost.jfrog.com/docs/he/benchmarks/try-yourself/"><link rel="alternate" hreflang="x-default" href="https://boost.jfrog.com/docs/en/benchmarks/try-yourself/"><link rel="alternate" type="text/markdown" href="https://boost.jfrog.com/llms.txt" title="Boost for agents"><link rel="describedby" type="text/plain" href="https://boost.jfrog.com/agents.txt"><link rel="describedby" type="application/json" href="https://boost.jfrog.com/.well-known/agent-skills/index.json"><!--
+      Fonts are self-hosted via @fontsource (see src/styles/global.css), so no
+      preconnect to fonts.googleapis.com / fonts.gstatic.com is needed. Only the
+      Navbar's GitHub stars fetch still hits a third party.
+    --><link rel="preconnect" href="https://api.github.com"><!-- Open Graph: Facebook, LinkedIn, Slack, WhatsApp, Telegram, Discord, iMessage, etc. --><meta property="og:type" content="website"><meta property="og:locale" content="fr_FR"><meta property="og:locale:alternate" content="en_US"><meta property="og:locale:alternate" content="es_ES"><meta property="og:locale:alternate" content="de_DE"><meta property="og:locale:alternate" content="ja_JP"><meta property="og:locale:alternate" content="he_IL"><meta property="og:site_name" content="Boost"><meta property="og:title" content="Essayez le benchmark vous-même | Boost Docs"><meta property="og:description" content="Guide pas à pas pour lancer Terminal-Bench 2.0 avec Boost via le fork harbor-boost."><meta property="og:url" content="https://boost.jfrog.com/docs/fr/benchmarks/try-yourself/"><meta property="og:image" content="https://boost.jfrog.com/og-image.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Essayez le benchmark vous-même | Boost Docs"><meta property="og:image:type" content="image/png"><!-- Twitter / X --><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@jfrog"><meta name="twitter:creator" content="@jfrog"><meta name="twitter:title" content="Essayez le benchmark vous-même | Boost Docs"><meta name="twitter:description" content="Guide pas à pas pour lancer Terminal-Bench 2.0 avec Boost via le fork harbor-boost."><meta name="twitter:image" content="https://boost.jfrog.com/og-image.png"><meta name="twitter:image:alt" content="Essayez le benchmark vous-même | Boost Docs"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Boost","item":"https://boost.jfrog.com/"},{"@type":"ListItem","position":2,"name":"Documentation","item":"https://boost.jfrog.com/docs/fr/overview/"},{"@type":"ListItem","position":3,"name":"Essayez le benchmark vous-même","item":"https://boost.jfrog.com/docs/fr/benchmarks/try-yourself/"}]}</script><title>Essayez le benchmark vous-même | Boost Docs</title><link rel="stylesheet" href="/_astro/Layout.DIXjWvoZ.css"><style>.docs-hero-glow[data-astro-cid-vnlsngxu]{filter:blur(72px);z-index:-1;background:radial-gradient(circle,#36a13b1f 0%,#0000 70%);width:26rem;height:14rem;top:-6rem;left:50%;transform:translate(-50%)}@media (prefers-reduced-motion:no-preference){.docs-hero-prompt[data-astro-cid-vnlsngxu]{animation:.5s cubic-bezier(.25,.4,.25,1) both docs-hero-rise}.docs-hero-title[data-astro-cid-vnlsngxu]{animation:.5s cubic-bezier(.25,.4,.25,1) 80ms both docs-hero-rise}.docs-hero-intro[data-astro-cid-vnlsngxu]{animation:.5s cubic-bezier(.25,.4,.25,1) .16s both docs-hero-rise}}@keyframes docs-hero-rise{0%{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+</style></head><body><div id="release-banner-root" data-release-banner-root data-release-version="v0.13.7" data-release-default-variant="top-bar" data-astro-cid-tc2wthqa><div data-release-banner-variant="top-bar" class="release-banner-hidden fixed inset-x-0 top-0 z-[60] border-b border-brand-700/50 bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white shadow-[0_8px_30px_rgba(18,63,20,0.45)] backdrop-blur-md pt-[env(safe-area-inset-top,0px)]" role="region" aria-label="Annonce de version" data-astro-cid-tc2wthqa><div class="mx-auto flex h-11 max-w-7xl items-center gap-3 px-4 sm:h-12 sm:px-6 lg:px-8" data-astro-cid-tc2wthqa><a href="/docs/en/changelog#download-latest" class="group flex min-w-0 flex-1 items-center gap-2 sm:gap-3" data-astro-cid-tc2wthqa><span class="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/30 bg-white/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.18em] text-white sm:text-[11px]" data-astro-cid-tc2wthqa><svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true" data-astro-cid-tc2wthqa><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" data-astro-cid-tc2wthqa></path></svg>0.13.7</span><span class="truncate text-[13px] font-semibold text-white sm:text-sm" data-astro-cid-tc2wthqa>Une nouvelle version de Boost est disponible</span><span class="hidden truncate text-[13px] text-white/90 sm:inline" data-astro-cid-tc2wthqa><span aria-hidden="true" data-astro-cid-tc2wthqa>·</span> installez la dernière version en une ligne.</span></a><a href="/docs/en/changelog#download-latest" class="hidden shrink-0 items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-[12px] font-semibold text-brand-700 shadow-sm transition-all duration-200 hover:bg-brand-50 hover:text-brand-800 sm:inline-flex" data-astro-cid-tc2wthqa>Télécharger la dernière version<svg class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true" data-astro-cid-tc2wthqa><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" data-astro-cid-tc2wthqa></path></svg></a><button type="button" data-release-banner-dismiss class="-mr-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" aria-label="Fermer l’annonce de version" data-astro-cid-tc2wthqa><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true" data-astro-cid-tc2wthqa><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" data-astro-cid-tc2wthqa></path></svg></button></div></div><div data-release-banner-variant="floating-card" class="release-banner-hidden fixed inset-x-3 z-[55] sm:inset-x-0 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 top-[calc(4rem+env(safe-area-inset-top,0px)+0.75rem)] md:top-[calc(5rem+env(safe-area-inset-top,0px)+0.75rem)] sm:w-[min(44rem,calc(100vw-2rem))]" role="region" aria-label="Annonce de version" data-astro-cid-tc2wthqa><style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).load=e;window.dispatchEvent(new Event("astro:load"));})();</script><script>(()=>{var g=Object.defineProperty;var w=(a,s,c)=>s in a?g(a,s,{enumerable:!0,configurable:!0,writable:!0,value:c}):a[s]=c;var l=(a,s,c)=>w(a,typeof s!="symbol"?s+"":s,c);var E=new Set(["__proto__","constructor","prototype"]);{let a={0:t=>y(t),1:t=>c(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(c(t)),5:t=>new Set(c(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>Number.POSITIVE_INFINITY*t},s=t=>{let[p,e]=t;return p in a?a[p](e):void 0},c=t=>t.map(s),y=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([p,e])=>[p,s(e)]));class f extends HTMLElement{constructor(){super(...arguments);l(this,"Component");l(this,"hydrator");l(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let r=this.querySelectorAll("astro-slot"),n={},d=this.querySelectorAll("template[data-astro-template]");for(let o of d){let i=o.closest(this.tagName);i!=null&&i.isSameNode(this)&&(n[o.getAttribute("data-astro-template")||"default"]=o.innerHTML,o.remove())}for(let o of r){let i=o.closest(this.tagName);i!=null&&i.isSameNode(this)&&(n[o.getAttribute("name")||"default"]=o.innerHTML)}let u;try{u=this.hasAttribute("props")?y(JSON.parse(this.getAttribute("props"))):{}}catch(o){let i=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&&(i+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${i}`,this.getAttribute("props"),o),o}let h;await this.hydrator(this)(this.Component,u,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});l(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),r.disconnect(),this.childrenConnectedCallback()},r=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue==="astro:end"&&(this.lastChild.remove(),e())});r.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}getRetryImportUrl(e){let r=new URL(e,document.baseURI);return r.searchParams.set("astro-retry",Date.now().toString()),r.toString()}async importWithRetry(e){try{return await import(e)}catch(r){return await new Promise(n=>setTimeout(n,1e3)),import(this.getRetryImportUrl(e))}}handleHydrationError(e){let r=this.getAttribute("component-url"),n=new CustomEvent("astro:hydration-error",{cancelable:!0,bubbles:!0,composed:!0,detail:{error:e,componentUrl:r}});this.dispatchEvent(n)&&console.error(`[astro-island] Error hydrating ${r}`,e)}async start(){let e=JSON.parse(this.getAttribute("opts")),r=this.getAttribute("client");if(Astro[r]===void 0){window.addEventListener(`astro:${r}`,()=>this.start(),{once:!0});return}try{await Astro[r](async()=>{let n=this.getAttribute("renderer-url");try{let[d,{default:u}]=await Promise.all([this.importWithRetry(this.getAttribute("component-url")),n?this.importWithRetry(n):Promise.resolve({default:()=>()=>{}})]),h=this.getAttribute("component-export")||"default";if(h.includes(".")){this.Component=d;for(let m of h.split(".")){if(E.has(m)||!this.Component||typeof this.Component!="object"&&typeof this.Component!="function"||!Object.hasOwn(this.Component,m))throw new Error(`Invalid component export path: ${h}`);this.Component=this.Component[m]}}else{if(E.has(h))throw new Error(`Invalid component export path: ${h}`);this.Component=d[h]}return this.hydrator=u,this.hydrate}catch(d){return this.handleHydrationError(d),()=>{}}},e,this)}catch(n){this.handleHydrationError(n)}}attributeChangedCallback(){this.hydrate()}}l(f,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",f)}})();</script><astro-island uid="1XsKai" prefix="r1" component-url="/_astro/ReleaseAnnouncementCard.BMDmHoEV.js" component-export="default" renderer-url="/_astro/client.tJ05cBRt.js" props="{&quot;version&quot;:[0,&quot;v0.13.7&quot;],&quot;displayVersion&quot;:[0,&quot;0.13.7&quot;],&quot;date&quot;:[0,&quot;Sep 2, 2026&quot;],&quot;title&quot;:[0,&quot;More reliable workspace indexing and hooks&quot;],&quot;headline&quot;:[0,&quot;Une nouvelle version de Boost est disponible&quot;],&quot;badgeLabel&quot;:[0,&quot;Nouvelle version&quot;],&quot;ctaLabel&quot;:[0,&quot;Télécharger la dernière version&quot;],&quot;releaseNotesLabel&quot;:[0,&quot;Notes de version&quot;],&quot;dismissLabel&quot;:[0,&quot;Fermer l’annonce de version&quot;],&quot;downloadHref&quot;:[0,&quot;/docs/en/changelog#download-latest&quot;],&quot;releaseUrl&quot;:[0,&quot;https://github.com/jfrog/boost/releases/tag/v0.13.7&quot;],&quot;installCommand&quot;:[0,&quot;curl -fsSL https://boost.jfrog.com/install.sh | bash&quot;],&quot;data-astro-cid-tc2wthqa&quot;:[0,true]}" ssr client="load" opts="{&quot;name&quot;:&quot;ReleaseAnnouncementCard&quot;,&quot;value&quot;:true}" await-children><style>
+@property --beam-angle-_r1R_0_ {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: true;
+}
+
+@property --beam-opacity-_r1R_0_ {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: true;
+}
+
+[data-beam="_r1R_0_"] {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+[data-beam="_r1R_0_"][data-active] {
+  animation:
+    beam-spin-_r1R_0_ 6s linear infinite,
+    beam-fade-in-_r1R_0_ 0.6s ease forwards;
+}
+
+[data-beam="_r1R_0_"][data-fading] {
+  animation:
+    beam-spin-_r1R_0_ 6s linear infinite,
+    beam-fade-out-_r1R_0_ 0.5s ease forwards;
+}
+
+[data-beam="_r1R_0_"][data-active]::after,
+[data-beam="_r1R_0_"][data-fading]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  padding: 1px;
+  clip-path: inset(0 round 16px);
+  background: conic-gradient(
+        from var(--beam-angle-_r1R_0_),
+        transparent 0%, transparent 54%,
+        rgba(255, 255, 255, 0.1) 57%,
+        rgba(255, 255, 255, 0.3) 60%,
+        rgba(255, 255, 255, 0.6) 63%,
+        rgba(255, 255, 255, 0.75) 66%,
+        rgba(255, 255, 255, 0.6) 69%,
+        rgba(255, 255, 255, 0.3) 72%,
+        rgba(255, 255, 255, 0.1) 75%,
+        transparent 78%, transparent 100%
+      ),radial-gradient(ellipse 70px 40px at 33% -7.4%, rgb(255, 50, 100), transparent),
+    radial-gradient(ellipse 60px 35px at 12% -5%, rgb(40, 140, 255), transparent),
+    radial-gradient(ellipse 40px 70px at 2.1% 68.3%, rgb(50, 200, 80), transparent),
+    radial-gradient(ellipse 20px 35px at 2.1% 68.3%, rgb(30, 185, 170), transparent),
+    radial-gradient(ellipse 180px 32px at 74.4% 100%, rgb(100, 70, 255), transparent),
+    radial-gradient(ellipse 85px 26px at 55% 100%, rgb(40, 140, 255), transparent),
+    radial-gradient(ellipse 74px 32px at 93.9% 0%, rgb(255, 120, 40), transparent),
+    radial-gradient(ellipse 26px 42px at 100% 27.1%, rgb(240, 50, 180), transparent),
+    radial-gradient(ellipse 52px 48px at 100% 27.1%, rgb(180, 40, 240), transparent);
+  -webkit-mask:
+    conic-gradient(
+      from var(--beam-angle-_r1R_0_),
+      transparent 0%, transparent 30%,
+      rgba(255, 255, 255, 0.1) 36%, rgba(255, 255, 255, 0.35) 44%,
+      white 52%, white 80%,
+      rgba(255, 255, 255, 0.35) 86%, rgba(255, 255, 255, 0.1) 92%,
+      transparent 95%, transparent 100%
+    ),
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: source-in, xor;
+  mask:
+    conic-gradient(
+      from var(--beam-angle-_r1R_0_),
+      transparent 0%, transparent 30%,
+      rgba(255, 255, 255, 0.1) 36%, rgba(255, 255, 255, 0.35) 44%,
+      white 52%, white 80%,
+      rgba(255, 255, 255, 0.35) 86%, rgba(255, 255, 255, 0.1) 92%,
+      transparent 95%, transparent 100%
+    ),
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: intersect, exclude;
+  pointer-events: none;
+  z-index: 2;
+  opacity: calc(var(--beam-opacity-_r1R_0_) * 0.26 * var(--beam-stroke-opacity, 1) * var(--beam-strength, 1));
+  animation: beam-hue-shift-_r1R_0_ 12s ease-in-out infinite;
+}
+
+[data-beam="_r1R_0_"][data-active]::before,
+[data-beam="_r1R_0_"][data-fading]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: radial-gradient(ellipse 63px 36px at 33% -7.4%, rgba(255, 50, 100, 0.45), transparent),
+    radial-gradient(ellipse 54px 32px at 12% -5%, rgba(40, 140, 255, 0.45), transparent),
+    radial-gradient(ellipse 36px 63px at 2.1% 68.3%, rgba(50, 200, 80, 0.45), transparent),
+    radial-gradient(ellipse 18px 32px at 2.1% 68.3%, rgba(30, 185, 170, 0.45), transparent),
+    radial-gradient(ellipse 162px 29px at 74.4% 100%, rgba(100, 70, 255, 0.45), transparent),
+    radial-gradient(ellipse 77px 23px at 55% 100%, rgba(40, 140, 255, 0.45), transparent),
+    radial-gradient(ellipse 67px 29px at 93.9% 0%, rgba(255, 120, 40, 0.45), transparent),
+    radial-gradient(ellipse 23px 38px at 100% 27.1%, rgba(240, 50, 180, 0.45), transparent),
+    radial-gradient(ellipse 47px 43px at 100% 27.1%, rgba(180, 40, 240, 0.45), transparent);
+  box-shadow: inset 0 0 9px 1px rgba(255, 255, 255, 0.27);
+  -webkit-mask-image:
+    conic-gradient(
+      from var(--beam-angle-_r1R_0_),
+      transparent 0%, transparent 30%,
+      rgba(255, 255, 255, 0.1) 36%, rgba(255, 255, 255, 0.35) 44%,
+      white 52%, white 80%,
+      rgba(255, 255, 255, 0.35) 86%, rgba(255, 255, 255, 0.1) 92%,
+      transparent 95%, transparent 100%
+    ),
+    linear-gradient(white, transparent 28px, transparent calc(100% - 28px), white),
+    linear-gradient(to right, white, transparent 28px, transparent calc(100% - 28px), white);
+  -webkit-mask-composite: source-in, source-over;
+  mask-image:
+    conic-gradient(
+      from var(--beam-angle-_r1R_0_),
+      transparent 0%, transparent 30%,
+      rgba(255, 255, 255, 0.1) 36%, rgba(255, 255, 255, 0.35) 44%,
+      white 52%, white 80%,
+      rgba(255, 255, 255, 0.35) 86%, rgba(255, 255, 255, 0.1) 92%,
+      transparent 95%, transparent 100%
+    ),
+    linear-gradient(white, transparent 28px, transparent calc(100% - 28px), white),
+    linear-gradient(to right, white, transparent 28px, transparent calc(100% - 28px), white);
+  mask-composite: intersect, add;
+  pointer-events: none;
+  z-index: 1;
+  opacity: calc(var(--beam-opacity-_r1R_0_) * 0.42 * var(--beam-inner-opacity, 1) * var(--beam-strength, 1));
+  clip-path: inset(0 round 16px);
+  animation: beam-hue-shift-_r1R_0_ 12s ease-in-out infinite;
+}
+
+[data-beam="_r1R_0_"] [data-beam-bloom] {
+  display: none;
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  clip-path: inset(0 round 16px);
+  background: conic-gradient(
+        from var(--beam-angle-_r1R_0_),
+        transparent 0%, transparent 58%,
+        rgba(255, 255, 255, 0.03) 62%,
+        rgba(255, 255, 255, 0.08) 65%,
+        rgba(255, 255, 255, 0.2) 67%,
+        rgba(255, 255, 255, 0.45) 69%,
+        rgba(255, 255, 255, 0.85) 70%,
+        rgba(255, 255, 255, 0.85) 70.5%,
+        rgba(255, 255, 255, 0.45) 71.5%,
+        rgba(255, 255, 255, 0.2) 73%,
+        rgba(255, 255, 255, 0.08) 75%,
+        rgba(255, 255, 255, 0.03) 78%,
+        transparent 82%
+      );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+  filter: blur(8px) brightness(1.30) saturate(1.20);
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0;
+}
+
+[data-beam="_r1R_0_"][data-active] [data-beam-bloom],
+[data-beam="_r1R_0_"][data-fading] [data-beam-bloom] {
+  display: block;
+  opacity: calc(var(--beam-opacity-_r1R_0_) * 0.24 * var(--beam-bloom-opacity, 1) * var(--beam-strength, 1));
+}
+
+@keyframes beam-spin-_r1R_0_ {
+  to { --beam-angle-_r1R_0_: 360deg; }
+}
+
+@keyframes beam-fade-in-_r1R_0_ {
+  to { --beam-opacity-_r1R_0_: 1; }
+}
+
+@keyframes beam-fade-out-_r1R_0_ {
+  from { --beam-opacity-_r1R_0_: 1; }
+  to { --beam-opacity-_r1R_0_: 0; }
+}
+
+@keyframes beam-hue-shift-_r1R_0_ {
+  0% { filter: hue-rotate(calc(var(--beam-hue-base, 0deg) - 30deg)) brightness(1.30) saturate(1.20); }
+  50% { filter: hue-rotate(calc(var(--beam-hue-base, 0deg) + 30deg)) brightness(1.30) saturate(1.20); }
+  100% { filter: hue-rotate(calc(var(--beam-hue-base, 0deg) - 30deg)) brightness(1.30) saturate(1.20); }
+}
+
+[data-beam="_r1R_0_"][data-paused],
+[data-beam="_r1R_0_"][data-paused]::after,
+[data-beam="_r1R_0_"][data-paused]::before,
+[data-beam="_r1R_0_"][data-paused] [data-beam-bloom] {
+  animation-play-state: paused !important;
+}
+</style><div data-beam="_r1R_0_" data-active="" class="w-full min-w-0 max-w-full rounded-2xl" style="--beam-strength:0.9"><div class="relative w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-brand-400/35 bg-gradient-to-br from-brand-500/[0.18] via-brand-400/[0.10] to-white/[0.04] shadow-[0_0_70px_rgba(54,161,59,0.22)] ring-1 ring-brand-300/15 backdrop-blur-xl"><div aria-hidden="true" class="pointer-events-none absolute -top-20 -left-16 h-48 w-48 rounded-full bg-brand-500/30 blur-3xl"></div><div aria-hidden="true" class="pointer-events-none absolute -bottom-24 -right-12 h-56 w-56 rounded-full bg-brand-400/20 blur-3xl"></div><div class="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-stretch sm:p-6"><div class="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-brand-400/30 bg-brand-500/15 text-brand-200 shadow-[0_0_24px_rgba(54,161,59,0.25)] sm:flex"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div><div class="min-w-0 flex-1"><div class="flex flex-wrap items-center gap-2"><span class="inline-flex items-center gap-1.5 rounded-full border border-brand-400/40 bg-brand-500/15 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-200 shadow-[0_0_24px_rgba(54,161,59,0.18)] sm:text-[11px]"><span class="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-300" aria-hidden="true"></span>Nouvelle version</span><span class="font-mono text-[12px] font-semibold text-white sm:text-[13px]">v0.13.7</span><span class="text-[12px] text-gray-400 sm:text-[13px]"><span class="mx-1 text-gray-600" aria-hidden="true">·</span>Sep 2, 2026</span></div><h3 class="mt-2 text-[15px] font-semibold leading-tight text-white sm:text-[17px]">Une nouvelle version de Boost est disponible<span class="ml-1 font-normal text-gray-300">— <!-- -->More reliable workspace indexing and hooks</span></h3><div class="mt-3 hidden min-w-0 items-center gap-1.5 overflow-x-auto rounded-lg border border-white/10 bg-black/40 px-2.5 py-1.5 font-mono text-[11px] sm:flex"><span class="tb-prompt shrink-0 select-none text-brand-300">$</span><code class="min-w-0 flex-1 truncate text-gray-200">curl -fsSL https://boost.jfrog.com/install.sh | bash</code></div><div class="mt-4 flex flex-wrap items-center gap-2.5"><a href="/docs/en/changelog#download-latest" class="group inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-4 py-2 text-[12px] font-semibold text-white shadow-[0_0_24px_rgba(54,161,59,0.35)] transition-all duration-200 hover:bg-brand-400 hover:shadow-[0_0_32px_rgba(54,161,59,0.55)] sm:text-[13px]">Télécharger la dernière version<svg class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></a><a href="https://github.com/jfrog/boost/releases/tag/v0.13.7" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-2 text-[12px] font-medium text-gray-200 transition-colors hover:border-white/30 hover:bg-white/[0.06] hover:text-white sm:text-[13px]">Notes de version</a></div></div><button type="button" data-release-banner-dismiss="true" class="absolute right-3 top-3 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-white/10 hover:text-white sm:relative sm:right-0 sm:top-0 sm:-mr-1 sm:-mt-1" aria-label="Fermer l’annonce de version"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button></div></div><div data-beam-bloom="true"></div></div><!--astro:end--></astro-island></div></div><script>(function(){const version = "v0.13.7";
+
+  (() => {
+    const STORAGE_KEY = 'boost_release_banner_dismissed_version';
+    const VARIANT_PARAM = 'releaseBanner';
+    const TOP_BAR_HEIGHT_VAR = '--release-banner-height';
+
+    const root = document.querySelector('[data-release-banner-root]');
+    if (!root) return;
+
+    const variants = root.querySelectorAll('[data-release-banner-variant]');
+    if (!variants.length) return;
+
+    const defaultVariant = root.getAttribute('data-release-default-variant') || 'top-bar';
+
+    const getRequestedVariant = () => {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const requested = params.get(VARIANT_PARAM);
+        if (requested === 'top-bar' || requested === 'floating-card' || requested === 'none') {
+          return requested;
+        }
+      } catch {
+        // ignore
+      }
+      return null;
+    };
+
+    const getDismissedVersion = () => {
+      try {
+        return window.localStorage.getItem(STORAGE_KEY);
+      } catch {
+        return null;
+      }
+    };
+
+    const setDismissedVersion = (value) => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, value);
+      } catch {
+        // storage unavailable — accept that the banner returns next visit
+      }
+    };
+
+    const setTopBarHeight = (variantEl) => {
+      // Measure on next frame so layout is settled. Reserve top space for
+      // the fixed top bar so the navbar (which uses
+      // var(--release-banner-height)) and hero/docs offsets shift down.
+      requestAnimationFrame(() => {
+        const height = variantEl.getBoundingClientRect().height;
+        document.documentElement.style.setProperty(
+          TOP_BAR_HEIGHT_VAR,
+          `${Math.round(height)}px`,
+        );
+      });
+    };
+
+    const clearTopBarHeight = () => {
+      document.documentElement.style.setProperty(TOP_BAR_HEIGHT_VAR, '0px');
+    };
+
+    const showVariant = (name) => {
+      let shown = null;
+      variants.forEach((el) => {
+        if (el.getAttribute('data-release-banner-variant') === name) {
+          el.classList.remove('release-banner-hidden');
+          shown = el;
+        } else {
+          el.classList.add('release-banner-hidden');
+        }
+      });
+      if (shown && name === 'top-bar') {
+        setTopBarHeight(shown);
+      } else {
+        clearTopBarHeight();
+      }
+    };
+
+    const hideAll = () => {
+      variants.forEach((el) => el.classList.add('release-banner-hidden'));
+      clearTopBarHeight();
+    };
+
+    const requested = getRequestedVariant();
+    const dismissedVersion = getDismissedVersion();
+
+    if (requested === 'none') {
+      hideAll();
+    } else if (requested) {
+      // Preview override always wins, regardless of dismissal state.
+      showVariant(requested);
+    } else if (dismissedVersion === version) {
+      hideAll();
+    } else {
+      showVariant(defaultVariant);
+    }
+
+    // Event delegation so dismissal works across SSR markup AND the
+    // hydrated React island that renders the floating-card content.
+    root.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const dismiss = target.closest('[data-release-banner-dismiss]');
+      if (!dismiss || !root.contains(dismiss)) return;
+      event.preventDefault();
+      setDismissedVersion(version);
+      hideAll();
+    });
+
+    window.addEventListener('resize', () => {
+      const visibleTopBar = root.querySelector(
+        '[data-release-banner-variant="top-bar"]:not(.release-banner-hidden)',
+      );
+      if (visibleTopBar) {
+        setTopBarHeight(visibleTopBar);
+      }
+    });
+  })();
+})();</script><nav id="navbar" class="fixed left-0 right-0 z-50 transition-all duration-300 pt-[env(safe-area-inset-top,0px)] top-[var(--release-banner-height,0px)]"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><div class="flex items-center justify-between h-16 md:h-20"><a href="/fr/" class="flex items-center gap-3 group" aria-label="Accueil de JFrog Boost"><img src="/jfrog.svg" alt="JFrog" class="h-6 w-auto sm:h-7"><span class="h-5 w-px bg-white/20" aria-hidden="true"></span><img src="/boost-logo-white.png" alt="Boost" class="h-7 w-auto sm:h-8"></a><div class="flex items-center gap-3"><a href="/features" class="hidden md:flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Fonctionnalités</a><a href="/docs/fr/overview" class="hidden md:flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Documentation</a><a href="/benchmarks" class="hidden md:flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Benchmarks</a><a href="/game" class="hidden lg:flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5">Game</a><a href="/blog" class="hidden md:flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Blog</a><a href="/docs/fr/quickstart" class="hidden md:flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Installer</a><a href="https://github.com/jfrog/boost?utm_source=boost-site&amp;utm_medium=referral&amp;utm_campaign=nav" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-sm text-gray-300 hover:text-white transition-colors px-2 py-2 rounded-lg hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300 sm:gap-2 sm:px-3"><svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg><span class="hidden sm:inline">GitHub</span><span class="flex min-w-0 shrink items-center gap-1 sm:gap-1.5" aria-label="Statistiques du dépôt"><span id="gh-stars" class="hidden items-center gap-1 rounded-full border border-white/10 px-1.5 py-0.5 text-[10px] text-gray-300 sm:px-2 sm:text-xs" title="Étoiles GitHub"><svg class="w-3.5 h-3.5 shrink-0 text-yellow-400" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg><span id="gh-stars-count"></span></span><span id="gh-downloads" class="hidden items-center gap-1 rounded-full border border-white/10 px-1.5 py-0.5 text-[10px] text-gray-300 sm:px-2 sm:text-xs" title="Téléchargements des versions GitHub (toutes versions confondues)"><svg class="w-3.5 h-3.5 shrink-0 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg><span id="gh-downloads-count"></span></span></span></a><a href="/fr/#install" class="hidden sm:inline-flex text-sm font-semibold px-5 py-2.5 rounded-full bg-brand-700 text-white hover:bg-brand-600 transition-all duration-200 hover:shadow-[0_0_20px_rgba(54,161,59,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Commencer</a><!-- Mobile hamburger --><button id="mobile-menu-btn" type="button" class="sm:hidden relative min-h-11 min-w-11 w-11 h-11 flex items-center justify-center rounded-lg text-gray-200 hover:text-white hover:bg-white/5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300" aria-label="Ouvrir le menu" aria-expanded="false"><svg id="menu-icon-open" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg><svg id="menu-icon-close" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></button></div></div></div><!-- Mobile menu panel --><div id="mobile-menu" class="lg:hidden hidden border-t border-white/5" style="background: rgba(13, 17, 23, 0.95); backdrop-filter: blur(20px);"><div class="px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] flex flex-col gap-1"><a href="/features" class="flex items-center gap-3 text-sm text-gray-200 hover:text-white px-3 py-3 rounded-lg hover:bg-white/5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"><svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h7"></path><path stroke-linecap="round" stroke-linejoin="round" d="M18 13v6m-3-3h6"></path></svg>Fonctionnalités</a><a href="/docs/fr/overview" class="flex items-center gap-3 text-sm text-gray-200 hover:text-white px-3 py-3 rounded-lg hover:bg-white/5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"><svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>Documentation</a><a href="/benchmarks" class="flex items-center gap-3 text-sm text-gray-200 hover:text-white px-3 py-3 rounded-lg hover:bg-white/5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"><svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 19V9m6 10V5m6 14v-7M3 19h18"></path></svg>Benchmarks</a><a href="/game" class="flex items-center gap-3 text-sm text-gray-300 hover:text-white px-3 py-3 rounded-lg hover:bg-white/5 transition-colors"><svg class="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 8h8a5 5 0 014.8 6.4l-1.1 3.7a2.5 2.5 0 01-4.1 1.1L13.8 17h-3.6l-1.8 2.2a2.5 2.5 0 01-4.1-1.1l-1.1-3.7A5 5 0 018 8zM8 12v3m-1.5-1.5h3M16 13.5h.01M18 15h.01"></path></svg>Game</a><a href="/blog" class="flex items-center gap-3 text-sm text-gray-200 hover:text-white px-3 py-3 rounded-lg hover:bg-white/5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"><svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m-9 4h6m-6 4h6m4-8v10a2 2 0 01-2 2"></path></svg>Blog</a><a href="/docs/fr/quickstart" class="flex items-center gap-3 text-sm text-gray-200 hover:text-white px-3 py-3 rounded-lg hover:bg-white/5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"><svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v10m0 0l-3.5-3.5M12 14l3.5-3.5M5 17v1a2 2 0 002 2h10a2 2 0 002-2v-1"></path></svg>Installer</a><a href="https://github.com/jfrog/boost?utm_source=boost-site&amp;utm_medium=referral&amp;utm_campaign=nav" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-sm text-gray-200 hover:text-white px-3 py-3 rounded-lg hover:bg-white/5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"><svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>GitHub</a><div class="mt-2 px-3"><a href="/fr/#install" class="block w-full text-center text-sm font-semibold min-h-11 px-5 py-2.5 rounded-full bg-brand-700 text-white hover:bg-brand-600 transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Commencer</a></div></div></div></nav><script type="module">var e=document.getElementById(`navbar`);function t(){let t=window.scrollY;e&&(t>50?(e.style.background=`rgba(13, 17, 23, 0.85)`,e.style.backdropFilter=`blur(20px)`,e.style.borderBottom=`1px solid rgba(255,255,255,0.05)`):(e.style.background=`transparent`,e.style.backdropFilter=`none`,e.style.borderBottom=`1px solid transparent`))}window.addEventListener(`scroll`,t,{passive:!0}),t();function n(e,t,n){e&&t&&n!=null&&n!==``&&(t.textContent=n,e.classList.remove(`hidden`),e.classList.add(`flex`))}async function r(){let e=document.getElementById(`gh-stars`),t=document.getElementById(`gh-stars-count`),r=document.getElementById(`gh-downloads`),i=document.getElementById(`gh-downloads-count`);if(e&&t&&r&&i)try{let[a,o]=await Promise.all([fetch(`https://api.github.com/repos/jfrog/boost`),fetch(`https://img.shields.io/github/downloads/jfrog/boost/total.json`)]);if(a.ok){let r=(await a.json()).stargazers_count;typeof r==`number`&&n(e,t,r>=1e3?`${(r/1e3).toFixed(1)}k`:String(r))}if(o.ok){let e=await o.json(),t=typeof e.message==`string`&&e.message!==``?e.message:e.value;n(r,i,t!=null&&t!==``?String(t):``)}}catch{}}r();var i=document.getElementById(`mobile-menu-btn`),a=document.getElementById(`mobile-menu`),o=document.getElementById(`menu-icon-open`),s=document.getElementById(`menu-icon-close`);i&&a&&o&&s&&i.addEventListener(`click`,()=>{let e=!a.classList.contains(`hidden`);a.classList.toggle(`hidden`),o.classList.toggle(`hidden`),s.classList.toggle(`hidden`),i.setAttribute(`aria-expanded`,String(!e))});</script><div class="pt-[calc(4rem+env(safe-area-inset-top,0px)+var(--release-banner-height,0px))] md:pt-[calc(5rem+env(safe-area-inset-top,0px)+var(--release-banner-height,0px))] min-h-screen border-t border-white/[0.04]"><div class="mx-auto max-w-[90rem] flex"><aside class="hidden lg:block w-[220px] shrink-0 border-r border-white/[0.06]"><div class="sticky top-[calc(4rem+env(safe-area-inset-top,0px)+var(--release-banner-height,0px))] md:top-[calc(5rem+env(safe-area-inset-top,0px)+var(--release-banner-height,0px))] h-[calc(100vh-4rem-env(safe-area-inset-top,0px)-var(--release-banner-height,0px))] md:h-[calc(100vh-5rem-env(safe-area-inset-top,0px)-var(--release-banner-height,0px))] overflow-y-auto py-6 pl-5 pr-2"><nav class="text-[13px] leading-5"><a href="/features" class="mb-5 flex items-center justify-between rounded-lg border border-brand-400/20 bg-brand-500/[0.05] px-3 py-2 font-medium text-brand-300 transition-colors hover:border-brand-400/40 hover:bg-brand-500/[0.09] hover:text-brand-200"><span>Features</span><span aria-hidden="true">→</span></a><div><h4 class="mb-0.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">Premiers pas</h4><ul><li><a href="/docs/fr/overview" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Bienvenue</a></li><li><a href="/docs/fr/quickstart" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Démarrage rapide</a></li><li><a href="/docs/fr/github-actions" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">GitHub Actions</a></li><li><a href="/docs/fr/features/token-reduction" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Économies de tokens</a></li><li><a href="/docs/fr/features/boostgraph" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">BoostGraph</a></li><li><a href="/docs/fr/features/pr-usage-comments" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Commentaires d’usage PR</a></li></ul></div><div class="mt-5"><h4 class="mb-0.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">Installation en entreprise</h4><ul><li><a href="/docs/fr/customer-installation" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Installation entreprise</a></li><li><a href="/docs/fr/customer-installation/mdm/jamf-pro" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Jamf Pro MDM</a></li><li><a href="/docs/fr/customer-installation/mdm/workspace-one" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Workspace ONE (WS1) MDM</a></li></ul></div><div class="mt-5"><h4 class="mb-0.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">Benchmarks</h4><ul><li><a href="/docs/fr/benchmarks/performance-lab" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Rapport Performance Lab</a></li><li><a href="/docs/fr/benchmarks/try-yourself" aria-current="page" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-brand-400 bg-white/[0.06] font-semibold text-brand-300">Essayez le benchmark vous-même</a></li></ul></div><div class="mt-5"><h4 class="mb-0.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">Référence</h4><ul><li><a href="/docs/fr/configuration" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Configuration</a></li><li><a href="/docs/fr/toml-filters" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Filtres TOML</a></li><li><a href="/docs/fr/observability-platforms" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Plateformes d’observabilité</a></li><li><a href="/docs/fr/contact" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Nous contacter</a></li><li><a href="/docs/fr/changelog" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Journal des modifications</a></li></ul></div></nav></div></aside><main id="docs-main" class="min-w-0 flex-1 px-4 sm:px-10 lg:px-16 py-10 sm:py-12 max-w-3xl"><header class="docs-hero relative isolate" data-astro-cid-vnlsngxu><div class="docs-hero-glow glow-orb" aria-hidden="true" data-astro-cid-vnlsngxu></div><p class="docs-hero-prompt font-mono text-[11px] tracking-wider text-gray-500" data-astro-cid-vnlsngxu><span class="text-brand-400" data-astro-cid-vnlsngxu>$</span> benchmarks<span class="ml-1 inline-block h-3 w-1.5 animate-caret-blink bg-brand-400 align-middle" aria-hidden="true" data-astro-cid-vnlsngxu></span></p><h1 class="docs-hero-title mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl" data-astro-cid-vnlsngxu>Essayez le benchmark vous-même</h1><div class="docs-hero-intro mt-4 text-[15px] leading-7 text-gray-300" data-astro-cid-vnlsngxu></div></header><div class="mt-6"><p class="max-w-[62ch] text-pretty text-lg leading-relaxed text-gray-300 mt-0">Harbor is a framework for evaluating and optimizing agents and models in container environments. This guide walks you through running Terminal-Bench 2.0 with Boost enabled, using our <a href="https://github.com/jfrog-fastci/harbor-boost" class="text-brand-400 underline decoration-brand-400/30 underline-offset-4 hover:text-brand-300" target="_blank" rel="noopener noreferrer">harbor-boost</a> fork.</p><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">01</span><span class="ml-3 text-gray-400">How Harbor works</span></p><p class="mt-4 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">Harbor runs agents against benchmark tasks inside isolated containers. A <strong class="font-medium text-gray-200">job</strong> fans out many <strong class="font-medium text-gray-200">trials</strong>; each trial pairs an <strong class="font-medium text-gray-200">agent</strong> with one <strong class="font-medium text-gray-200">task</strong> from a <strong class="font-medium text-gray-200">dataset</strong>. The harness records tokens, cost, duration, and reward so configurations can be compared side by side.</p><p class="mt-3 text-sm text-gray-500">Adapted from the <a href="https://www.harborframework.com/docs/core-concepts" class="text-brand-400 underline decoration-brand-400/30 underline-offset-4 hover:text-brand-300" target="_blank" rel="noopener noreferrer">Harbor core concepts</a> documentation.</p><dl class="mt-8 grid gap-6 sm:grid-cols-2"><div class="border-t border-gray-800 pt-4"><dt class="text-sm font-semibold text-white">Task</dt><dd class="mt-2 text-sm leading-relaxed text-gray-400">A single instruction, container environment, and test script used to evaluate an agent or model.</dd></div><div class="border-t border-gray-800 pt-4"><dt class="text-sm font-semibold text-white">Dataset</dt><dd class="mt-2 text-sm leading-relaxed text-gray-400">A collection of tasks, usually corresponding to a public benchmark such as Terminal-Bench.</dd></div><div class="border-t border-gray-800 pt-4"><dt class="text-sm font-semibold text-white">Agent</dt><dd class="mt-2 text-sm leading-relaxed text-gray-400">A program that completes tasks — for this study, unmodified Claude Code.</dd></div><div class="border-t border-gray-800 pt-4"><dt class="text-sm font-semibold text-white">Container environment</dt><dd class="mt-2 text-sm leading-relaxed text-gray-400">An isolated container per task. Harbor talks to Docker and cloud runtimes through one environment interface.</dd></div><div class="border-t border-gray-800 pt-4"><dt class="text-sm font-semibold text-white">Trial</dt><dd class="mt-2 text-sm leading-relaxed text-gray-400">One agent&#39;s attempt at one task — a rollout that produces a reward.</dd></div><div class="border-t border-gray-800 pt-4"><dt class="text-sm font-semibold text-white">Job</dt><dd class="mt-2 text-sm leading-relaxed text-gray-400">A collection of trials run in parallel across agents, tasks, and models.</dd></div></dl></section><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">02</span><span class="ml-3 text-gray-400">Prerequisites</span></p><ul class="mt-4 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-gray-400"><li><strong class="font-medium text-gray-200">Python 3.12+</strong> and<a href="https://docs.astral.sh/uv/" class="ml-1 text-brand-400 underline decoration-brand-400/30 underline-offset-4 hover:text-brand-300" target="_blank" rel="noopener noreferrer">uv</a></li><li><strong class="font-medium text-gray-200">Docker</strong> running locally (default Harbor environment)</li><li>An agent API key —<code class="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">ANTHROPIC_API_KEY</code>or Amazon Bedrock credentials</li></ul></section><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">03</span><span class="ml-3 text-gray-400">Clone harbor-boost</span></p><p class="mt-4 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">The Performance Lab report used a Harbor fork that can layer Boost into each trial container. Clone it and sync dependencies:</p><pre class="mt-6 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-[13px] leading-relaxed text-gray-200"><code>git clone https://github.com/jfrog-fastci/harbor-boost
+cd harbor-boost
+uv sync --all-extras --dev</code></pre><p class="mt-4 text-sm text-gray-500">Confirm Harbor is available:</p><pre class="mt-3 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-[13px] leading-relaxed text-gray-200"><code>uv run harbor --help
+uv run harbor datasets list</code></pre></section><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">04</span><span class="ml-3 text-gray-400">Set credentials</span></p><p class="mt-4 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">Anthropic direct (simplest for a smoke test):</p><pre class="mt-3 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-[13px] leading-relaxed text-gray-200"><code>export ANTHROPIC_API_KEY=&lt;your-key&gt;</code></pre><p class="mt-6 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">Or Amazon Bedrock (matches the published report):</p><pre class="mt-3 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-[13px] leading-relaxed text-gray-200"><code>export AWS_BEARER_TOKEN_BEDROCK=&lt;your-bedrock-token&gt;
+export AWS_REGION=us-east-1</code></pre></section><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">05</span><span class="ml-3 text-gray-400">Smoke test one task with Boost</span></p><p class="mt-4 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">Boost is off by default. Pass<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">--with-boost</code>so Harbor layers Boost into the trial image, then runs<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">boost init</code>after agent setup. Start with a single Terminal-Bench task:</p><pre class="mt-6 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-[13px] leading-relaxed text-gray-200"><code>uv run harbor run \
+  -d terminal-bench/terminal-bench-2 \
+  -t terminal-bench/fix-git \
+  -a claude-code \
+  -m anthropic/claude-haiku-4-5-20251001 \
+  --with-boost \
+  -k 1 \
+  -n 1 \
+  -y</code></pre><p class="mt-4 text-sm leading-relaxed text-gray-500">Flag cheat sheet:<code class="text-gray-400">-d</code> dataset,<code class="text-gray-400">-t</code> single task,<code class="text-gray-400">-a</code> agent,<code class="text-gray-400">-m</code> model,<code class="text-gray-400">-k</code> attempts,<code class="text-gray-400">-n</code> concurrency,<code class="text-gray-400">-y</code> auto-confirm. Optionally pin a release with<code class="text-gray-400">--boost-version vX.Y.Z</code>.</p><p class="mt-4 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">Bedrock variant (pass agent env with<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">--ae</code>):</p><pre class="mt-3 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-[13px] leading-relaxed text-gray-200"><code>uv run harbor run \
+  --ae CLAUDE_CODE_USE_BEDROCK=1 \
+  --ae AWS_REGION=us-east-1 \
+  --ae AWS_BEARER_TOKEN_BEDROCK=$AWS_BEARER_TOKEN_BEDROCK \
+  -d terminal-bench/terminal-bench-2 \
+  -t terminal-bench/fix-git \
+  -a claude-code \
+  -m &quot;global.anthropic.claude-haiku-4-5-20251001-v1:0&quot; \
+  --with-boost \
+  -k 1 \
+  -n 1 \
+  -y</code></pre></section><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">06</span><span class="ml-3 text-gray-400">Run the full 89-task suite</span></p><p class="mt-4 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">Drop<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">-t</code>to run all Terminal-Bench 2.0 tasks. Raise concurrency as your machine allows; the published lab used isolated Docker with one container per task.</p><pre class="mt-6 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-[13px] leading-relaxed text-gray-200"><code>uv run harbor run \
+  -d terminal-bench/terminal-bench-2 \
+  -a claude-code \
+  -m anthropic/claude-haiku-4-5-20251001 \
+  --with-boost \
+  --cpus ignore \
+  -k 1 \
+  -n 4 \
+  -y</code></pre><p class="mt-6 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">Compare against baseline (same agent and model, no compression) by omitting<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">--with-boost</code>:</p><pre class="mt-3 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-4 font-mono text-[13px] leading-relaxed text-gray-200"><code>uv run harbor run \
+  -d terminal-bench/terminal-bench-2 \
+  -a claude-code \
+  -m anthropic/claude-haiku-4-5-20251001 \
+  -k 1 \
+  -n 4 \
+  -y</code></pre></section><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">07</span><span class="ml-3 text-gray-400">What Harbor does with Boost</span></p><ol class="mt-4 list-decimal space-y-3 pl-5 text-[15px] leading-relaxed text-gray-400"><li><strong class="font-medium text-gray-200">Image build</strong> — Harbor appends a Boost install layer to each task Dockerfile (or wraps a prebuilt image), downloading Boost into the container.</li><li><strong class="font-medium text-gray-200">Agent setup</strong> — Claude Code is installed as usual; the agent binary itself is unmodified.</li><li><strong class="font-medium text-gray-200">boost init</strong> — Harbor runs<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">boost init --claude --cursor --accept-terms</code>so hooks rewrite shell commands through Boost before they reach the context window.</li><li><strong class="font-medium text-gray-200">Trial + telemetry</strong> — After the agent finishes, Harbor collects<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">boost report</code>output and<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">history.db</code>alongside Harbor’s own token and cost metrics.</li></ol></section><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">08</span><span class="ml-3 text-gray-400">Check the results</span></p><p class="mt-4 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">Job output lands under<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">jobs/</code>. Inside each trial directory, look for:</p><ul class="mt-4 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-gray-400"><li><code class="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">agent/boost-report-after-agent.txt</code>— Boost savings report</li><li><code class="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">agent/history.db</code>— Boost command history</li><li><code class="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">result.json</code>— Harbor reward, tokens, timing, and cost</li></ul><p class="mt-6 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">To publish the job to <a href="https://hub.harborframework.com" class="text-brand-400 underline decoration-brand-400/30 underline-offset-4 hover:text-brand-300" target="_blank" rel="noopener noreferrer">Harbor Hub</a> and get a shareable link, add<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">--upload</code>to any<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">harbor run</code>command. Runs are private by default; pass<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">--public</code>if you want them visible on the Hub.</p></section><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">09</span><span class="ml-3 text-gray-400">Gotchas</span></p><ul class="mt-4 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-gray-400"><li>Forgetting<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">--with-boost</code>runs baseline Harbor with no compression.</li><li>First builds are slow: each task image gets a Boost layer. You can optionally pin a release with<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">--boost-version vX.Y.Z</code>for reproducibility.</li><li>Some Terminal-Bench tasks request high CPU counts; use<code class="mx-1 rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-brand-300">--cpus ignore</code>if Docker rejects the resource request.</li></ul></section><section class="mt-14 border-t border-gray-800 pt-10"><p class="font-mono text-[11px] uppercase tracking-[0.2em] text-gray-500"><span class="text-brand-400">10</span><span class="ml-3 text-gray-400">Source</span></p><p class="mt-4 max-w-[68ch] text-pretty text-[15px] leading-relaxed text-gray-400">Full source, Boost wrappers, and further examples live in the fork:</p><a href="https://github.com/jfrog-fastci/harbor-boost" class="group mt-8 inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-400" target="_blank" rel="noopener noreferrer">Open harbor-boost on GitHub<span class="transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span></a><p class="mt-6 text-sm text-gray-500">Back to the <a href="/docs/fr/benchmarks/performance-lab" class="text-brand-400 underline decoration-brand-400/30 underline-offset-4 hover:text-brand-300">Performance Lab report</a>.</p></section></div></main><aside id="docs-toc-rail" class="hidden xl:block w-[200px] shrink-0 bg-surface-950" data-docs-toc data-label="Sur cette page"><nav aria-label="Sur cette page" class="sticky top-[calc(4rem+env(safe-area-inset-top,0px)+var(--release-banner-height,0px))] md:top-[calc(5rem+env(safe-area-inset-top,0px)+var(--release-banner-height,0px))] z-10 max-h-[calc(100vh-5rem-env(safe-area-inset-top,0px)-var(--release-banner-height,0px))] overflow-y-auto bg-surface-950 py-4 pl-3 pr-2"><p id="docs-toc-heading" class="mb-3 hidden text-[10px] font-semibold uppercase tracking-wider text-gray-500">Sur cette page</p><ul id="docs-toc-list" class="hidden space-y-0.5 border-l border-white/10"></ul></nav></aside><script type="module">function e(e){return e.toLowerCase().normalize(`NFKD`).replace(/[\u0300-\u036f]/g,``).replace(/<[^>]+>/g,``).replace(/[^a-z0-9\u0590-\u05ff\u3040-\u30ff\u4e00-\u9fff]+/gi,`-`).replace(/^-+|-+$/g,``).slice(0,64)}function t(){let t=document.querySelector(`[data-docs-toc]`),n=document.getElementById(`docs-toc-list`),r=document.getElementById(`docs-toc-heading`),i=document.querySelector(`main`);if(!t||!n||!r||!i)return;let a=Array.from(i.querySelectorAll(`h2, h3`)).filter(e=>(e.textContent||``).trim().length>0&&!e.closest(`figure, [aria-hidden="true"]`));if(a.length<2){t.classList.add(`!hidden`);return}let o=new Set;for(let t of a){if(!t.id){let n=e(t.textContent||`section`)||`section`,r=2;for(;o.has(n)||document.getElementById(n);)n=`${n.replace(/-\d+$/,``)}-${r++}`;t.id=n}o.add(t.id),t.className.includes(`scroll-mt-`)||t.classList.add(`scroll-mt-[calc(6rem+var(--release-banner-height,0px))]`)}n.replaceChildren();for(let e of a){let t=document.createElement(`li`),r=document.createElement(`a`);r.href=`#${e.id}`,r.dataset.tocLink=e.id,r.textContent=(e.textContent||``).trim(),r.className=`-ml-px block border-l border-transparent py-1 text-[12px] leading-snug text-gray-400 transition-colors hover:text-gray-200 `+(e.tagName===`H3`?`pl-5`:`pl-3 font-medium`),t.appendChild(r),n.appendChild(t)}r.classList.remove(`hidden`),n.classList.remove(`hidden`);let s=Array.from(n.querySelectorAll(`[data-toc-link]`)),c=s.map(e=>document.getElementById(e.dataset.tocLink)).filter(e=>e!=null),l=[`border-brand-400`,`text-white`,`font-medium`],u=[`border-transparent`,`text-gray-400`];function d(e){for(let t of s){let n=t.dataset.tocLink===e;t.classList.toggle(l[0],n),t.classList.toggle(l[1],n),t.classList.toggle(l[2],n),t.classList.toggle(u[0],!n),n?t.classList.remove(u[1]):t.classList.add(u[1])}}function f(e){let t=parseFloat(getComputedStyle(e).scrollMarginTop);return(Number.isFinite(t)?t:96)+8}function p(){let e=c[0]?.id??null;for(let t of c){if(t.getBoundingClientRect().top>f(t))break;e=t.id}d(e)}let m=0;for(let e of s)e.addEventListener(`click`,()=>{m=Date.now()+700,d(e.dataset.tocLink??null)});function h(){Date.now()<m||p()}window.addEventListener(`scroll`,h,{passive:!0}),window.addEventListener(`resize`,h),p()}t();</script></div></div><footer class="relative border-t border-white/5 bg-surface-950/70"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><div class="flex flex-col items-center justify-between gap-6 lg:flex-row"><a href="/fr/" class="flex items-center gap-3 opacity-90 transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300" aria-label="Accueil de JFrog Boost"><img src="/boost-logo-white.png" alt="JFrog Boost" class="h-9 w-auto"></a><nav class="flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs sm:text-sm lg:flex-1" aria-label="Liens du pied de page"><a href="https://github.com/jfrog/boost?utm_source=boost-site&amp;utm_medium=referral&amp;utm_campaign=footer" target="_blank" rel="noopener noreferrer" aria-label="GitHub: Boost" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300"><svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg></a><span class="text-gray-600" aria-hidden="true">|</span><a href="https://join.slack.com/t/boost-0wl2605/shared_invite/zt-47e3gh6vo-aw15OzLVAmxpCZ5tkX8OGw" target="_blank" rel="noopener noreferrer" aria-label="Rejoignez la communauté Slack de Boost" class="text-gray-400 transition-colors hover:text-white"><svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"></path></svg></a><span class="text-gray-600" aria-hidden="true">|</span><a href="https://jfrog.com" target="_blank" rel="noopener noreferrer" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">jfrog.com</a><span class="text-gray-600" aria-hidden="true">|</span><a href="/docs/fr/why-boost" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Pourquoi Boost</a><span class="text-gray-600" aria-hidden="true">|</span><a href="/fr/#security" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Sécurité</a><span class="text-gray-600" aria-hidden="true">|</span><a href="https://jfrog.com/terms-of-use/" target="_blank" rel="noopener noreferrer" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Conditions d’utilisation</a><span class="text-gray-600" aria-hidden="true">|</span><a href="/preview-agreement/" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Accord de prévisualisation</a><span class="text-gray-600" aria-hidden="true">|</span><a href="https://jfrog.com/privacy-notice/" target="_blank" rel="noopener noreferrer" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Politique de confidentialité</a><span class="text-gray-600" aria-hidden="true">|</span><a href="https://jfrog.com/jfrog-cookies-policy/" target="_blank" rel="noopener noreferrer" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Politique relative aux cookies</a><span class="text-gray-600" aria-hidden="true">|</span><a href="https://jfrog.com/impressum/" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Mentions légales</a><span class="text-gray-600" aria-hidden="true">|</span><button id="cookie_settings" type="button" class="cursor-pointer bg-transparent p-0 text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Paramètres des cookies</button><span class="text-gray-600" aria-hidden="true">|</span><a href="https://jfrog.com/jfrog-accessibility-notice/" target="_blank" rel="noopener noreferrer" class="text-gray-300 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300">Déclaration d’accessibilité</a><span class="text-gray-600" aria-hidden="true">|</span><span class="text-gray-300">Mode d’accessibilité</span></nav><p class="text-center text-xs text-gray-400 lg:text-right">&copy; 2026 JFrog Ltd. Tous droits réservés.</p></div></div></footer><button id="docs-menu-toggle" class="lg:hidden fixed z-40 flex items-center gap-2 rounded-full bg-surface-800/90 border border-white/10 px-4 py-2.5 text-xs font-medium text-gray-300 shadow-lg backdrop-blur-md hover:bg-surface-700 transition-colors bottom-[max(1.25rem,env(safe-area-inset-bottom,0px))] right-[max(1.25rem,env(safe-area-inset-right,0px))]" aria-label="Ouvrir la navigation de la documentation"><svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path></svg>Menu</button><div id="docs-mobile-drawer" class="lg:hidden fixed inset-0 z-50 hidden"><div id="docs-drawer-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div><div id="docs-drawer-panel" class="absolute left-0 top-0 bottom-0 w-[min(100vw,220px)] max-w-[100vw] bg-surface-950 border-r border-white/10 pt-[calc(5rem+env(safe-area-inset-top,0px)+var(--release-banner-height,0px))] px-3 pb-[max(2rem,env(safe-area-inset-bottom,0px))] overflow-y-auto -translate-x-full transition-transform duration-200 ease-out"><nav class="text-[13px] leading-5"><a href="/features" class="mb-5 flex items-center justify-between rounded-lg border border-brand-400/20 bg-brand-500/[0.05] px-3 py-2 font-medium text-brand-300 transition-colors hover:border-brand-400/40 hover:bg-brand-500/[0.09] hover:text-brand-200"><span>Features</span><span aria-hidden="true">→</span></a><div><h4 class="mb-0.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">Premiers pas</h4><ul><li><a href="/docs/fr/overview" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Bienvenue</a></li><li><a href="/docs/fr/quickstart" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Démarrage rapide</a></li><li><a href="/docs/fr/github-actions" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">GitHub Actions</a></li><li><a href="/docs/fr/features/token-reduction" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Économies de tokens</a></li><li><a href="/docs/fr/features/boostgraph" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">BoostGraph</a></li><li><a href="/docs/fr/features/pr-usage-comments" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Commentaires d’usage PR</a></li></ul></div><div class="mt-5"><h4 class="mb-0.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">Installation en entreprise</h4><ul><li><a href="/docs/fr/customer-installation" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Installation entreprise</a></li><li><a href="/docs/fr/customer-installation/mdm/jamf-pro" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Jamf Pro MDM</a></li><li><a href="/docs/fr/customer-installation/mdm/workspace-one" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Workspace ONE (WS1) MDM</a></li></ul></div><div class="mt-5"><h4 class="mb-0.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">Benchmarks</h4><ul><li><a href="/docs/fr/benchmarks/performance-lab" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Rapport Performance Lab</a></li><li><a href="/docs/fr/benchmarks/try-yourself" aria-current="page" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-brand-400 bg-white/[0.06] font-semibold text-brand-300">Essayez le benchmark vous-même</a></li></ul></div><div class="mt-5"><h4 class="mb-0.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">Référence</h4><ul><li><a href="/docs/fr/configuration" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Configuration</a></li><li><a href="/docs/fr/toml-filters" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Filtres TOML</a></li><li><a href="/docs/fr/observability-platforms" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Plateformes d’observabilité</a></li><li><a href="/docs/fr/contact" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Nous contacter</a></li><li><a href="/docs/fr/changelog" class="block rounded-md px-3 py-1 transition-colors border-l-2 border-transparent text-gray-400 hover:bg-white/[0.03] hover:text-white">Journal des modifications</a></li></ul></div></nav></div></div><div id="cookie-consent" class="fixed inset-x-0 bottom-0 z-50 hidden px-4 pb-4 sm:px-6 sm:pb-6" data-cookie-consent-root role="region" aria-label="Vos choix de confidentialité"><div class="mx-auto max-w-6xl rounded-2xl border border-white/10 bg-surface-950/95 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:px-5 sm:py-4"><div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"><p class="min-w-0 text-xs leading-4 text-gray-300 sm:leading-5 lg:max-w-3xl lg:flex-1">Ce site utilise des cookies Google Analytics pour savoir quels contenus sont utiles. Les acceptez-vous ?</p><div class="flex flex-wrap items-center gap-2 lg:shrink-0"><button type="button" class="min-h-11 rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-gray-200 transition-colors hover:border-white/25 hover:bg-white/[0.14] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300" data-cookie-reject>Cookies nécessaires uniquement</button><button type="button" class="min-h-11 rounded-lg border border-brand-500/60 bg-brand-500 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white" data-cookie-accept>Accepter</button><button type="button" class="min-h-11 rounded-lg px-4 py-2 text-xs font-semibold text-brand-200 transition-colors hover:bg-brand-500/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300" data-cookie-customize>Paramètres des cookies</button></div></div></div></div><div id="cookie-preferences" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 px-4 py-6 backdrop-blur-sm" data-cookie-preferences role="dialog" aria-modal="true" aria-labelledby="cookie-preferences-title"><div class="w-full max-w-lg rounded-2xl border border-white/10 bg-surface-950 p-6 shadow-[0_24px_80px_rgba(0,0,0,0.55)]"><div class="flex items-start justify-between gap-4"><div><p class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-300">Choix en matière de confidentialité</p><h2 id="cookie-preferences-title" class="mt-2 text-xl font-semibold text-white">Paramètres des cookies</h2></div><button type="button" class="min-h-11 rounded-full border border-white/10 px-3 py-2 text-sm text-gray-300 transition-colors hover:border-white/25 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-300" data-cookie-close aria-label="Fermer: Paramètres des cookies">Fermer</button></div><div class="mt-6 space-y-4"><div class="rounded-xl border border-white/10 bg-white/[0.03] p-4"><div class="flex items-center justify-between gap-4"><div><h3 class="font-semibold text-white">Cookies nécessaires</h3><p class="mt-1 text-sm leading-5 text-gray-400">Indispensables au fonctionnement du site.</p></div><span class="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-gray-300">Toujours activés</span></div></div><label class="block cursor-pointer rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-brand-500/30"><span class="flex items-center justify-between gap-4"><span><span class="block font-semibold text-white">Cookies analytiques</span><span class="mt-1 block text-sm leading-5 text-gray-400">Nous aident à améliorer les pages et parcours d’installation utiles. Sans publicité ni personnalisation.</span></span><input type="checkbox" class="h-5 w-5 shrink-0 accent-brand-500" data-cookie-analytics-toggle></span></label></div><div class="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-end"><button type="button" class="rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-gray-200 transition-colors hover:border-white/25 hover:bg-white/[0.04]" data-cookie-save-reject>Cookies nécessaires uniquement</button><button type="button" class="rounded-lg border border-brand-500/60 bg-brand-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-400" data-cookie-save>Confirmer mes choix</button></div></div></div><script>(function(){const gaMeasurementId = "G-0VT297SJRS";
+
+  (() => {
+    const STORAGE_KEY = 'boost_cookie_consent_v1';
+    const CONSENT_ACCEPTED = 'accepted';
+    const CONSENT_REJECTED = 'rejected';
+
+    const banner = document.querySelector('[data-cookie-consent-root]');
+    const preferences = document.querySelector('[data-cookie-preferences]');
+    const analyticsToggle = document.querySelector('[data-cookie-analytics-toggle]');
+    const settingsButton = document.getElementById('cookie_settings');
+    const gaDisableKey = `ga-disable-${gaMeasurementId}`;
+    let analyticsLoaded = false;
+
+    const getConsent = () => {
+      try {
+        const storedConsent = window.localStorage.getItem(STORAGE_KEY);
+        return storedConsent === CONSENT_ACCEPTED || storedConsent === CONSENT_REJECTED
+          ? storedConsent
+          : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const setConsent = (value) => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, value);
+      } catch {
+        // If storage is unavailable, keep the current page compliant and avoid GA.
+      }
+    };
+
+    const show = (element) => {
+      element?.classList.remove('hidden');
+      if (element === preferences) {
+        element.classList.add('flex');
+      }
+    };
+
+    const hide = (element) => {
+      element?.classList.add('hidden');
+      if (element === preferences) {
+        element.classList.remove('flex');
+      }
+    };
+
+    const setAnalyticsDisabled = (disabled) => {
+      if (gaMeasurementId) {
+        window[gaDisableKey] = disabled;
+      }
+    };
+
+    const updateGoogleConsent = (analyticsStorage) => {
+      if (typeof window.gtag !== 'function') {
+        return;
+      }
+
+      window.gtag('consent', 'update', {
+        analytics_storage: analyticsStorage,
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+      });
+    };
+
+    const deleteCookie = (name) => {
+      const expire = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+      document.cookie = expire;
+
+      const hostParts = window.location.hostname.split('.');
+      for (let index = 0; index < hostParts.length - 1; index += 1) {
+        document.cookie = `${expire}; domain=.${hostParts.slice(index).join('.')}`;
+      }
+    };
+
+    const deleteAnalyticsCookies = () => {
+      deleteCookie('_ga');
+      deleteCookie('_gid');
+      deleteCookie('_gat');
+      deleteCookie(`_ga_${gaMeasurementId.replace(/^G-/, '')}`);
+    };
+
+    const loadGoogleAnalytics = () => {
+      if (!gaMeasurementId) {
+        return;
+      }
+
+      setAnalyticsDisabled(false);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function gtag() {
+        window.dataLayer.push(arguments);
+      };
+
+      updateGoogleConsent('granted');
+
+      if (analyticsLoaded) {
+        window.gtag('config', gaMeasurementId);
+        return;
+      }
+
+      analyticsLoaded = true;
+      window.gtag('js', new Date());
+      window.gtag('config', gaMeasurementId);
+
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaMeasurementId)}`;
+      document.head.appendChild(script);
+    };
+
+    const disableGoogleAnalytics = () => {
+      setAnalyticsDisabled(true);
+      updateGoogleConsent('denied');
+      deleteAnalyticsCookies();
+    };
+
+    const applyConsent = (value) => {
+      if (value === CONSENT_ACCEPTED) {
+        loadGoogleAnalytics();
+        return;
+      }
+
+      disableGoogleAnalytics();
+    };
+
+    const saveConsent = (value) => {
+      setConsent(value);
+      hide(banner);
+      hide(preferences);
+      applyConsent(value);
+    };
+
+    document.querySelector('[data-cookie-accept]')?.addEventListener('click', () => {
+      saveConsent(CONSENT_ACCEPTED);
+    });
+
+    document.querySelector('[data-cookie-reject]')?.addEventListener('click', () => {
+      saveConsent(CONSENT_REJECTED);
+    });
+
+    document.querySelector('[data-cookie-customize]')?.addEventListener('click', () => {
+      if (analyticsToggle instanceof HTMLInputElement) {
+        analyticsToggle.checked = getConsent() === CONSENT_ACCEPTED;
+      }
+      show(preferences);
+    });
+
+    document.querySelector('[data-cookie-save]')?.addEventListener('click', () => {
+      const analyticsAccepted = analyticsToggle instanceof HTMLInputElement && analyticsToggle.checked;
+      saveConsent(analyticsAccepted ? CONSENT_ACCEPTED : CONSENT_REJECTED);
+    });
+
+    document.querySelector('[data-cookie-save-reject]')?.addEventListener('click', () => {
+      if (analyticsToggle instanceof HTMLInputElement) {
+        analyticsToggle.checked = false;
+      }
+      saveConsent(CONSENT_REJECTED);
+    });
+
+    document.querySelector('[data-cookie-close]')?.addEventListener('click', () => {
+      hide(preferences);
+    });
+
+    preferences?.addEventListener('click', (event) => {
+      if (event.target === preferences) {
+        hide(preferences);
+      }
+    });
+
+    settingsButton?.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (analyticsToggle instanceof HTMLInputElement) {
+        analyticsToggle.checked = getConsent() === CONSENT_ACCEPTED;
+      }
+      show(preferences);
+    });
+
+    const currentConsent = getConsent();
+    applyConsent(currentConsent);
+    if (!currentConsent) {
+      show(banner);
+    }
+  })();
+})();</script></body></html><script>(function(){const copyAria = "Copier dans le presse-papiers";
+
+  const toggle = document.getElementById('docs-menu-toggle');
+  const drawer = document.getElementById('docs-mobile-drawer');
+  const backdrop = document.getElementById('docs-drawer-backdrop');
+  const panel = document.getElementById('docs-drawer-panel');
+
+  function openDrawer() {
+    if (!drawer || !panel) return;
+    drawer.classList.remove('hidden');
+    requestAnimationFrame(() => panel?.classList.remove('-translate-x-full'));
+  }
+
+  function closeDrawer() {
+    if (!drawer || !panel) return;
+    panel.classList.add('-translate-x-full');
+    panel.addEventListener('transitionend', () => drawer?.classList.add('hidden'), { once: true });
+  }
+
+  toggle?.addEventListener('click', openDrawer);
+  backdrop?.addEventListener('click', closeDrawer);
+
+  // Hover-reveal copy for HTML <pre> blocks (TerminalBlock already has its own).
+  const copySvg =
+    '<svg class="copy-icon w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>';
+  const checkSvg =
+    '<svg class="check-icon w-3.5 h-3.5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>';
+
+  document.querySelectorAll('#docs-main pre').forEach((pre) => {
+    if (!(pre instanceof HTMLElement)) return;
+    if (pre.closest('.terminal-block') || pre.closest('.doc-pre-block')) return;
+    const text = (pre.textContent || '').trim();
+    if (text.length < 12) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'doc-pre-block group relative';
+    pre.parentNode?.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'doc-pre-copy';
+    btn.setAttribute('aria-label', copyAria);
+    btn.innerHTML = copySvg + checkSvg;
+    wrap.appendChild(btn);
+
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code');
+      const payload = (code?.textContent || pre.textContent || '').replace(/\n$/, '');
+      navigator.clipboard.writeText(payload).then(() => {
+        const copyIcon = btn.querySelector('.copy-icon');
+        const checkIcon = btn.querySelector('.check-icon');
+        copyIcon?.classList.add('hidden');
+        checkIcon?.classList.remove('hidden');
+        setTimeout(() => {
+          copyIcon?.classList.remove('hidden');
+          checkIcon?.classList.add('hidden');
+        }, 2000);
+      }).catch(() => {});
+    });
+  });
+})();</script>

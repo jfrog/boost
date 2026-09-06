@@ -1,0 +1,1 @@
+var e=`/`.replace(/\/$/,``)||`/`;function t(t){return`${e}/${t.replace(/^\//,``)}`.replace(/\/+/g,`/`)}export{t};

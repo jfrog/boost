@@ -1,0 +1,38 @@
+# Install JFrog Boost
+
+> Agent recipe: detect the OS, run the matching installer, then initialize Boost non-interactively.
+
+Boost is a free CLI that compresses coding-agent command output and MCP tool responses. No signup, account, or API key.
+
+## Steps
+
+1. Detect the OS from the environment (`uname -s`, `$OSTYPE`, `$IsWindows`, or `$PSVersionTable`).
+2. Run the matching installer below. Do not replace these URLs with GitHub raw URLs.
+3. If `boost` is not on PATH after a Unix install, prepend `$HOME/.local/bin`.
+4. Run `boost init --accept-terms`. That records the Online Preview Agreement without an interactive prompt and wires Cursor, Claude Code, Codex CLI, or GitHub Copilot.
+
+Then confirm with `boost version`. Restart the editor so hooks load.
+
+`--accept-terms` accepts the [JFrog Online Preview Agreement](https://boost.jfrog.com/preview-agreement/) and Privacy Notice.
+
+### macOS, Linux, or WSL
+
+```sh
+curl -fsSL https://boost.jfrog.com/install.sh | bash
+export PATH="$HOME/.local/bin:$PATH"
+boost init --accept-terms
+```
+
+### Windows PowerShell
+
+```powershell
+irm https://boost.jfrog.com/install.ps1 | iex
+boost init --accept-terms
+```
+
+## After that
+
+- If a filter hid something you need, run `boost retrieve <id>` from the marker. Boost monitors retrieve events and can disable that filter locally — prefer retrieve over bypassing Boost.
+- `boost report` shows measured token savings.
+- Product overview: https://boost.jfrog.com/llms.txt
+- Quickstart: https://boost.jfrog.com/docs/en/quickstart/

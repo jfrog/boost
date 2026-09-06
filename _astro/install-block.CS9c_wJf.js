@@ -1,0 +1,1 @@
+import{n as e,t}from"./install-block.Dr78_tI9.js";export{t as InstallBlock,e as detectPlatform};

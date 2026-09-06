@@ -1,0 +1,766 @@
+Boost CLI — Full documentation snapshot for LLM ingestion
+Source of truth: https://boost.jfrog.com/
+Last generated: 2026-09-06T09:27:42.299Z
+
+================================================================================
+WHAT IS BOOST
+================================================================================
+
+Boost compresses coding-agent command output and MCP tool responses before
+they enter the model context — without breaking the agent, and without
+claiming fake token savings. It works with Cursor, Claude Code, Codex CLI,
+and GitHub Copilot. Boost is free and requires no signup, account, API key,
+or trial.
+
+Token-reduction numbers include both per-command measurements and an
+end-to-end Terminal-Bench evaluation. Typical per-command reductions are
+60–90% on noisy tools such as docker build, npm install, vitest, and cargo
+test — measured against the final stdout that would have entered context,
+not cherry-picked examples. Boost can also compress MCP tool responses
+(JSON→TOON) on PostToolUse (see MCP section below).
+
+================================================================================
+HOW BOOST WORKS
+================================================================================
+
+1. Boost is installed as a single binary on your PATH.
+2. You run `boost init` (guided) or `boost init --<agent>`. Agent hooks and
+   skills install globally under your home directory.
+3. When the agent proposes a shell command, the rewrite hook turns supported
+   tools into suffix form:
+
+       (docker build .) | boost
+       (npm install) | boost
+       (pytest -q | grep FAILED) | boost
+
+   The real tool (and any agent-owned pipes) run unchanged. Boost only
+   receives the final stdout on stdin, applies declarative TOML filters, and
+   returns a compact, agent-friendly subset — plus a trace span for
+   duration, exit code, and token savings.
+4. On PostToolUse, Boost can also compress MCP tool responses (JSON→TOON).
+   Compressed MCP results count toward the same token-savings totals and are
+   recoverable with `boost retrieve <id>` when significant.
+5. `boost report` summarizes total commands, tokens saved (shell filters +
+   MCP), and the slowest commands by p90 latency. `boost retrieve <id>`
+   restores a locally stored original when the agent needs detail that was
+   filtered out.
+6. You can create your own custom filters very easily from the
+   `boost report -w` view or with the boost filter factory skill, so Boost
+   adapts to your exact tools and workflows.
+
+External tools are not separate `boost docker` / `boost npm` binaries.
+Filtering happens on the `(cmd) | boost` pipe path via the TOML filter
+engine (builtins under the binary; custom filters in ~/.boost/filters or
+.boost/filters). MCP compression is a separate PostToolUse path (not TOML
+filters) and appears in the report as capability `mcp:toon`.
+
+================================================================================
+BOOSTGRAPH (STRUCTURAL CODE INTELLIGENCE)
+================================================================================
+
+BoostGraph is bundled with Boost and gives coding agents a local map of how
+code fits together — what calls what, how files connect, and where key logic
+lives — so agents answer structural questions without file-by-file search.
+
+How it attaches
+---------------
+
+1. `boost init` registers agent hooks and wires the BoostGraph MCP server
+   (`boost graph serve --mcp`).
+2. On each session start, a hook verifies the index in the background.
+   First visit to a repo creates `.boost/` and builds the graph; later
+   sessions sync it. A local file watcher keeps the index fresh after edits.
+3. On large codebases the first index can take longer; it does not block the
+   agent. When ready, the agent uses `boostgraph_explore` over MCP.
+4. To index manually ahead of time: `boost graph init` in the repo root.
+
+What agents get
+---------------
+
+BoostGraph runs as an MCP server and exposes a tool that lets a supported
+coding agent query the codebase with natural-language questions — no manual
+file search required.
+
+Troubleshooting
+---------------
+
+- Not initialized: run `boost init`, then open the project with your coding
+  agent. For immediate indexing: `boost graph init`.
+- Agent still greps: index may still be building or MCP not connected yet.
+  Restart the agent and verify MCP via `/mcp`.
+
+Early benchmark (kubernetes/minikube flow-tracing question): ~3.2× faster,
+~51% lower cost, ~73% fewer input tokens vs. grep/read exploration without
+BoostGraph. Full table: https://boost.jfrog.com/docs/en/features/boostgraph/
+
+Docs: https://boost.jfrog.com/docs/en/features/boostgraph/
+
+================================================================================
+HOW BOOST KNOWS NOT TO BREAK THE AGENT
+================================================================================
+
+Aggressive truncation often makes agents worse: they lose bearings, re-run
+the same ls/cat, hallucinate fixes, and burn more tokens than they save.
+Boost’s engineering contract is designed so compression never strands the
+agent:
+
+1. Output-only. Boost does not change what the agent is allowed to run. It
+   shapes stdout on the return path after the agent has already chosen and
+   been authorized to run the command. Native permission prompts still see
+   the original executable and pipeline — not a blanket `boost …` prefix
+   that collapses every tool into one approval.
+2. Fail open. A filter miss, unknown command, malformed hook input, or
+   filter panic falls back to raw/unmodified behavior. Hooks exit 0 so the
+   agent’s command still runs. Streaming recomputation that would rewrite
+   already-emitted text also fails open to passthrough.
+3. Flag-aware and transparent. Explicit verbose flags (--nocapture, -la,
+   etc.) preserve detail. Filtered output stays a recognizable shorter form
+   of the real tool — not a new invented format the agent cannot parse.
+4. Correctable by the agent. Significant reductions append
+   `boost retrieve <id>`. That is the intended correction path: restore the
+   redacted original locally instead of unwrapping the pipe, re-running
+   without Boost, or guessing at dropped lines. Boost monitors every
+   retrieve (capability id + version + optional reason). Repeated
+   retrievals of the same capability auto-disable that filter locally.
+5. Agent-aware. `boost init` installs a skill / awareness rule so the agent
+   understands the optimization layer instead of being silently manipulated
+   by it — stopping the truncation hallucination / retry spiral.
+6. Task-proven. Across the complete 89-task Terminal-Bench 2.0 suite
+   (Claude Code + Haiku 4.5), Boost cut full-suite duration 28.9% and cost
+   per task 13.5% against the uncompacted baseline. In a separate 81-task
+   capability check, Boost preserved the same 30.9% pass rate.
+
+================================================================================
+AGENTS CAN CORRECT BOOST
+================================================================================
+
+If a filter hid something you need, run the `boost retrieve <id>` marker
+from the compressed output. Do not unwrap the pipe or re-run the command
+without Boost.
+
+What happens:
+
+1. Boost restores the original on this machine (secrets/PII stay redacted).
+2. Boost records the retrieve event: filter/capability id, version, and an
+   optional short reason.
+3. After enough retrieves of the same capability (default 3; see
+   `[filters] retrieve_disable_threshold`), Boost disables that filter
+   locally so it stops hiding useful detail.
+4. Retrieve events are also a quality signal for Boost maintainers.
+
+Prefer retrieve. Boost is designed to be corrected by the agent using it.
+
+================================================================================
+HONEST TOKEN COUNTING: SUFFIX, NOT PREFIX
+================================================================================
+
+Many tools claim ~90% token reduction while measuring the wrong boundary.
+
+Wrong (prefix wrap):
+
+    boost pytest … | grep FAILED
+
+Here a wrapper sitting in front of the pipeline can count raw pytest output
+and claim credit for tokens grep would have dropped anyway. That inflates
+“savings” and also breaks host permission models (one Always Allow on
+`boost …` becomes blanket approval).
+
+Right (suffix pipe — what Boost does):
+
+    (pytest … | grep FAILED) | boost
+
+1. The agent’s own pipes and filters run first.
+2. Boost compresses only what remains on the return path.
+3. Savings = final raw stdout − filtered stdout the agent actually sees.
+4. Those are the tokens that would have entered the context window.
+
+Boost therefore counts only real context-window input from tool output —
+the suffix of the pipeline — not prefix-inflated bytes that never would
+have reached the model. Day-to-day sessions often see ~60–90% per-command
+(and ~91% session) reductions on noisy workflows; long-horizon benchmarks
+show smaller aggregate input savings because most tokens are reasoning and
+prior context, not raw tool stdout — which is why the Terminal-Bench cost
+signal (~12% cheaper at the same pass rate) is the honest end-to-end proof.
+
+================================================================================
+HOW BOOST COMPARES
+================================================================================
+
+Boost focuses on the command-output boundary with a measurable safety loop:
+preserve requested detail, recover hidden output, learn from every
+retrieval, and verify agents still complete the task.
+
+RTK also focuses on fast local command-output compression and broad agent
+coverage. Headroom works across a broader message and context stream through
+library, proxy, and MCP integrations. Caveman focuses on concise assistant
+prose and persistent instruction files. These tools address overlapping but
+different layers; the right choice depends on the boundary being optimized.
+
+Boost uniquely documents: native approval visibility of the original
+executable, versioned retrieval rollback learning, auto-disable of filters
+that repeatedly hide useful detail, OTLP evidence, and end-to-end task +
+cost A/B results.
+
+Comparison and sources:
+https://boost.jfrog.com/docs/en/why-boost/
+https://boost.jfrog.com/blog/why-model-routing-backfires/
+https://boost.jfrog.com/blog/boost-public-preview/
+https://boost.jfrog.com/blog/introducing-boost/
+https://boost.jfrog.com/blog/benchmarks-terminal-bench/
+
+================================================================================
+QUICKSTART
+================================================================================
+
+Step 1 — Install Boost:
+
+    macOS, Linux, or WSL:
+    curl -fsSL https://boost.jfrog.com/install.sh | bash
+
+    Windows (PowerShell):
+    irm https://boost.jfrog.com/install.ps1 | iex
+
+Step 2 — Initialize your agent:
+
+    boost init
+
+The wizard detects your supported agents and wires up the matching hook and
+Boost Skill. Prefer explicit flags?
+
+    boost init --cursor          # Cursor
+    boost init --claude          # Claude Code
+    boost init --codex           # Codex CLI
+    boost init --copilot         # GitHub Copilot
+
+Step 3 — Restart your editor so the new hooks take effect. Agent shell
+commands are rewritten to `(cmd) | boost` automatically. Confirm with:
+
+    boost version
+    boost report
+
+Keep Boost up to date with:
+
+    boost update
+
+================================================================================
+CONFIGURATION
+================================================================================
+
+Boost reads optional settings from config.toml. Search order: cwd
+.boost/config.toml, then the enclosing git repo root, then
+~/.boost/config.toml. Override with BOOST_CONFIG_DIR.
+
+Skip hook rewrite for specific commands
+---------------------------------------
+
+When an agent hook pipes shell commands through Boost, you can keep
+certain tools unwrapped by listing their binary name in
+`[hooks] exclude_commands`:
+
+    [hooks]
+    exclude_commands = ["playwright", "vim", "docker"]
+
+Each entry is the first word of the command. With the example above,
+`playwright test` stays `playwright test` instead of becoming
+`(playwright test) | boost`. The same list applies to `boost rewrite` and
+the agent hook path.
+
+This affects automatic hook rewriting only.
+
+Retrieve auto-disable
+---------------------
+
+    [filters]
+    disabled = []                  # filter names skipped by the engine
+    retrieve_disable_threshold = 3 # retrieves per capability_id before auto-disable; 0 = never
+
+MCP JSON→TOON conversion
+------------------------
+
+Boost also compresses MCP tool responses: on PostToolUse it can convert JSON
+results to compact TOON (Cursor and Claude Code). This is separate from shell
+TOML filters. Savings count toward report totals, show as an `mcp:toon`
+square in the contribution graph, and significant compressions remain
+recoverable via `boost retrieve <id>`.
+
+Docs: https://boost.jfrog.com/docs/en/configuration/
+TOML filters: https://boost.jfrog.com/docs/en/toml-filters/
+
+================================================================================
+USING BOOST ANALYTICS
+================================================================================
+
+`boost init` installs an always-on awareness rule into Cursor and Claude Code
+that explains Boost’s suffix-pipe wrapping and how to use
+[hooks] exclude_commands when exact unfiltered output is needed. Ask the
+agent to run Boost query presets directly (for example
+`boost query --preset flaky-tests`) to analyze your local command history.
+
+Good prompts ask the agent to compare recent spans instead of judging from a
+single command log.
+
+Example prompts:
+
+    Analyze test traces from the last 7 days.
+    Find flaky tests in this repo. Include pass/fail counts, failure rate,
+    common failure signatures, and the first fix or quarantine step.
+
+    Review my agent command history for this branch.
+    Find commands that slow down development or waste context, then suggest
+    narrower commands the agent should run first next time.
+
+================================================================================
+FREQUENTLY ASKED QUESTIONS
+================================================================================
+
+Q: What is Boost?
+A: Boost compresses the command output your coding agents read so those
+   runs are faster, quieter, and cheaper in tokens — without breaking the
+   agent or inventing savings.
+
+Q: Which coding agents does Boost support?
+A: Cursor, Claude Code, Codex CLI, and GitHub Copilot.
+
+Q: How does Boost attach to agent commands?
+A: Hooks rewrite supported shell commands to `(cmd) | boost`. The real tool
+   runs; Boost filters only the final stdout on the way into context via
+   declarative TOML filters. Typical per-command reductions are 60-90%,
+   measured against that final stdout rather than prefix-inflated raw logs.
+
+Q: How does Boost avoid breaking the agent?
+A: Fail-open hooks, flag-aware transparent filters, `boost retrieve`
+   recovery with learning, agent skills that explain the layer, and
+   Terminal-Bench proof of unchanged pass rate. See “HOW BOOST KNOWS NOT
+   TO BREAK THE AGENT” and “AGENTS CAN CORRECT BOOST” above.
+
+Q: What should I do if Boost hid something I need?
+A: Run `boost retrieve <id>` from the marker on the compressed output.
+   That restores the original locally. Boost monitors the retrieve
+   (filter id, version, reason) and can auto-disable a filter that keeps
+   hiding useful detail. Do not unwrap the pipe or re-run without Boost.
+
+Q: How are token savings counted?
+A: Savings = final pipeline stdout − filtered stdout the agent sees. Boost
+   sits as the suffix of the pipeline so it does not claim tokens the
+   agent’s own pipes would have removed. See “HONEST TOKEN COUNTING”.
+
+Q: Is Boost free?
+A: Yes. The Boost CLI is free and requires no signup, no account, and no API
+   key. Optional paid plans may add enterprise capabilities.
+
+Q: How does Boost handle command output and telemetry?
+A: Full original and filtered outputs are stored locally after redaction so
+   retrieval works. Boost sends product telemetry to JFrog under the Preview
+   Agreement, including usage, command, output-metric, environment, and
+   correlation data. For users outside JFrog, synced spans strip command-line
+   and output-body attributes. A configured external OTLP destination receives
+   the same sanitized spans.
+
+Q: Can I send Boost traces to my own observability platform?
+A: Yes. Set EXTERNAL_OTEL_ENDPOINT to your OTLP collector or vendor endpoint.
+   Use EXTERNAL_OTEL_HEADERS for provider-specific headers such as api-key,
+   x-honeycomb-team, or Authorization=ApiKey. EXTERNAL_OTEL_TOKEN is a
+   convenience shortcut for Authorization=Bearer <token>.
+
+Q: How do I stop agent hooks from wrapping a specific tool?
+A: Add its binary name to [hooks] exclude_commands in config.toml (e.g.
+   exclude_commands = ["playwright"]).
+   See https://boost.jfrog.com/docs/en/configuration/
+
+Q: Does Boost compress MCP tool responses?
+A: Yes. On PostToolUse, Boost can convert JSON MCP results to compact TOON.
+   See boost report -w for MCP savings alongside shell filter savings.
+================================================================================
+TOOLS WITH DEDICATED FILTERS (121 total)
+================================================================================
+
+Agent hooks rewrite these to `(<command>) | boost`. Dedicated TOML filters
+then compress stdout on that pipe path. Tools not listed still pass through
+Boost (trace + fail-open raw output). Add a custom TOML filter to compress
+your own tools: https://boost.jfrog.com/docs/en/toml-filters/
+
+## docker
+
+  (docker build) | boost   (tokens: ~85%  |  trace: yes  |  cache: ~2-5x faster)
+  (docker buildx) | boost   (tokens: ~85%  |  trace: yes  |  cache: ~2-5x faster)
+  (docker ps) | boost   (tokens: ~80%  |  trace: yes)
+  (docker images) | boost   (tokens: ~80%  |  trace: yes)
+  (docker logs) | boost   (tokens: ~75%  |  trace: yes)
+
+## git
+
+  (git status) | boost   (tokens: ~70%  |  trace: yes)
+  (git log) | boost   (tokens: ~75%  |  trace: yes)
+  (git diff) | boost   (tokens: ~80%  |  trace: yes)
+  (git show) | boost   (tokens: ~80%  |  trace: yes)
+  (git add) | boost   (tokens: ~59%  |  trace: yes)
+  (git commit) | boost   (tokens: ~59%  |  trace: yes)
+  (git push) | boost   (tokens: ~59%  |  trace: yes)
+  (git pull) | boost   (tokens: ~59%  |  trace: yes)
+  (git branch) | boost   (tokens: ~65%  |  trace: yes)
+  (git fetch) | boost   (tokens: ~65%  |  trace: yes)
+  (git stash) | boost   (tokens: ~60%  |  trace: yes)
+  (git worktree) | boost   (tokens: ~60%  |  trace: yes)
+  (git merge) | boost   (tokens: ~65%  |  trace: yes)
+
+## cargo
+
+  (cargo build) | boost   (tokens: ~80%  |  trace: yes)
+  (cargo check) | boost   (tokens: ~80%  |  trace: yes)
+  (cargo clippy) | boost   (tokens: ~80%  |  trace: yes)
+  (cargo test) | boost   (tokens: ~90%  |  trace: yes)
+  (cargo install) | boost   (tokens: ~80%  |  trace: yes)
+
+## go
+
+  (go test) | boost   (tokens: ~90%  |  trace: yes)
+  (go build) | boost   (tokens: ~80%  |  trace: yes)
+  (go vet) | boost   (tokens: ~75%  |  trace: yes)
+
+## gh
+
+  (gh pr view) | boost   (tokens: ~87%  |  trace: yes)
+  (gh pr checks) | boost   (tokens: ~79%  |  trace: yes)
+  (gh run list) | boost   (tokens: ~82%  |  trace: yes)
+  (gh issue list) | boost   (tokens: ~80%  |  trace: yes)
+  (gh api) | boost   (tokens: ~26%  |  trace: yes)
+
+## pnpm
+
+  (pnpm list) | boost   (tokens: ~70%  |  trace: yes)
+  (pnpm outdated) | boost   (tokens: ~80%  |  trace: yes)
+  (pnpm install) | boost   (tokens: ~90%  |  trace: yes)
+
+## npm
+
+  (npm run) | boost   (tokens: ~80%  |  trace: yes)
+  (npm install) | boost   (tokens: ~85%  |  trace: yes)
+
+## pip
+
+  (pip list) | boost   (tokens: ~70%  |  trace: yes)
+  (pip outdated) | boost   (tokens: ~75%  |  trace: yes)
+  (pip install) | boost   (tokens: ~85%  |  trace: yes)
+
+## kubectl
+
+  (kubectl get pods) | boost   (tokens: ~85%  |  trace: yes)
+  (kubectl get svc) | boost   (tokens: ~85%  |  trace: yes)
+  (kubectl logs) | boost   (tokens: ~75%  |  trace: yes)
+
+## dotnet
+
+  (dotnet build) | boost   (tokens: ~85%  |  trace: yes)
+  (dotnet test) | boost   (tokens: ~80%  |  trace: yes)
+
+## ruff
+
+  (ruff check) | boost   (tokens: ~80%  |  trace: yes)
+  (ruff format) | boost   (tokens: ~80%  |  trace: yes)
+
+## prisma
+
+  (prisma generate) | boost   (tokens: ~88%  |  trace: yes)
+  (prisma migrate) | boost   (tokens: ~85%  |  trace: yes)
+  (prisma db) | boost   (tokens: ~85%  |  trace: yes)
+
+## tsc
+
+  (tsc) | boost   (tokens: ~83%  |  trace: yes)
+
+## eslint
+
+  (eslint) | boost   (tokens: ~84%  |  trace: yes)
+
+## prettier
+
+  (prettier --check) | boost   (tokens: ~70%  |  trace: yes)
+
+## next
+
+  (next build) | boost   (tokens: ~87%  |  trace: yes)
+
+## vitest
+
+  (vitest run) | boost   (tokens: ~99%  |  trace: yes)
+
+## playwright
+
+  (playwright test) | boost   (tokens: ~94%  |  trace: yes)
+
+## pytest
+
+  (pytest) | boost   (tokens: ~90%  |  trace: yes)
+
+## mypy
+
+  (mypy) | boost   (tokens: ~80%  |  trace: yes)
+
+## black
+
+  (black) | boost   (tokens: ~75%  |  trace: yes)
+
+## golangci-lint
+
+  (golangci-lint run) | boost   (tokens: ~85%  |  trace: yes)
+
+## aws
+
+  (aws) | boost   (tokens: ~70%  |  trace: yes)
+
+## psql
+
+  (psql) | boost   (tokens: ~70%  |  trace: yes)
+
+## ansible-playbook
+
+  (ansible-playbook) | boost   (tokens: ~80%  |  trace: yes)
+
+## basedpyright
+
+  (basedpyright) | boost   (tokens: ~80%  |  trace: yes)
+
+## biome
+
+  (biome) | boost   (tokens: ~80%  |  trace: yes)
+
+## brew
+
+  (brew install) | boost   (tokens: ~75%  |  trace: yes)
+
+## composer
+
+  (composer install) | boost   (tokens: ~80%  |  trace: yes)
+
+## df
+
+  (df) | boost   (tokens: ~70%  |  trace: yes)
+
+## du
+
+  (du) | boost   (tokens: ~70%  |  trace: yes)
+
+## fail2ban-client
+
+  (fail2ban-client) | boost   (tokens: ~70%  |  trace: yes)
+
+## gcc
+
+  (gcc) | boost   (tokens: ~80%  |  trace: yes)
+
+## gcloud
+
+  (gcloud) | boost   (tokens: ~70%  |  trace: yes)
+
+## gradle
+
+  (gradle) | boost   (tokens: ~80%  |  trace: yes)
+
+## hadolint
+
+  (hadolint) | boost   (tokens: ~75%  |  trace: yes)
+
+## helm
+
+  (helm) | boost   (tokens: ~75%  |  trace: yes)
+
+## iptables
+
+  (iptables) | boost   (tokens: ~70%  |  trace: yes)
+
+## jira
+
+  (jira) | boost   (tokens: ~75%  |  trace: yes)
+
+## jj
+
+  (jj) | boost   (tokens: ~70%  |  trace: yes)
+
+## jq
+
+  (jq) | boost   (tokens: ~70%  |  trace: yes)
+
+## just
+
+  (just) | boost   (tokens: ~70%  |  trace: yes)
+
+## make
+
+  (make) | boost   (tokens: ~75%  |  trace: yes)
+
+## markdownlint
+
+  (markdownlint) | boost   (tokens: ~75%  |  trace: yes)
+
+## mise
+
+  (mise) | boost   (tokens: ~75%  |  trace: yes)
+
+## mix
+
+  (mix compile) | boost   (tokens: ~75%  |  trace: yes)
+  (mix format) | boost   (tokens: ~70%  |  trace: yes)
+
+## mvn
+
+  (mvn) | boost   (tokens: ~80%  |  trace: yes)
+
+## nx
+
+  (nx) | boost   (tokens: ~80%  |  trace: yes)
+
+## ollama
+
+  (ollama) | boost   (tokens: ~70%  |  trace: yes)
+
+## oxlint
+
+  (oxlint) | boost   (tokens: ~80%  |  trace: yes)
+
+## ping
+
+  (ping) | boost   (tokens: ~75%  |  trace: yes)
+
+## pio
+
+  (pio run) | boost   (tokens: ~80%  |  trace: yes)
+
+## poetry
+
+  (poetry install) | boost   (tokens: ~80%  |  trace: yes)
+
+## pre-commit
+
+  (pre-commit) | boost   (tokens: ~80%  |  trace: yes)
+
+## ps
+
+  (ps) | boost   (tokens: ~70%  |  trace: yes)
+
+## quarto
+
+  (quarto render) | boost   (tokens: ~75%  |  trace: yes)
+
+## rsync
+
+  (rsync) | boost   (tokens: ~75%  |  trace: yes)
+
+## shellcheck
+
+  (shellcheck) | boost   (tokens: ~75%  |  trace: yes)
+
+## shopify
+
+  (shopify theme) | boost   (tokens: ~75%  |  trace: yes)
+
+## skopeo
+
+  (skopeo) | boost   (tokens: ~75%  |  trace: yes)
+
+## sops
+
+  (sops) | boost   (tokens: ~70%  |  trace: yes)
+
+## spring-boot
+
+  (spring-boot) | boost   (tokens: ~80%  |  trace: yes)
+
+## ssh
+
+  (ssh) | boost   (tokens: ~75%  |  trace: yes)
+
+## stat
+
+  (stat) | boost   (tokens: ~70%  |  trace: yes)
+
+## swift
+
+  (swift build) | boost   (tokens: ~80%  |  trace: yes)
+
+## systemctl
+
+  (systemctl status) | boost   (tokens: ~75%  |  trace: yes)
+
+## task
+
+  (task) | boost   (tokens: ~75%  |  trace: yes)
+
+## terraform
+
+  (terraform plan) | boost   (tokens: ~80%  |  trace: yes)
+
+## tofu
+
+  (tofu fmt) | boost   (tokens: ~70%  |  trace: yes)
+  (tofu init) | boost   (tokens: ~75%  |  trace: yes)
+  (tofu plan) | boost   (tokens: ~80%  |  trace: yes)
+  (tofu validate) | boost   (tokens: ~70%  |  trace: yes)
+
+## trunk
+
+  (trunk build) | boost   (tokens: ~75%  |  trace: yes)
+
+## turbo
+
+  (turbo) | boost   (tokens: ~80%  |  trace: yes)
+
+## ty
+
+  (ty) | boost   (tokens: ~80%  |  trace: yes)
+
+## uv
+
+  (uv sync) | boost   (tokens: ~80%  |  trace: yes)
+
+## xcodebuild
+
+  (xcodebuild) | boost   (tokens: ~85%  |  trace: yes)
+
+## yadm
+
+  (yadm) | boost   (tokens: ~70%  |  trace: yes)
+
+## yamllint
+
+  (yamllint) | boost   (tokens: ~75%  |  trace: yes)
+
+## ls
+
+  (ls) | boost   (tokens: ~65%  |  trace: yes)
+
+## grep
+
+  (grep) | boost   (tokens: ~75%  |  trace: yes)
+
+## find
+
+  (find) | boost   (tokens: ~70%  |  trace: yes)
+
+## wget
+
+  (wget) | boost   (tokens: ~65%  |  trace: yes)
+================================================================================
+LINKS
+================================================================================
+
+Website:        https://boost.jfrog.com/
+Docs overview:  https://boost.jfrog.com/docs/en/overview/
+Quickstart:     https://boost.jfrog.com/docs/en/quickstart/
+GitHub Actions: https://boost.jfrog.com/docs/en/github-actions/
+Why Boost:      https://boost.jfrog.com/docs/en/why-boost/
+Token savings:  https://boost.jfrog.com/docs/en/features/token-reduction/
+BoostGraph:     https://boost.jfrog.com/docs/en/features/boostgraph/
+TOML filters:   https://boost.jfrog.com/docs/en/toml-filters/
+Configuration:  https://boost.jfrog.com/docs/en/configuration/
+Observability:  https://boost.jfrog.com/docs/en/observability-platforms/
+Contact:        https://boost.jfrog.com/docs/en/contact/
+Intro blog:     https://boost.jfrog.com/blog/introducing-boost/
+Model routing:  https://boost.jfrog.com/blog/why-model-routing-backfires/
+Public preview: https://boost.jfrog.com/blog/boost-public-preview/
+Benchmarks:     https://boost.jfrog.com/blog/benchmarks-terminal-bench/
+Changelog:      https://boost.jfrog.com/docs/en/changelog/
+Short llms.txt: https://boost.jfrog.com/llms.txt
+Install llms:   https://boost.jfrog.com/llms-install.txt
+Agent skills:   https://boost.jfrog.com/.well-known/agent-skills/index.json
+Install skill:  https://boost.jfrog.com/.well-known/agent-skills/install-boost/SKILL.md
+Source:         https://github.com/jfrog/boost
