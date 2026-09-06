@@ -58,6 +58,11 @@
 
 ---
 
+> **プレビューに関する注意:** このソフトウェアはプレビュー版であり、JFrog の
+> [オンラインプレビュー契約](https://boost.jfrog.com/preview-agreement/)の対象となります。
+
+---
+
 <p align="center">
   <strong>マスコットの Frogi は、<code>boost</code> コマンドを単独で実行すると現れます。</strong>
 </p>
@@ -193,7 +198,7 @@ boost update
 
 ## ライセンス
 
-Copyright © 2026 JFrog Ltd. All rights reserved. [LICENSE](LICENSE) および [BETA_AGREEMENT.md](BETA_AGREEMENT.md) を参照してください。
+Copyright © 2026 JFrog Ltd. All rights reserved. [LICENSE](LICENSE) および [オンラインプレビュー契約](https://boost.jfrog.com/preview-agreement/) を参照してください。
 
 ---
 

@@ -59,6 +59,11 @@
 
 ---
 
+> **Preview Notice:** This software is in preview and subject to JFrog's
+> [Online Preview Agreement](https://boost.jfrog.com/preview-agreement/).
+
+---
+
 <p align="center">
   <strong>Frogi, our mascot, appears when you run just <code>boost</code>.</strong>
 </p>
@@ -208,7 +213,7 @@ Full policy, supported versions, and how to report a vulnerability: see [SECURIT
 
 ## License
 
-Copyright © 2026 JFrog Ltd. All rights reserved. See [LICENSE](LICENSE) and [BETA_AGREEMENT.md](BETA_AGREEMENT.md).
+Copyright © 2026 JFrog Ltd. All rights reserved. See [LICENSE](LICENSE) and the [Online Preview Agreement](https://boost.jfrog.com/preview-agreement/).
 
 ---
 

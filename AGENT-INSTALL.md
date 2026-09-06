@@ -73,7 +73,7 @@ anything. Include at least:
 1. What you will install or update
 2. Which agent integrations you will wire (or that you will run bare `boost init`)
 3. That Boost is preview software under the
-   [Online Preview Agreement](./PREVIEW_AGREEMENT.md)
+   [Online Preview Agreement](https://boost.jfrog.com/preview-agreement/)
 4. That Boost collects metadata such as timing, exit codes, and token savings to
    improve the product; raw command output stays local
 5. How to roll back if they change their mind
@@ -233,5 +233,5 @@ confirm before deleting anything outside the documented uninstall flow.
 - Product site: https://boost.jfrog.com/
 - Docs overview: https://boost.jfrog.com/docs/en/overview/
 - Why Boost: https://boost.jfrog.com/docs/en/why-boost/
-- Preview Agreement: [PREVIEW_AGREEMENT.md](./PREVIEW_AGREEMENT.md)
+- Preview Agreement: https://boost.jfrog.com/preview-agreement/
 - Security & privacy: [SECURITY.md](./SECURITY.md)

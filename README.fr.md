@@ -58,6 +58,11 @@
 
 ---
 
+> **Avis de préversion :** Ce logiciel est en préversion et soumis à l'
+> [Accord de préversion en ligne](https://boost.jfrog.com/preview-agreement/) de JFrog.
+
+---
+
 <p align="center">
   <strong>Frogi, notre mascotte, apparaît lorsque vous exécutez la commande <code>boost</code> sans argument.</strong>
 </p>
@@ -193,7 +198,7 @@ Pour consulter la politique complète, connaître les versions prises en charge 
 
 ## Licence
 
-Copyright © 2026 JFrog Ltd. Tous droits réservés. Voir [LICENSE](LICENSE) et [BETA_AGREEMENT.md](BETA_AGREEMENT.md).
+Copyright © 2026 JFrog Ltd. Tous droits réservés. Voir [LICENSE](LICENSE) et l'[Accord de préversion en ligne](https://boost.jfrog.com/preview-agreement/).
 
 ---
 

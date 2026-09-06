@@ -58,6 +58,11 @@
 
 ---
 
+> **पूर्वावलोकन सूचना:** यह सॉफ़्टवेयर पूर्वावलोकन (preview) में है और JFrog के
+> [ऑनलाइन पूर्वावलोकन अनुबंध](https://boost.jfrog.com/preview-agreement/) के अधीन है।
+
+---
+
 <p align="center">
   <strong>सिर्फ़ <code>boost</code> चलाने पर हमारा मैस्कॉट Frogi दिखाई देता है।</strong>
 </p>
@@ -193,7 +198,7 @@ boost update
 
 ## लाइसेंस
 
-Copyright © 2026 JFrog Ltd. सर्वाधिकार सुरक्षित। [LICENSE](LICENSE) और [BETA_AGREEMENT.md](BETA_AGREEMENT.md) देखें।
+Copyright © 2026 JFrog Ltd. सर्वाधिकार सुरक्षित। [LICENSE](LICENSE) और [ऑनलाइन पूर्वावलोकन अनुबंध](https://boost.jfrog.com/preview-agreement/) देखें।
 
 ---
 

@@ -58,6 +58,10 @@
 
 ---
 
+> **הודעת תצוגה מקדימה:** תוכנה זו נמצאת בתצוגה מקדימה וכפופה ל[הסכם התצוגה המקדימה המקוון](https://boost.jfrog.com/preview-agreement/) של JFrog.
+
+---
+
 <p align="center" dir="rtl">
   <strong>הקמע שלנו, Frogi, מופיע כשמריצים את <code>boost</code> ללא ארגומנטים.</strong>
 </p>
@@ -193,7 +197,7 @@ boost update
 
 ## רישיון
 
-זכויות יוצרים © 2026 JFrog Ltd. כל הזכויות שמורות. ראו [LICENSE](LICENSE) ו-[BETA_AGREEMENT.md](BETA_AGREEMENT.md).
+זכויות יוצרים © 2026 JFrog Ltd. כל הזכויות שמורות. ראו [LICENSE](LICENSE) ואת [הסכם התצוגה המקדימה המקוון](https://boost.jfrog.com/preview-agreement/).
 
 ---
 

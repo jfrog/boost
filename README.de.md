@@ -58,6 +58,11 @@
 
 ---
 
+> **Vorschau-Hinweis:** Diese Software befindet sich in der Vorschau und unterliegt JFrogs
+> [Online-Vorschau-Vereinbarung](https://boost.jfrog.com/preview-agreement/).
+
+---
+
 <p align="center">
   <strong>Frogi, unser Maskottchen, erscheint, wenn du nur <code>boost</code> ausführst.</strong>
 </p>
@@ -193,7 +198,7 @@ Die vollständige Richtlinie, Angaben zu unterstützten Versionen und eine Anlei
 
 ## Lizenz
 
-Copyright © 2026 JFrog Ltd. Alle Rechte vorbehalten. Siehe [LICENSE](LICENSE) und [BETA_AGREEMENT.md](BETA_AGREEMENT.md).
+Copyright © 2026 JFrog Ltd. Alle Rechte vorbehalten. Siehe [LICENSE](LICENSE) und die [Online-Vorschau-Vereinbarung](https://boost.jfrog.com/preview-agreement/).
 
 ---
 
