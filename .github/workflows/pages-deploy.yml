@@ -1,0 +1,69 @@
+# Deploys the Boost marketing site to GitHub Pages (boost.jfrog.com).
+#
+# Triggered by boost-cli's website.yml after it builds and uploads a Pages artifact.
+# Replaces the legacy "Deploy from a branch" flow that ran GitHub's built-in
+# pages-build-deployment workflow (Node 20 actions).
+#
+# One-time setup (repo admin):
+#   1. Settings → Pages → Build and deployment → Source: GitHub Actions
+#   2. Secret GH_RELEASE_TOKEN: PAT with actions:read on jfrog-fastci/boost-cli
+name: Deploy GitHub Pages
+
+on:
+  repository_dispatch:
+    types: [deploy-website]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: boost-cli workflow run ID that uploaded the site artifact
+        required: true
+      repo:
+        description: Source repository (owner/name)
+        required: false
+        default: jfrog-fastci/boost-cli
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download site artifact from boost-cli
+        env:
+          GH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
+          SOURCE_REPO: ${{ github.event.client_payload.repo || github.event.inputs.repo || 'jfrog-fastci/boost-cli' }}
+          SOURCE_RUN_ID: ${{ github.event.client_payload.run_id || github.event.inputs.run_id }}
+        run: |
+          set -euo pipefail
+          ARTIFACT_ID="$(gh api "repos/${SOURCE_REPO}/actions/runs/${SOURCE_RUN_ID}/artifacts" \
+            --jq '.artifacts[] | select(.name == "github-pages") | .id')"
+          if [ -z "$ARTIFACT_ID" ]; then
+            echo "No github-pages artifact on ${SOURCE_REPO} run ${SOURCE_RUN_ID}" >&2
+            exit 1
+          fi
+          mkdir -p _site
+          gh api "repos/${SOURCE_REPO}/actions/artifacts/${ARTIFACT_ID}/zip" > artifact.zip
+          unzip -q artifact.zip -d _site
+
+      - name: Ensure .nojekyll
+        run: touch _site/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+          include-hidden-files: true
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
