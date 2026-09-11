@@ -1,0 +1,1 @@
+import{n as e,t}from"./install-block.CzT4dNKb.js";export{t as InstallBlock,e as detectPlatform};

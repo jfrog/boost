@@ -1,0 +1,19 @@
+# Machine-readable context for autonomous agents visiting this site.
+# Human-readable product information: https://boost.jfrog.com/
+
+name: Boost CLI
+url: https://boost.jfrog.com/
+description: Boost is a free CLI that compresses noisy command output before it reaches Cursor, Claude Code, Codex CLI, or GitHub Copilot. Agents correct over-filtering with boost retrieve; Boost monitors those retrieve events and can disable the filter locally.
+
+documentation: https://boost.jfrog.com/docs/en/overview/
+quickstart: https://boost.jfrog.com/docs/en/quickstart/
+configuration: https://boost.jfrog.com/docs/en/configuration/
+toml_filters: https://boost.jfrog.com/docs/en/toml-filters/
+observability: https://boost.jfrog.com/docs/en/observability-platforms/
+changelog: https://boost.jfrog.com/docs/en/changelog/
+source: https://github.com/jfrog/boost
+llms_txt: https://boost.jfrog.com/llms.txt
+llms_full_txt: https://boost.jfrog.com/llms-full.txt
+llms_install_txt: https://boost.jfrog.com/llms-install.txt
+agent_skills: https://boost.jfrog.com/.well-known/agent-skills/index.json
+install_skill: https://boost.jfrog.com/.well-known/agent-skills/install-boost/SKILL.md
