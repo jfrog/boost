@@ -108,6 +108,7 @@ try {
 
     New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
     Copy-Item -LiteralPath $ExePath -Destination (Join-Path $InstallDir 'boost.exe') -Force
+    Set-Content -LiteralPath (Join-Path $InstallDir 'boost.install-channel') -Value 'standalone' -NoNewline
     $version = & (Join-Path $InstallDir 'boost.exe') version 2>$null
     if (-not $version) { $version = 'unknown' }
     Write-Host "→ Installed: $version to $(Join-Path $InstallDir 'boost.exe')"

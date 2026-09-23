@@ -93,6 +93,7 @@ fi
 # is user-writable, the empty case is the common one.
 mkdir -p "$INSTALL_DIR"
 install -m 0755 "$TMP/boost" "$INSTALL_DIR/boost"
+printf 'standalone\n' > "$INSTALL_DIR/boost.install-channel"
 echo "→ Installed: $("$INSTALL_DIR/boost" version 2>/dev/null || echo unknown)to $INSTALL_DIR/boost"
 
 
