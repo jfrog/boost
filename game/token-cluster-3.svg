@@ -1,0 +1,14 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A small cluster of useful tokens">
+  <path d="M 36.4 7.5 L 51.6 7.5 L 57.5 13.4 L 57.5 28.6 L 51.6 34.5 L 36.4 34.5 L 30.5 28.6 L 30.5 13.4 Z" fill="#f2c14a" stroke="#8a5a1e" stroke-width="3.0" stroke-linejoin="round"/>
+  <rect x="35.5" y="10.5" width="16.9" height="3.5" fill="#fff0b8"/>
+  <rect x="37.5" y="19.6" width="13.0" height="2.7" fill="#8a5a1e"/>
+  <rect x="37.5" y="25.3" width="8.1" height="2.7" fill="#8a5a1e"/>
+  <path d="M 13.4 10.5 L 28.6 10.5 L 34.5 16.4 L 34.5 31.6 L 28.6 37.5 L 13.4 37.5 L 7.5 31.6 L 7.5 16.4 Z" fill="#f2c14a" stroke="#8a5a1e" stroke-width="3.0" stroke-linejoin="round"/>
+  <rect x="12.5" y="13.5" width="16.9" height="3.5" fill="#fff0b8"/>
+  <rect x="14.5" y="22.6" width="13.0" height="2.7" fill="#8a5a1e"/>
+  <rect x="14.5" y="28.3" width="8.1" height="2.7" fill="#8a5a1e"/>
+  <path d="M 24.4 31.5 L 39.6 31.5 L 45.5 37.4 L 45.5 52.6 L 39.6 58.5 L 24.4 58.5 L 18.5 52.6 L 18.5 37.4 Z" fill="#f2c14a" stroke="#8a5a1e" stroke-width="3.0" stroke-linejoin="round"/>
+  <rect x="23.5" y="34.5" width="16.9" height="3.5" fill="#fff0b8"/>
+  <rect x="25.5" y="43.6" width="13.0" height="2.7" fill="#8a5a1e"/>
+  <rect x="25.5" y="49.3" width="8.1" height="2.7" fill="#8a5a1e"/>
+</svg>

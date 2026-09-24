@@ -1,0 +1,1 @@
+import{n as e,t}from"./install-block.bU_wTm3m.js";export{t as InstallBlock,e as detectPlatform};
