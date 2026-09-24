@@ -47,37 +47,13 @@ try {
         $Archive = 'boost-windows-amd64.zip'
         $Tag = $From
         if ($From -eq 'latest') {
-            $Tag = $null
-            try {
-                $apiHeaders = @{ Accept = 'application/vnd.github+json' }
-                if ($env:GITHUB_TOKEN) {
-                    $apiHeaders['Authorization'] = "Bearer $($env:GITHUB_TOKEN)"
-                } elseif ($env:GH_TOKEN) {
-                    $apiHeaders['Authorization'] = "Bearer $($env:GH_TOKEN)"
-                }
-                $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases?per_page=30" -Headers $apiHeaders
-                foreach ($rel in $releases) {
-                    foreach ($asset in $rel.assets) {
-                        if ($asset.name -eq $Archive) {
-                            $Tag = $rel.tag_name
-                            break
-                        }
-                    }
-                    if ($Tag) { break }
-                }
-            } catch {
-                $Tag = $null
+            $tagUrl = & curl.exe -fsSLI -o NUL -w '%{url_effective}' "https://github.com/$Repo/releases/latest"
+            if ($LASTEXITCODE -ne 0 -or -not $tagUrl) {
+                throw 'could not resolve latest release tag'
             }
+            $Tag = ($tagUrl -split '/tag/')[-1]
             if (-not $Tag) {
-                # Fallback: releases/latest redirect (desktop-only tags may 404 on CLI archives).
-                $tagUrl = & curl.exe -fsSLI -o NUL -w '%{url_effective}' "https://github.com/$Repo/releases/latest"
-                if ($LASTEXITCODE -ne 0 -or -not $tagUrl) {
-                    throw 'could not resolve latest release tag'
-                }
-                $Tag = ($tagUrl -split '/tag/')[-1]
-                if (-not $Tag) {
-                    throw 'could not resolve latest release tag'
-                }
+                throw 'could not resolve latest release tag'
             }
         }
 
