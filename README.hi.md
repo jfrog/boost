@@ -112,6 +112,12 @@ irm https://boost.jfrog.com/install.ps1 | iex
 boost init
 ```
 
+**इसे pi के साथ सेट अप करें** — `boost init` में pi शामिल नहीं है, इसलिए कम्युनिटी पैकेज [pi-jfrog-boost](https://github.com/darkdiamond/pi-jfrog-boost) का इस्तेमाल करें:
+
+```bash
+pi install npm:pi-jfrog-boost
+```
+
 अगर कोई AI कोडिंग एजेंट यूज़र की मशीन पर Boost इंस्टॉल कर रहा है, तो **[AGENT-INSTALL.md](./AGENT-INSTALL.md)** का पालन करें।
 
 ## Boost का इस्तेमाल कब करें
@@ -169,7 +175,7 @@ boost report -t
 
 ## Boost क्या रैप करता है
 
-- **एजेंट्स:** Cursor, Claude Code, GitHub Copilot, Codex CLI।
+- **एजेंट्स:** Cursor, Claude Code, GitHub Copilot, Codex CLI, pi।
 - **कमांड्स:** Docker, npm, pytest, Git, GitHub CLI और दूसरे शेल कमांड्स इसी रैपर से गुज़रते हैं।
 
 ## आपके एजेंट Boost का इस्तेमाल कैसे कर रहे हैं

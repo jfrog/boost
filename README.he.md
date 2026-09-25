@@ -111,6 +111,12 @@ irm https://boost.jfrog.com/install.ps1 | iex
 boost init
 ```
 
+**שלבו את Boost עם pi** — הפקודה `boost init` לא מכסה את pi, אז השתמשו בחבילה הקהילתית [pi-jfrog-boost](https://github.com/darkdiamond/pi-jfrog-boost):
+
+```bash
+pi install npm:pi-jfrog-boost
+```
+
 סוכני קוד מבוססי AI שמתקינים את Boost במחשב של משתמש צריכים לפעול לפי **[AGENT-INSTALL.md](./AGENT-INSTALL.md)**.
 
 ## מתי להשתמש ב-Boost
@@ -168,7 +174,7 @@ boost report -t
 
 ## מה Boost עוטף
 
-- **סוכנים:** Cursor, Claude Code, GitHub Copilot, Codex CLI.
+- **סוכנים:** Cursor, Claude Code, GitHub Copilot, Codex CLI, pi.
 - **פקודות:** אותה מעטפת משמשת לפקודות של Docker, npm, pytest, Git ו-GitHub CLI ולפקודות shell אחרות.
 
 ## איך הסוכנים שלכם משתמשים ב-Boost
