@@ -4,7 +4,7 @@
 #   .\install.ps1
 #
 # Environment:
-#   BOOST_INSTALL_FROM  - local .zip path, release tag (e.g. v1.2.3), or "latest" (default)
+#   BOOST_INSTALL_FROM  - local .zip path, directory with boost.exe, release tag, or "latest" (default)
 #   BOOST_INSTALL_DIR   - install directory (default: %LOCALAPPDATA%\boost\bin)
 
 $ErrorActionPreference = 'Stop'
@@ -28,16 +28,48 @@ function Write-Banner {
     Write-Host ''
 }
 
+function Clear-InternetDownloadBlock {
+    param([Parameter(Mandatory)][string]$LiteralPath)
+    if (Get-Command Unblock-File -ErrorAction SilentlyContinue) {
+        Unblock-File -LiteralPath $LiteralPath -ErrorAction SilentlyContinue | Out-Null
+    }
+}
+
+function Get-BoostInstalledVersion {
+    param([Parameter(Mandatory)][string]$Exe)
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'SilentlyContinue'
+    try {
+        $out = & $Exe version 2>$null
+        if ($out) { return [string]$out }
+    } catch {
+        # Best-effort probe only; copy + PATH update must still succeed.
+    } finally {
+        $ErrorActionPreference = $prev
+    }
+    return 'unknown'
+}
+
 $Tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("boost-install-" + [guid]::NewGuid().ToString())
 New-Item -ItemType Directory -Force -Path $Tmp | Out-Null
 try {
     $ExePath = Join-Path $Tmp 'boost.exe'
 
     if (Test-Path -LiteralPath $From) {
-        Write-Host "→ Installing from local archive: $From"
-        Expand-Archive -LiteralPath $From -DestinationPath $Tmp -Force
-        if (-not (Test-Path -LiteralPath $ExePath)) {
-            throw "archive missing 'boost.exe' binary"
+        $fromItem = Get-Item -LiteralPath $From
+        if ($fromItem.PSIsContainer) {
+            Write-Host "→ Installing from local directory: $From"
+            $srcExe = Join-Path $From 'boost.exe'
+            if (-not (Test-Path -LiteralPath $srcExe)) {
+                throw "directory missing 'boost.exe' binary"
+            }
+            Copy-Item -LiteralPath $srcExe -Destination $ExePath -Force
+        } else {
+            Write-Host "→ Installing from local archive: $From"
+            Expand-Archive -LiteralPath $From -DestinationPath $Tmp -Force
+            if (-not (Test-Path -LiteralPath $ExePath)) {
+                throw "archive missing 'boost.exe' binary"
+            }
         }
     } else {
         if (-not (Get-Command curl.exe -ErrorAction SilentlyContinue)) {
@@ -82,11 +114,13 @@ try {
         throw 'download failed: binary not found'
     }
 
+    Clear-InternetDownloadBlock -LiteralPath $ExePath
     New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
-    Copy-Item -LiteralPath $ExePath -Destination (Join-Path $InstallDir 'boost.exe') -Force
-    $version = & (Join-Path $InstallDir 'boost.exe') version 2>$null
-    if (-not $version) { $version = 'unknown' }
-    Write-Host "→ Installed: $version to $(Join-Path $InstallDir 'boost.exe')"
+    $DestExe = Join-Path $InstallDir 'boost.exe'
+    Copy-Item -LiteralPath $ExePath -Destination $DestExe -Force
+    Clear-InternetDownloadBlock -LiteralPath $DestExe
+    $version = Get-BoostInstalledVersion -Exe $DestExe
+    Write-Host "→ Installed: $version to $DestExe"
 
     $userPathParts = ([Environment]::GetEnvironmentVariable('Path', 'User') -split ';' | Where-Object { $_ -ne '' })
     if ($userPathParts -notcontains $InstallDir) {
