@@ -105,7 +105,7 @@ The following are outside the scope of this policy:
 
 ## Terms & Privacy
 
-- Use of the beta is governed by the [JFrog Online Beta Agreement](./BETA_AGREEMENT.md).
+- Use of Boost is governed by the [JFrog Online Preview Agreement](https://boost.jfrog.com/preview-agreement/), the [JFrog Terms of Use](https://jfrog.com/terms-of-use/), and the [JFrog Privacy Notice](https://jfrog.com/privacy-notice/).
 - Sub-processors are listed at [jfrog.com/trust/privacy/sub-processors](https://jfrog.com/trust/privacy/sub-processors/).
 
 ## Contact
