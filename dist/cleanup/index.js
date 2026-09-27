@@ -94061,11 +94061,77 @@ class Request {
     }
   }
 
-  onUpgrade (statusCode, headers, socket) {
+  /**
+   * @param {number|null} statusCode
+   * @param {Buffer[]|null} headers
+   * @param {import('node:stream').Duplex} socket
+   * @param {string} [statusText]
+   */
+  onUpgrade (statusCode, headers, socket, statusText = '') {
+    this.onFinally()
+
     assert(!this.aborted)
     assert(!this.completed)
 
-    return this[kHandler].onUpgrade(statusCode, headers, socket)
+    if (statusCode !== null) {
+      this.#publishUpgradeHeaders(statusCode, headers, statusText)
+    }
+
+    const result = this[kHandler].onUpgrade(statusCode, headers, socket)
+
+    if (!this.aborted) {
+      this.completed = true
+      if (statusCode !== null) {
+        this.#publishUpgradeTrailers()
+      }
+    }
+
+    return result
+  }
+
+  /**
+   * @param {number} statusCode
+   * @param {import('node:http2').IncomingHttpHeaders} headers
+   * @param {(headers: import('node:http2').IncomingHttpHeaders) => Buffer[]} parseHeaders
+   * @param {string} [statusText]
+   */
+  onUpgradeResponse (statusCode, headers, parseHeaders, statusText = '') {
+    assert(!this.aborted)
+    assert(this.completed)
+
+    if (channels.headers.hasSubscribers) {
+      this.#publishUpgradeHeaders(statusCode, parseHeaders(headers), statusText)
+    }
+    this.#publishUpgradeTrailers()
+  }
+
+  /**
+   * @param {Error} error
+   */
+  onUpgradeError (error) {
+    assert(!this.aborted)
+    assert(this.completed)
+
+    if (channels.error.hasSubscribers) {
+      channels.error.publish({ request: this, error })
+    }
+  }
+
+  /**
+   * @param {number} statusCode
+   * @param {Buffer[]} headers
+   * @param {string} statusText
+   */
+  #publishUpgradeHeaders (statusCode, headers, statusText) {
+    if (channels.headers.hasSubscribers) {
+      channels.headers.publish({ request: this, response: { statusCode, headers, statusText } })
+    }
+  }
+
+  #publishUpgradeTrailers () {
+    if (channels.trailers.hasSubscribers) {
+      channels.trailers.publish({ request: this, trailers: [] })
+    }
   }
 
   onComplete (trailers) {
@@ -95964,7 +96030,7 @@ class Parser {
   }
 
   onUpgrade (head) {
-    const { upgrade, client, socket, headers, statusCode } = this
+    const { upgrade, client, socket, headers, statusCode, statusText } = this
 
     assert(upgrade)
     assert(client[kSocket] === socket)
@@ -95999,9 +96065,10 @@ class Parser {
     client.emit('disconnect', client[kUrl], [client], new InformationalError('upgrade'))
 
     try {
-      request.onUpgrade(statusCode, headers, socket)
-    } catch (err) {
-      util.destroy(socket, err)
+      request.onUpgrade(statusCode, headers, socket, statusText)
+    } catch (error) {
+      util.errorRequest(client, request, error)
+      util.destroy(socket, error)
     }
 
     client[kResume]()
@@ -96582,12 +96649,22 @@ function writeH1 (client, request) {
   const socket = client[kSocket]
   clearIdleSocketValidation(socket)
 
-  const abort = (err) => {
-    if (request.aborted || request.completed) {
+  /**
+   * @param {Error} [error]
+   */
+  const abort = (error) => {
+    if (request.aborted) {
       return
     }
 
-    util.errorRequest(client, request, err || new RequestAbortedError())
+    if (request.completed) {
+      if (request.upgrade || request.method === 'CONNECT') {
+        util.destroy(socket, new InformationalError('aborted'))
+      }
+      return
+    }
+
+    util.errorRequest(client, request, error || new RequestAbortedError())
 
     util.destroy(body)
     util.destroy(socket, new InformationalError('aborted'))
@@ -97044,6 +97121,7 @@ module.exports = connectH1
 
 
 const assert = __nccwpck_require__(98061)
+const { errorMonitor } = __nccwpck_require__(15673)
 const { pipeline } = __nccwpck_require__(84492)
 const util = __nccwpck_require__(83983)
 const {
@@ -97118,6 +97196,15 @@ function parseH2Headers (headers) {
   }
 
   return result
+}
+
+/**
+ * @param {import('node:http2').IncomingHttpHeaders} headers
+ * @returns {Buffer[]}
+ */
+function parseH2ResponseHeaders (headers) {
+  const { [HTTP2_HEADER_STATUS]: _statusCode, ...realHeaders } = headers
+  return parseH2Headers(realHeaders)
 }
 
 async function connectH2 (client, socket) {
@@ -97340,22 +97427,32 @@ function writeH2 (client, request) {
   headers[HTTP2_HEADER_AUTHORITY] = host || `${hostname}${port ? `:${port}` : ''}`
   headers[HTTP2_HEADER_METHOD] = method
 
-  const abort = (err) => {
-    if (request.aborted || request.completed) {
+  /**
+   * @param {Error} [error]
+   */
+  const abort = (error) => {
+    if (request.aborted) {
       return
     }
 
-    err = err || new RequestAbortedError()
+    if (request.completed) {
+      if (method === 'CONNECT' && stream != null) {
+        util.destroy(stream, error || new RequestAbortedError())
+      }
+      return
+    }
 
-    util.errorRequest(client, request, err)
+    error = error || new RequestAbortedError()
+
+    util.errorRequest(client, request, error)
 
     if (stream != null) {
-      util.destroy(stream, err)
+      util.destroy(stream, error)
     }
 
     // We do not destroy the socket as we can continue using the session
     // the stream get's destroyed and the session remains to create new streams
-    util.destroy(body, err)
+    util.destroy(body, error)
     client[kQueue][client[kRunningIdx]++] = null
     client[kResume]()
   }
@@ -97374,25 +97471,57 @@ function writeH2 (client, request) {
 
   if (method === 'CONNECT') {
     session.ref()
-    // We are already connected, streams are pending, first request
-    // will create a new stream. We trigger a request to create the stream and wait until
-    // `ready` event is triggered
     // We disabled endStream to allow the user to write to the stream
     stream = session.request(headers, { endStream: false, signal })
+    let upgradeResponseFinished = false
 
-    if (stream.id && !stream.pending) {
-      request.onUpgrade(null, null, stream)
-      ++session[kOpenStreams]
-      client[kQueue][client[kRunningIdx]++] = null
-    } else {
-      stream.once('ready', () => {
-        request.onUpgrade(null, null, stream)
-        ++session[kOpenStreams]
-        client[kQueue][client[kRunningIdx]++] = null
-      })
+    /**
+     * @param {import('node:http2').IncomingHttpHeaders} headers
+     */
+    const onResponse = (headers) => {
+      upgradeResponseFinished = true
+      stream.off(errorMonitor, onUpgradeError)
+      request.onUpgradeResponse(Number(headers[HTTP2_HEADER_STATUS]), headers, parseH2ResponseHeaders)
     }
 
+    /**
+     * @param {Error} error
+     */
+    const onUpgradeError = (error) => {
+      upgradeResponseFinished = true
+      stream.off('response', onResponse)
+      request.onUpgradeError(error)
+    }
+
+    const onReady = () => {
+      try {
+        request.onUpgrade(null, null, stream)
+      } catch (error) {
+        stream.off('response', onResponse)
+        abort(error)
+        return
+      }
+
+      if (request.aborted) {
+        return
+      }
+
+      stream.off('error', abort)
+      stream.once(errorMonitor, onUpgradeError)
+      client[kQueue][client[kRunningIdx]++] = null
+    }
+
+    stream.once('response', onResponse)
+    stream.once('error', abort)
+    ++session[kOpenStreams]
+    onReady()
+
     stream.once('close', () => {
+      if (!upgradeResponseFinished && request.completed) {
+        stream.off('response', onResponse)
+        stream.off(errorMonitor, onUpgradeError)
+        request.onUpgradeError(new InformationalError(`HTTP/2: "stream error" received - code ${stream.rstCode}`))
+      }
       session[kOpenStreams] -= 1
       if (session[kOpenStreams] === 0) session.unref()
     })
@@ -100206,7 +100335,10 @@ class RetryHandler {
     this.retryCount += 1
 
     if (statusCode >= 300) {
-      if (this.retryOpts.statusCodes.includes(statusCode) === false) {
+      // Only expose a response if no earlier attempt has reached the caller.
+      // Otherwise abort this attempt so the error settles the existing body
+      // instead of replacing it with a new response.
+      if (!this.headersSent && this.retryOpts.statusCodes.includes(statusCode) === false) {
         this.headersSent = true
         this.checkpointResponseEnd(headers, resume)
         return this.handler.onHeaders(
@@ -130931,8 +131063,12 @@ __nccwpck_require__.d(mappers_namespaceObject, {
   "ContainerGetPropertiesExceptionHeaders": () => (ContainerGetPropertiesExceptionHeaders),
   "ContainerGetPropertiesHeaders": () => (ContainerGetPropertiesHeaders),
   "ContainerItem": () => (ContainerItem),
+  "ContainerListBlobFlatSegmentApacheArrowExceptionHeaders": () => (ContainerListBlobFlatSegmentApacheArrowExceptionHeaders),
+  "ContainerListBlobFlatSegmentApacheArrowHeaders": () => (ContainerListBlobFlatSegmentApacheArrowHeaders),
   "ContainerListBlobFlatSegmentExceptionHeaders": () => (ContainerListBlobFlatSegmentExceptionHeaders),
   "ContainerListBlobFlatSegmentHeaders": () => (ContainerListBlobFlatSegmentHeaders),
+  "ContainerListBlobHierarchySegmentApacheArrowExceptionHeaders": () => (ContainerListBlobHierarchySegmentApacheArrowExceptionHeaders),
+  "ContainerListBlobHierarchySegmentApacheArrowHeaders": () => (ContainerListBlobHierarchySegmentApacheArrowHeaders),
   "ContainerListBlobHierarchySegmentExceptionHeaders": () => (ContainerListBlobHierarchySegmentExceptionHeaders),
   "ContainerListBlobHierarchySegmentHeaders": () => (ContainerListBlobHierarchySegmentHeaders),
   "ContainerProperties": () => (ContainerProperties),
@@ -152857,7 +152993,7 @@ function xml_stringifyXML(obj, opts = {}) {
  * @param opts - Options that govern the parsing of given xml string
  * `includeRoot` indicates whether the root element is to be included or not in the output
  */
-async function parseXML(str, opts = {}) {
+async function xml_parseXML(str, opts = {}) {
     if (!str) {
         throw new Error("Document is empty");
     }
@@ -156846,7 +156982,7 @@ function cache_getCachedDefaultHttpClient() {
 /**
  * Specifies the format the service should use to return list results.
  */
-const StorageResponseFormat = {
+const StorageResponseFormat_StorageResponseFormat = {
     /**
      * Default. Currently maps to {@link StorageResponseFormat.Xml}, but may be updated in future releases.
      */
@@ -158667,8 +158803,8 @@ class UserDelegationKeyCredential {
 ;// CONCATENATED MODULE: ./node_modules/@azure/storage-blob/dist/esm/utils/constants.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-const esm_utils_constants_SDK_VERSION = "12.33.0";
-const constants_SERVICE_VERSION = "2026-06-06";
+const esm_utils_constants_SDK_VERSION = "12.34.0";
+const constants_SERVICE_VERSION = "2026-10-06";
 const BLOCK_BLOB_MAX_UPLOAD_BLOB_BYTES = 256 * 1024 * 1024; // 256MB
 const BLOCK_BLOB_MAX_STAGE_BLOCK_BYTES = 4000 * 1024 * 1024; // 4000MB
 const BLOCK_BLOB_MAX_BLOCKS = 50000;
@@ -158680,6 +158816,12 @@ const REQUEST_TIMEOUT = 100 * 1000; // In ms
  * The OAuth scope to use with Azure Storage.
  */
 const constants_StorageOAuthScopes = "https://storage.azure.com/.default";
+/**
+ * The media type returned by the List Blobs Apache Arrow operation when Apache Arrow
+ * is enabled for the account. When the response Content-Type differs from this value,
+ * the service has fallen back to XML.
+ */
+const constants_ApacheArrowContentType = "application/vnd.apache.arrow.stream";
 const utils_constants_URLConstants = {
     Parameters: {
         FORCE_BROWSER_NO_CACHE: "_",
@@ -159033,7 +159175,7 @@ function Pipeline_getCoreClientOptions(pipeline) {
                 },
             },
             deserializationOptions: {
-                parseXML: parseXML,
+                parseXML: xml_parseXML,
                 serializerOptions: {
                     xml: {
                         // Use customized XML char key of "#" so we can deserialize metadata
@@ -163120,6 +163262,66 @@ const ContainerListBlobFlatSegmentExceptionHeaders = {
         },
     },
 };
+const ContainerListBlobFlatSegmentApacheArrowHeaders = {
+    serializedName: "Container_listBlobFlatSegmentApacheArrowHeaders",
+    type: {
+        name: "Composite",
+        className: "ContainerListBlobFlatSegmentApacheArrowHeaders",
+        modelProperties: {
+            contentType: {
+                serializedName: "content-type",
+                xmlName: "content-type",
+                type: {
+                    name: "String",
+                },
+            },
+            clientRequestId: {
+                serializedName: "x-ms-client-request-id",
+                xmlName: "x-ms-client-request-id",
+                type: {
+                    name: "String",
+                },
+            },
+            requestId: {
+                serializedName: "x-ms-request-id",
+                xmlName: "x-ms-request-id",
+                type: {
+                    name: "String",
+                },
+            },
+            version: {
+                serializedName: "x-ms-version",
+                xmlName: "x-ms-version",
+                type: {
+                    name: "String",
+                },
+            },
+            date: {
+                serializedName: "date",
+                xmlName: "date",
+                type: {
+                    name: "DateTimeRfc1123",
+                },
+            },
+        },
+    },
+};
+const ContainerListBlobFlatSegmentApacheArrowExceptionHeaders = {
+    serializedName: "Container_listBlobFlatSegmentApacheArrowExceptionHeaders",
+    type: {
+        name: "Composite",
+        className: "ContainerListBlobFlatSegmentApacheArrowExceptionHeaders",
+        modelProperties: {
+            errorCode: {
+                serializedName: "x-ms-error-code",
+                xmlName: "x-ms-error-code",
+                type: {
+                    name: "String",
+                },
+            },
+        },
+    },
+};
 const ContainerListBlobHierarchySegmentHeaders = {
     serializedName: "Container_listBlobHierarchySegmentHeaders",
     type: {
@@ -163176,6 +163378,66 @@ const ContainerListBlobHierarchySegmentExceptionHeaders = {
     type: {
         name: "Composite",
         className: "ContainerListBlobHierarchySegmentExceptionHeaders",
+        modelProperties: {
+            errorCode: {
+                serializedName: "x-ms-error-code",
+                xmlName: "x-ms-error-code",
+                type: {
+                    name: "String",
+                },
+            },
+        },
+    },
+};
+const ContainerListBlobHierarchySegmentApacheArrowHeaders = {
+    serializedName: "Container_listBlobHierarchySegmentApacheArrowHeaders",
+    type: {
+        name: "Composite",
+        className: "ContainerListBlobHierarchySegmentApacheArrowHeaders",
+        modelProperties: {
+            contentType: {
+                serializedName: "content-type",
+                xmlName: "content-type",
+                type: {
+                    name: "String",
+                },
+            },
+            clientRequestId: {
+                serializedName: "x-ms-client-request-id",
+                xmlName: "x-ms-client-request-id",
+                type: {
+                    name: "String",
+                },
+            },
+            requestId: {
+                serializedName: "x-ms-request-id",
+                xmlName: "x-ms-request-id",
+                type: {
+                    name: "String",
+                },
+            },
+            version: {
+                serializedName: "x-ms-version",
+                xmlName: "x-ms-version",
+                type: {
+                    name: "String",
+                },
+            },
+            date: {
+                serializedName: "date",
+                xmlName: "date",
+                type: {
+                    name: "DateTimeRfc1123",
+                },
+            },
+        },
+    },
+};
+const ContainerListBlobHierarchySegmentApacheArrowExceptionHeaders = {
+    serializedName: "Container_listBlobHierarchySegmentApacheArrowExceptionHeaders",
+    type: {
+        name: "Composite",
+        className: "ContainerListBlobHierarchySegmentApacheArrowExceptionHeaders",
         modelProperties: {
             errorCode: {
                 serializedName: "x-ms-error-code",
@@ -163613,6 +163875,34 @@ const BlobDownloadHeaders = {
                 xmlName: "x-ms-structured-content-length",
                 type: {
                     name: "Number",
+                },
+            },
+            accessTier: {
+                serializedName: "x-ms-access-tier",
+                xmlName: "x-ms-access-tier",
+                type: {
+                    name: "String",
+                },
+            },
+            accessTierInferred: {
+                serializedName: "x-ms-access-tier-inferred",
+                xmlName: "x-ms-access-tier-inferred",
+                type: {
+                    name: "Boolean",
+                },
+            },
+            accessTierChangedOn: {
+                serializedName: "x-ms-access-tier-change-time",
+                xmlName: "x-ms-access-tier-change-time",
+                type: {
+                    name: "DateTimeRfc1123",
+                },
+            },
+            smartAccessTier: {
+                serializedName: "x-ms-smart-access-tier",
+                xmlName: "x-ms-smart-access-tier",
+                type: {
+                    name: "String",
                 },
             },
             errorCode: {
@@ -167230,6 +167520,13 @@ const BlockBlobUploadHeaders = {
                     name: "ByteArray",
                 },
             },
+            xMsContentCrc64: {
+                serializedName: "x-ms-content-crc64",
+                xmlName: "x-ms-content-crc64",
+                type: {
+                    name: "ByteArray",
+                },
+            },
             clientRequestId: {
                 serializedName: "x-ms-client-request-id",
                 xmlName: "x-ms-client-request-id",
@@ -167342,6 +167639,13 @@ const BlockBlobPutBlobFromUrlHeaders = {
             contentMD5: {
                 serializedName: "content-md5",
                 xmlName: "content-md5",
+                type: {
+                    name: "ByteArray",
+                },
+            },
+            xMsContentCrc64: {
+                serializedName: "x-ms-content-crc64",
+                xmlName: "x-ms-content-crc64",
                 type: {
                     name: "ByteArray",
                 },
@@ -167943,7 +168247,7 @@ const timeoutInSeconds = {
 const version = {
     parameterPath: "version",
     mapper: {
-        defaultValue: "2026-06-06",
+        defaultValue: "2026-10-06",
         isConstant: true,
         serializedName: "x-ms-version",
         type: {
@@ -168483,6 +168787,27 @@ const startFrom = {
     mapper: {
         serializedName: "startFrom",
         xmlName: "startFrom",
+        type: {
+            name: "String",
+        },
+    },
+};
+const accept2 = {
+    parameterPath: "accept",
+    mapper: {
+        defaultValue: "application/vnd.apache.arrow.stream,application/xml",
+        isConstant: true,
+        serializedName: "Accept",
+        type: {
+            name: "String",
+        },
+    },
+};
+const endBefore = {
+    parameterPath: ["options", "endBefore"],
+    mapper: {
+        serializedName: "endBefore",
+        xmlName: "endBefore",
         type: {
             name: "String",
         },
@@ -169243,7 +169568,7 @@ const body1 = {
         },
     },
 };
-const accept2 = {
+const accept3 = {
     parameterPath: "accept",
     mapper: {
         defaultValue: "application/xml",
@@ -170086,6 +170411,14 @@ class ContainerImpl {
         return this.client.sendOperationRequest({ options }, listBlobFlatSegmentOperationSpec);
     }
     /**
+     * The List Blobs operation returns a list of the blobs under the specified container. This operation
+     * is for Apache Arrow use case so response is returned as raw to be deserialized by the client.
+     * @param options The options parameters.
+     */
+    listBlobFlatSegmentApacheArrow(options) {
+        return this.client.sendOperationRequest({ options }, listBlobFlatSegmentApacheArrowOperationSpec);
+    }
+    /**
      * [Update] The List Blobs operation returns a list of the blobs under the specified container
      * @param delimiter When the request includes this parameter, the operation returns a BlobPrefix
      *                  element in the response body that acts as a placeholder for all blobs whose names begin with the
@@ -170095,6 +170428,19 @@ class ContainerImpl {
      */
     listBlobHierarchySegment(delimiter, options) {
         return this.client.sendOperationRequest({ delimiter, options }, listBlobHierarchySegmentOperationSpec);
+    }
+    /**
+     * [Update] The List Blobs operation returns a list of the blobs under the specified container. This
+     * operation is for Apache Arrow use case so response is returned as raw to be deserialized by the
+     * client.
+     * @param delimiter When the request includes this parameter, the operation returns a BlobPrefix
+     *                  element in the response body that acts as a placeholder for all blobs whose names begin with the
+     *                  same substring up to the appearance of the delimiter character. The delimiter may be a single
+     *                  character or a string.
+     * @param options The options parameters.
+     */
+    listBlobHierarchySegmentApacheArrow(delimiter, options) {
+        return this.client.sendOperationRequest({ delimiter, options }, listBlobHierarchySegmentApacheArrowOperationSpec);
     }
     /**
      * Returns the sku name and account kind
@@ -170587,6 +170933,42 @@ const listBlobFlatSegmentOperationSpec = {
     isXML: true,
     serializer: container_xmlSerializer,
 };
+const listBlobFlatSegmentApacheArrowOperationSpec = {
+    path: "/{containerName}",
+    httpMethod: "GET",
+    responses: {
+        200: {
+            bodyMapper: {
+                type: { name: "Stream" },
+                serializedName: "parsedResponse",
+            },
+            headersMapper: ContainerListBlobFlatSegmentApacheArrowHeaders,
+        },
+        default: {
+            bodyMapper: StorageError,
+            headersMapper: ContainerListBlobFlatSegmentApacheArrowExceptionHeaders,
+        },
+    },
+    queryParameters: [
+        timeoutInSeconds,
+        comp2,
+        prefix,
+        marker,
+        maxPageSize,
+        restype2,
+        include1,
+        startFrom,
+        endBefore,
+    ],
+    urlParameters: [url],
+    headerParameters: [
+        version,
+        requestId,
+        accept2,
+    ],
+    isXML: true,
+    serializer: container_xmlSerializer,
+};
 const listBlobHierarchySegmentOperationSpec = {
     path: "/{containerName}",
     httpMethod: "GET",
@@ -170616,6 +170998,43 @@ const listBlobHierarchySegmentOperationSpec = {
         version,
         requestId,
         accept1,
+    ],
+    isXML: true,
+    serializer: container_xmlSerializer,
+};
+const listBlobHierarchySegmentApacheArrowOperationSpec = {
+    path: "/{containerName}",
+    httpMethod: "GET",
+    responses: {
+        200: {
+            bodyMapper: {
+                type: { name: "Stream" },
+                serializedName: "parsedResponse",
+            },
+            headersMapper: ContainerListBlobHierarchySegmentApacheArrowHeaders,
+        },
+        default: {
+            bodyMapper: StorageError,
+            headersMapper: ContainerListBlobHierarchySegmentApacheArrowExceptionHeaders,
+        },
+    },
+    queryParameters: [
+        timeoutInSeconds,
+        comp2,
+        prefix,
+        marker,
+        maxPageSize,
+        restype2,
+        include1,
+        startFrom,
+        endBefore,
+        delimiter,
+    ],
+    urlParameters: [url],
+    headerParameters: [
+        version,
+        requestId,
+        accept2,
     ],
     isXML: true,
     serializer: container_xmlSerializer,
@@ -171878,7 +172297,7 @@ const uploadPagesOperationSpec = {
         transactionalContentMD5,
         transactionalContentCrc64,
         contentType1,
-        accept2,
+        accept3,
         pageWrite,
         ifSequenceNumberLessThanOrEqualTo,
         ifSequenceNumberLessThan,
@@ -172286,7 +172705,7 @@ const appendBlockOperationSpec = {
         transactionalContentMD5,
         transactionalContentCrc64,
         contentType1,
-        accept2,
+        accept3,
         structuredContentLength,
         maxSize,
         appendPosition,
@@ -172520,7 +172939,7 @@ const uploadOperationSpec = {
         transactionalContentMD5,
         transactionalContentCrc64,
         contentType1,
-        accept2,
+        accept3,
         structuredContentLength,
         blobType2,
     ],
@@ -172619,7 +173038,7 @@ const stageBlockOperationSpec = {
         transactionalContentMD5,
         transactionalContentCrc64,
         contentType1,
-        accept2,
+        accept3,
         structuredContentLength,
     ],
     isXML: true,
@@ -172798,7 +173217,7 @@ class storageClient_StorageClient extends ExtendedServiceClient {
         const defaults = {
             requestContentType: "application/json; charset=utf-8",
         };
-        const packageDetails = `azsdk-js-azure-storage-blob/12.33.0`;
+        const packageDetails = `azsdk-js-azure-storage-blob/12.34.0`;
         const userAgentPrefix = options.userAgentOptions && options.userAgentOptions.userAgentPrefix
             ? `${options.userAgentOptions.userAgentPrefix} ${packageDetails}`
             : `${packageDetails}`;
@@ -172814,7 +173233,7 @@ class storageClient_StorageClient extends ExtendedServiceClient {
         // Parameter assignments
         this.url = url;
         // Assigning values to Constant parameters
-        this.version = options.version || "2026-06-06";
+        this.version = options.version || "2026-10-06";
         this.service = new ServiceImpl(this);
         this.container = new ContainerImpl(this);
         this.blob = new BlobImpl(this);
@@ -172863,6 +173282,7 @@ class StorageContextClient_StorageContextClient extends storageClient_StorageCli
 ;// CONCATENATED MODULE: ./node_modules/@azure/storage-blob/dist/esm/utils/utils.common.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 
 
 
@@ -173526,6 +173946,18 @@ function utils_common_parseObjectReplicationRecord(objectReplicationRecord) {
     return orProperties;
 }
 /**
+ * Resolves a {@link StorageResponseFormat} to the concrete format the client should use.
+ * `Auto` currently resolves to `Xml`; this mapping may change in a future service version.
+ *
+ * @param responseFormat - The requested response format, or undefined to use the default.
+ */
+function utils_common_resolveResponseFormat(responseFormat) {
+    if (responseFormat === undefined || responseFormat === StorageResponseFormat.Auto) {
+        return StorageResponseFormat.Xml;
+    }
+    return responseFormat;
+}
+/**
  * Attach a TokenCredential to an object.
  *
  * @param thing -
@@ -173634,6 +174066,45 @@ function utils_utils_common_EscapePath(blobName) {
     return split.join("/");
 }
 /**
+ * Reads a raw response body (a Node.js readable stream or a browser Blob) into a
+ * single byte array. Shared by the Apache Arrow or XML List Blobs response parsers.
+ */
+async function utils_common_readResponseBodyToBytes(response) {
+    if (response.blobBody) {
+        const blob = await response.blobBody;
+        return new Uint8Array(await blob.arrayBuffer());
+    }
+    if (response.readableStreamBody) {
+        return readNodeStreamToBytes(response.readableStreamBody);
+    }
+    throw new RangeError("List Blobs response body is empty or unavailable.");
+}
+/**
+ * Reads a Node.js readable stream to completion, concatenating its chunks into a
+ * single byte array.
+ */
+function readNodeStreamToBytes(stream) {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        let totalLength = 0;
+        stream.on("data", (chunk) => {
+            const bytes = typeof chunk === "string" ? new TextEncoder().encode(chunk) : chunk;
+            chunks.push(bytes);
+            totalLength += bytes.byteLength;
+        });
+        stream.on("end", () => {
+            const result = new Uint8Array(totalLength);
+            let offset = 0;
+            for (const chunk of chunks) {
+                result.set(chunk, offset);
+                offset += chunk.byteLength;
+            }
+            resolve(result);
+        });
+        stream.on("error", reject);
+    });
+}
+/**
  * A typesafe helper for ensuring that a given response object has
  * the original _response attached.
  * @param response - A response object from calling a client operation
@@ -173739,6 +174210,229 @@ const tracing_tracingClient = createTracingClient({
     namespace: "Microsoft.Storage",
 });
 //# sourceMappingURL=tracing.js.map
+;// CONCATENATED MODULE: ./node_modules/@azure/storage-blob/dist/esm/utils/blobListArrowParser.js
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+
+/**
+ * Reads the raw body of an Apache Arrow List Blobs response (a Node.js readable
+ * stream or a browser Blob) and parses it into blob items and prefixes.
+ *
+ * @param response - The raw stream response returned by the Apache Arrow list operation.
+ */
+async function blobListArrowParser_parseBlobListArrowResponse(response) {
+    // Load apache-arrow lazily so it is only pulled in when the Arrow format is requested.
+    const { tableFromIPC } = await __nccwpck_require__.e(/* import() */ 437).then(__nccwpck_require__.bind(__nccwpck_require__, 65437));
+    // Node streams the body into apache-arrow so record batches are read incrementally;
+    // the browser reads the whole Blob.
+    const table = response.readableStreamBody
+        ? await tableFromIPC(response.readableStreamBody)
+        : tableFromIPC(await readResponseBodyToBytes(response));
+    return projectArrowTable(table);
+}
+/**
+ * Reconstructs blob items and prefixes from a decoded Apache Arrow table.
+ *
+ * The Arrow data is columnar: each field (e.g. `Name`, `Content-Length`) is a
+ * separate column. We reconstruct one {@link BlobItemInternal} row per row by reading
+ * each column at that row index; the caller projects those to public models. The
+ * continuation token travels in the schema metadata (a page-level value, not a column).
+ */
+function projectArrowTable(table) {
+    const nextMarker = table.schema.metadata?.get("NextMarker") ?? undefined;
+    const getColumn = (columnName) => table.getChild(columnName);
+    const cell = (rowIndex, columnName) => getColumn(columnName)?.get(rowIndex);
+    const asString = (rowIndex, columnName) => {
+        const value = cell(rowIndex, columnName);
+        return value === undefined || value === null ? undefined : String(value);
+    };
+    const asBoolean = (rowIndex, columnName) => {
+        const value = cell(rowIndex, columnName);
+        return value === undefined || value === null ? undefined : Boolean(value);
+    };
+    const asNumber = (rowIndex, columnName) => {
+        const value = cell(rowIndex, columnName);
+        return value === undefined || value === null ? undefined : Number(value);
+    };
+    const asDate = (rowIndex, columnName) => {
+        const value = cell(rowIndex, columnName);
+        if (value === undefined || value === null) {
+            return undefined;
+        }
+        // apache-arrow normalizes every Timestamp unit to epoch milliseconds when a
+        // cell is read (SECOND x1000, MICROSECOND /1000, NANOSECOND /1e6), so the
+        // value is already in the milliseconds a Date expects and must not be scaled
+        // again. Fall back to string parsing if a column ever arrives non-numeric.
+        const millis = Number(value);
+        if (Number.isNaN(millis)) {
+            const parsed = Date.parse(String(value));
+            return Number.isNaN(parsed) ? undefined : new Date(parsed);
+        }
+        return new Date(millis);
+    };
+    const asBytesFromBase64 = (rowIndex, columnName) => {
+        const value = asString(rowIndex, columnName);
+        return value === undefined ? undefined : stringToUint8Array(value, "base64");
+    };
+    const asMap = (rowIndex, columnName) => toRecord(cell(rowIndex, columnName));
+    const blobItems = [];
+    const blobPrefixes = [];
+    for (let i = 0; i < table.numRows; i++) {
+        // BlobPrefix rows only populate the `Name` column; all others are null.
+        const resourceType = asString(i, "ResourceType");
+        if (resourceType !== undefined && resourceType.toLowerCase() === "blobprefix") {
+            blobPrefixes.push({ name: { content: asString(i, "Name") ?? "" } });
+            continue;
+        }
+        const properties = {
+            createdOn: asDate(i, "Creation-Time"),
+            lastModified: asDate(i, "Last-Modified") ?? new Date(0),
+            etag: asString(i, "Etag") ?? "",
+            contentLength: asNumber(i, "Content-Length"),
+            contentType: asString(i, "Content-Type"),
+            contentEncoding: asString(i, "Content-Encoding"),
+            contentLanguage: asString(i, "Content-Language"),
+            contentMD5: asBytesFromBase64(i, "Content-MD5"),
+            contentDisposition: asString(i, "Content-Disposition"),
+            cacheControl: asString(i, "Cache-Control"),
+            blobSequenceNumber: asNumber(i, "x-ms-blob-sequence-number"),
+            blobType: asString(i, "BlobType"),
+            leaseStatus: asString(i, "LeaseStatus"),
+            leaseState: asString(i, "LeaseState"),
+            leaseDuration: asString(i, "LeaseDuration"),
+            copyId: asString(i, "CopyId"),
+            copyStatus: asString(i, "CopyStatus"),
+            copySource: asString(i, "CopySource"),
+            copyProgress: asString(i, "CopyProgress"),
+            copyCompletedOn: asDate(i, "CopyCompletionTime"),
+            copyStatusDescription: asString(i, "CopyStatusDescription"),
+            serverEncrypted: asBoolean(i, "ServerEncrypted"),
+            incrementalCopy: asBoolean(i, "IncrementalCopy"),
+            destinationSnapshot: asString(i, "CopyDestinationSnapshot"),
+            deletedOn: asDate(i, "DeletedTime"),
+            remainingRetentionDays: asNumber(i, "RemainingRetentionDays"),
+            accessTier: asString(i, "AccessTier"),
+            accessTierInferred: asBoolean(i, "AccessTierInferred"),
+            archiveStatus: asString(i, "ArchiveStatus"),
+            smartAccessTier: asString(i, "SmartAccessTier"),
+            customerProvidedKeySha256: asString(i, "CustomerProvidedKeySha256"),
+            encryptionScope: asString(i, "EncryptionScope"),
+            accessTierChangedOn: asDate(i, "AccessTierChangeTime"),
+            tagCount: asNumber(i, "TagCount"),
+            expiresOn: asDate(i, "Expiry-Time"),
+            isSealed: asBoolean(i, "Sealed"),
+            rehydratePriority: asString(i, "RehydratePriority"),
+            lastAccessedOn: asDate(i, "LastAccessTime"),
+            immutabilityPolicyExpiresOn: asDate(i, "ImmutabilityPolicyUntilDate"),
+            immutabilityPolicyMode: asString(i, "ImmutabilityPolicyMode"),
+            legalHold: asBoolean(i, "LegalHold"),
+        };
+        blobItems.push({
+            name: { content: asString(i, "Name") ?? "" },
+            deleted: asBoolean(i, "Deleted") ?? false,
+            snapshot: asString(i, "Snapshot") ?? "",
+            versionId: asString(i, "VersionId"),
+            isCurrentVersion: asBoolean(i, "IsCurrentVersion"),
+            properties,
+            metadata: asMap(i, "Metadata"),
+            blobTags: blobListArrowParser_toBlobTags(asMap(i, "Tags")),
+            objectReplicationMetadata: asMap(i, "OrMetadata"),
+            hasVersionsOnly: asBoolean(i, "HasVersionsOnly"),
+        });
+    }
+    return { nextMarker, blobItems, blobPrefixes };
+}
+/**
+ * Converts an Apache Arrow map cell (a plain string dictionary) into the generated
+ * {@link BlobTags} shape, so the shared projection layer can flatten it exactly like
+ * the XML path does.
+ */
+function blobListArrowParser_toBlobTags(map) {
+    return map === undefined
+        ? undefined
+        : { blobTagSet: Object.entries(map).map(([key, value]) => ({ key, value })) };
+}
+/**
+ * Converts an Apache Arrow map cell into a plain string dictionary. Handles the
+ * possible shapes an arrow map value can take (iterable of `[key, value]` pairs,
+ * iterable of `{ key, value }` structs, or a plain object).
+ */
+function toRecord(value) {
+    if (value === undefined || value === null) {
+        return undefined;
+    }
+    const entries = [];
+    const asText = (v) => (v === undefined || v === null ? "" : String(v));
+    if (typeof value[Symbol.iterator] === "function") {
+        for (const entry of value) {
+            if (Array.isArray(entry)) {
+                entries.push([String(entry[0]), asText(entry[1])]);
+            }
+            else if (entry && typeof entry === "object" && "key" in entry) {
+                const { key, value: entryValue } = entry;
+                entries.push([String(key), asText(entryValue)]);
+            }
+        }
+    }
+    else if (typeof value === "object") {
+        for (const [key, entryValue] of Object.entries(value)) {
+            entries.push([key, asText(entryValue)]);
+        }
+    }
+    return Object.fromEntries(entries);
+}
+//# sourceMappingURL=blobListArrowParser.js.map
+;// CONCATENATED MODULE: ./node_modules/@azure/storage-blob/dist/esm/utils/blobListXmlParser.js
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+
+
+
+const listBlobsXmlSerializer = createSerializer(mappers_namespaceObject, /* isXml */ true);
+/**
+ * Reads a raw response body (a Node.js readable stream or a browser Blob) as text,
+ * used for the XML fallback path.
+ */
+async function readResponseBodyToText(response) {
+    const bytes = await readResponseBodyToBytes(response);
+    return new TextDecoder().decode(bytes);
+}
+/**
+ * Deserializes a List Blobs (flat) XML response body. Used when the service falls
+ * back to XML for an account that does not support Apache Arrow; parses the
+ * already-received stream instead of issuing a second request.
+ *
+ * @param response - The raw stream response from the list operation, with an XML body.
+ */
+async function blobListXmlParser_deserializeListBlobFlatSegmentXml(response) {
+    const bodyAsText = await readResponseBodyToText(response);
+    const parsedXml = (await parseXML(bodyAsText, {
+        includeRoot: true,
+    }));
+    return {
+        parsed: listBlobsXmlSerializer.deserialize(Mappers.ListBlobsFlatSegmentResponse, parsedXml.EnumerationResults ?? parsedXml, "EnumerationResults"),
+        bodyAsText,
+    };
+}
+/**
+ * Deserializes a List Blobs by hierarchy XML response body (see
+ * {@link deserializeListBlobFlatSegmentXml}).
+ *
+ * @param response - The raw stream response from the list operation, with an XML body.
+ */
+async function blobListXmlParser_deserializeListBlobHierarchySegmentXml(response) {
+    const bodyAsText = await readResponseBodyToText(response);
+    const parsedXml = (await parseXML(bodyAsText, {
+        includeRoot: true,
+    }));
+    return {
+        parsed: listBlobsXmlSerializer.deserialize(Mappers.ListBlobsHierarchySegmentResponse, parsedXml.EnumerationResults ?? parsedXml, "EnumerationResults"),
+        bodyAsText,
+    };
+}
+//# sourceMappingURL=blobListXmlParser.js.map
 ;// CONCATENATED MODULE: ./node_modules/@azure/storage-blob/dist/esm/sas/BlobSASPermissions.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
@@ -176255,6 +176949,43 @@ class BlobDownloadResponse {
      */
     get legalHold() {
         return this.originalResponse.legalHold;
+    }
+    /**
+     * The access tier of the blob. Values include premium page-blob tiers and block-blob tiers
+     * such as Hot, Cool, Cold, Archive, and Smart. See
+     * https://learn.microsoft.com/azure/storage/blobs/storage-blob-storage-tiers.
+     *
+     * @readonly
+     */
+    get accessTier() {
+        return this.originalResponse.accessTier;
+    }
+    /**
+     * For page blobs on a premium storage account only. If the access tier is not explicitly set on
+     * the blob, the tier is inferred based on its content length and this header will be returned
+     * with true value.
+     *
+     * @readonly
+     */
+    get accessTierInferred() {
+        return this.originalResponse.accessTierInferred;
+    }
+    /**
+     * The time the tier was changed on the object. This is only returned if the tier on the block
+     * blob was ever set.
+     *
+     * @readonly
+     */
+    get accessTierChangedOn() {
+        return this.originalResponse.accessTierChangedOn;
+    }
+    /**
+     * The underlying tier of a smart tier blob. Only returned if the blob is in Smart tier.
+     *
+     * @readonly
+     */
+    get smartAccessTier() {
+        return this.originalResponse.smartAccessTier;
     }
     get structuredBodyType() {
         return this.originalResponse.structuredBodyType;
@@ -182734,6 +183465,69 @@ class BlobBatchClient_BlobBatchClient {
 
 
 
+
+
+
+/**
+ * Maps a generated internal blob item (with a structured `name`) to the public
+ * {@link BlobItem} shape, decoding the name and parsing tags / object-replication
+ * metadata. Shared by the XML and Apache Arrow list paths so they cannot drift.
+ */
+function mapBlobItemInternal(blobItemInternal) {
+    const blobItem = {
+        ...blobItemInternal,
+        name: BlobNameToString(blobItemInternal.name),
+        tags: toTags(blobItemInternal.blobTags),
+        objectReplicationSourceProperties: parseObjectReplicationRecord(blobItemInternal.objectReplicationMetadata),
+    };
+    return blobItem;
+}
+/**
+ * Maps a generated internal blob prefix (with a structured `name`) to the public
+ * {@link BlobPrefix} shape. Shared by the XML and Apache Arrow list paths.
+ */
+function mapBlobPrefixInternal(blobPrefixInternal) {
+    const blobPrefix = {
+        ...blobPrefixInternal,
+        name: BlobNameToString(blobPrefixInternal.name),
+    };
+    return blobPrefix;
+}
+/**
+ * Returns true when a raw List Blobs response was actually returned as Apache Arrow.
+ * The service falls back to XML for accounts that do not support Apache Arrow, so the
+ * Content-Type header (ignoring parameters such as charset) is how the two are told apart.
+ */
+function isApacheArrow(contentType) {
+    return (contentType ?? "").split(";")[0].trim().toLowerCase() === ApacheArrowContentType;
+}
+/**
+ * Attaches the response metadata common to every List Blobs segment response - the
+ * request IDs, service version, date, content-type, and `_response` - so the
+ * flat/hierarchy and Apache Arrow/XML paths don't each repeat it.
+ *
+ * The raw stream body has already been consumed by the caller, so the stream
+ * operation's `_response` carries only headers/status. To honor the
+ * `ContainerListBlob*SegmentResponse` contract (whose `_response.parsedBody` is
+ * non-optional), the caller passes the segment it just parsed as `parsedBody`, which
+ * mirrors what the XML path exposes. `bodyAsText` carries the decoded XML for the
+ * XML-fallback path, or `""` for a native Apache Arrow body (binary, no text form).
+ */
+function withListSegmentResponseMetadata(base, rawResponse, parsedBody, bodyAsText = "") {
+    return {
+        ...base,
+        clientRequestId: rawResponse.clientRequestId,
+        requestId: rawResponse.requestId,
+        version: rawResponse.version,
+        date: rawResponse.date,
+        contentType: rawResponse.contentType,
+        _response: {
+            ...rawResponse._response,
+            bodyAsText,
+            parsedBody,
+        },
+    };
+}
 /**
  * A ContainerClient represents a URL to the Azure Storage container allowing you to manipulate its blobs.
  */
@@ -183232,6 +184026,12 @@ class ContainerClient_ContainerClient extends (/* unused pure expression or supe
      */
     async listBlobFlatSegment(marker, options = {}) {
         return tracingClient.withSpan("ContainerClient-listBlobFlatSegment", options, async (updatedOptions) => {
+            if (resolveResponseFormat(options.responseFormat) === StorageResponseFormat.Arrow) {
+                return this.listBlobFlatSegmentApacheArrow(marker, {
+                    ...options,
+                    tracingOptions: updatedOptions.tracingOptions,
+                });
+            }
             const response = assertResponse(await this.containerContext.listBlobFlatSegment({
                 marker,
                 ...options,
@@ -183245,19 +184045,66 @@ class ContainerClient_ContainerClient extends (/* unused pure expression or supe
                 }, // _response is made non-enumerable
                 segment: {
                     ...response.segment,
-                    blobItems: response.segment.blobItems.map((blobItemInternal) => {
-                        const blobItem = {
-                            ...blobItemInternal,
-                            name: BlobNameToString(blobItemInternal.name),
-                            tags: toTags(blobItemInternal.blobTags),
-                            objectReplicationSourceProperties: parseObjectReplicationRecord(blobItemInternal.objectReplicationMetadata),
-                        };
-                        return blobItem;
-                    }),
+                    blobItems: response.segment.blobItems.map(mapBlobItemInternal),
                 },
             };
             return wrappedResponse;
         });
+    }
+    /**
+     * Lists a single segment of blobs using the Apache Arrow response format. The service
+     * returns a raw stream that is either Apache Arrow or XML (when the account does not
+     * support Apache Arrow); both formats are parsed here and produce the same result.
+     *
+     * @param marker - A string value that identifies the portion of the list to be returned with the next list operation.
+     * @param options - Options to Container List Blob Flat Segment operation.
+     */
+    async listBlobFlatSegmentApacheArrow(marker, options) {
+        const rawResponse = assertResponse(await this.containerContext.listBlobFlatSegmentApacheArrow({
+            marker,
+            ...options,
+        }));
+        // The service falls back to XML for accounts that do not support Apache Arrow.
+        // The Content-Type header indicates which format we actually received. When it
+        // is not Apache Arrow, parse the already-received XML stream in place
+        // instead of issuing a second request.
+        if (!isApacheArrow(rawResponse.contentType)) {
+            const { parsed: internalResponse, bodyAsText } = await deserializeListBlobFlatSegmentXml(rawResponse);
+            return withListSegmentResponseMetadata({
+                ...internalResponse,
+                segment: {
+                    ...internalResponse.segment,
+                    blobItems: (internalResponse.segment?.blobItems ?? []).map(mapBlobItemInternal),
+                },
+            }, rawResponse, ConvertInternalResponseOfListBlobFlat(internalResponse), bodyAsText);
+        }
+        const parsed = await parseBlobListArrowResponse(rawResponse);
+        const serviceUrl = new URL(this.url);
+        const containerPath = serviceUrl.pathname.replace(/\/+$/, "");
+        serviceUrl.pathname = containerPath.slice(0, containerPath.lastIndexOf("/") + 1);
+        serviceUrl.search = "";
+        serviceUrl.hash = "";
+        const serviceEndpoint = serviceUrl.toString();
+        const internalResponse = {
+            serviceEndpoint,
+            containerName: this.containerName,
+            prefix: options.prefix,
+            marker,
+            maxPageSize: options.maxPageSize,
+            segment: { blobItems: parsed.blobItems },
+            continuationToken: parsed.nextMarker,
+        };
+        return withListSegmentResponseMetadata({
+            serviceEndpoint,
+            containerName: this.containerName,
+            prefix: options.prefix,
+            marker,
+            maxPageSize: options.maxPageSize,
+            segment: {
+                blobItems: parsed.blobItems.map(mapBlobItemInternal),
+            },
+            continuationToken: parsed.nextMarker,
+        }, rawResponse, ConvertInternalResponseOfListBlobFlat(internalResponse));
     }
     /**
      * listBlobHierarchySegment returns a single segment of blobs starting from
@@ -183272,6 +184119,12 @@ class ContainerClient_ContainerClient extends (/* unused pure expression or supe
      */
     async listBlobHierarchySegment(delimiter, marker, options = {}) {
         return tracingClient.withSpan("ContainerClient-listBlobHierarchySegment", options, async (updatedOptions) => {
+            if (resolveResponseFormat(options.responseFormat) === StorageResponseFormat.Arrow) {
+                return this.listBlobHierarchySegmentApacheArrow(delimiter, marker, {
+                    ...options,
+                    tracingOptions: updatedOptions.tracingOptions,
+                });
+            }
             const response = assertResponse(await this.containerContext.listBlobHierarchySegment(delimiter, {
                 marker,
                 ...options,
@@ -183285,26 +184138,72 @@ class ContainerClient_ContainerClient extends (/* unused pure expression or supe
                 }, // _response is made non-enumerable
                 segment: {
                     ...response.segment,
-                    blobItems: response.segment.blobItems.map((blobItemInternal) => {
-                        const blobItem = {
-                            ...blobItemInternal,
-                            name: BlobNameToString(blobItemInternal.name),
-                            tags: toTags(blobItemInternal.blobTags),
-                            objectReplicationSourceProperties: parseObjectReplicationRecord(blobItemInternal.objectReplicationMetadata),
-                        };
-                        return blobItem;
-                    }),
-                    blobPrefixes: response.segment.blobPrefixes?.map((blobPrefixInternal) => {
-                        const blobPrefix = {
-                            ...blobPrefixInternal,
-                            name: BlobNameToString(blobPrefixInternal.name),
-                        };
-                        return blobPrefix;
-                    }),
+                    blobItems: response.segment.blobItems.map(mapBlobItemInternal),
+                    blobPrefixes: response.segment.blobPrefixes?.map(mapBlobPrefixInternal),
                 },
             };
             return wrappedResponse;
         });
+    }
+    /**
+     * Lists a single segment of blobs by hierarchy using the Apache Arrow response format.
+     * The service returns a raw stream that is either Apache Arrow or XML (when the account
+     * does not support Apache Arrow); both formats are parsed here and produce the same result.
+     *
+     * @param delimiter - The character or string used to define the virtual hierarchy
+     * @param marker - A string value that identifies the portion of the list to be returned with the next list operation.
+     * @param options - Options to Container List Blob Hierarchy Segment operation.
+     */
+    async listBlobHierarchySegmentApacheArrow(delimiter, marker, options) {
+        const rawResponse = assertResponse(await this.containerContext.listBlobHierarchySegmentApacheArrow(delimiter, {
+            marker,
+            ...options,
+        }));
+        // The service falls back to XML for accounts that do not support Apache Arrow.
+        // The Content-Type header indicates which format we actually received. When it
+        // is not Apache Arrow, parse the already-received XML stream in place instead of
+        // issuing a second request.
+        if (!isApacheArrow(rawResponse.contentType)) {
+            const { parsed: internalResponse, bodyAsText } = await deserializeListBlobHierarchySegmentXml(rawResponse);
+            return withListSegmentResponseMetadata({
+                ...internalResponse,
+                segment: {
+                    ...internalResponse.segment,
+                    blobItems: (internalResponse.segment?.blobItems ?? []).map(mapBlobItemInternal),
+                    blobPrefixes: internalResponse.segment?.blobPrefixes?.map(mapBlobPrefixInternal),
+                },
+            }, rawResponse, ConvertInternalResponseOfListBlobHierarchy(internalResponse), bodyAsText);
+        }
+        const parsed = await parseBlobListArrowResponse(rawResponse);
+        const serviceUrl = new URL(this.url);
+        const containerPath = serviceUrl.pathname.replace(/\/+$/, "");
+        serviceUrl.pathname = containerPath.slice(0, containerPath.lastIndexOf("/") + 1);
+        serviceUrl.search = "";
+        serviceUrl.hash = "";
+        const serviceEndpoint = serviceUrl.toString();
+        const internalResponse = {
+            serviceEndpoint,
+            containerName: this.containerName,
+            prefix: options.prefix,
+            marker,
+            maxPageSize: options.maxPageSize,
+            delimiter,
+            segment: { blobItems: parsed.blobItems, blobPrefixes: parsed.blobPrefixes },
+            continuationToken: parsed.nextMarker,
+        };
+        return withListSegmentResponseMetadata({
+            serviceEndpoint,
+            containerName: this.containerName,
+            prefix: options.prefix,
+            marker,
+            maxPageSize: options.maxPageSize,
+            delimiter,
+            segment: {
+                blobItems: parsed.blobItems.map(mapBlobItemInternal),
+                blobPrefixes: parsed.blobPrefixes.map(mapBlobPrefixInternal),
+            },
+            continuationToken: parsed.nextMarker,
+        }, rawResponse, ConvertInternalResponseOfListBlobHierarchy(internalResponse));
     }
     /**
      * Returns an AsyncIterableIterator for ContainerListBlobFlatSegmentResponse
@@ -183409,6 +184308,10 @@ class ContainerClient_ContainerClient extends (/* unused pure expression or supe
      * @returns An asyncIterableIterator that supports paging.
      */
     listBlobsFlat(options = {}) {
+        if (options.endBefore !== undefined &&
+            resolveResponseFormat(options.responseFormat) !== StorageResponseFormat.Arrow) {
+            throw new RangeError("The 'endBefore' option is only supported when 'responseFormat' is StorageResponseFormat.Arrow.");
+        }
         const include = [];
         if (options.includeCopy) {
             include.push("copy");
@@ -183617,6 +184520,10 @@ class ContainerClient_ContainerClient extends (/* unused pure expression or supe
     listBlobsByHierarchy(delimiter, options = {}) {
         if (delimiter === "") {
             throw new RangeError("delimiter should contain one or more characters");
+        }
+        if (options.endBefore !== undefined &&
+            resolveResponseFormat(options.responseFormat) !== StorageResponseFormat.Arrow) {
+            throw new RangeError("The 'endBefore' option is only supported when 'responseFormat' is StorageResponseFormat.Arrow.");
         }
         const include = [];
         if (options.includeCopy) {
@@ -184845,6 +185752,7 @@ var generatedModels_KnownEncryptionAlgorithmType;
 ;// CONCATENATED MODULE: ./node_modules/@azure/storage-blob/dist/esm/index.js
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 
 
 

@@ -164,6 +164,11 @@ echo
 print_happy_boosting_banner
 echo "→ Boost is installed!"
 echo ""
+# BOOST_INVITE — a friend's Boost Pro invite code (from their share message).
+if [ -n "${BOOST_INVITE:-}" ]; then
+  "$INSTALL_DIR/boost" pro redeem "$BOOST_INVITE" || echo "⚠ Invite not applied. Retry later with: boost pro redeem $BOOST_INVITE" >&2
+  echo ""
+fi
 # Only auto-run init when INSTALL_DIR was already on PATH (so `boost` resolves
 # the same way the caller's shell would). Off-PATH installs still need the user
 # to source their rc — keep today's message verbatim in that case. The temporary

@@ -101,6 +101,12 @@ try {
     Write-Banner
     Write-Host '→ Boost is installed!'
     Write-Host ''
+    # BOOST_INVITE: a friend's Boost Pro invite code (from their share message).
+    if ($env:BOOST_INVITE) {
+        & (Join-Path $InstallDir 'boost.exe') pro redeem $env:BOOST_INVITE
+        if ($LASTEXITCODE -ne 0) { Write-Warning "Invite not applied. Retry later with: boost pro redeem $env:BOOST_INVITE" }
+        Write-Host ''
+    }
     Write-Host 'You can start by running:'
     Write-Host '   boost init'
 } finally {
