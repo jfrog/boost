@@ -1,0 +1,9 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Log-dump noise">
+  <path d="M8 34 Q5 22 16 17 Q25 9 38 13 Q54 13 56 27 Q59 39 50 47 Q42 57 28 55 Q12 52 8 40 Z"
+        fill="#8b9195" stroke="#3f4548" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="16" y="24" width="31" height="5" rx="2" fill="#e2e7ea"/>
+  <rect x="13" y="34" width="36" height="5" rx="2" fill="#e2e7ea"/>
+  <rect x="18" y="44" width="22" height="5" rx="2" fill="#e2e7ea"/>
+  <rect x="16" y="24" width="9" height="5" rx="2" fill="#5d6367"/>
+  <rect x="13" y="34" width="14" height="5" rx="2" fill="#5d6367"/>
+</svg>

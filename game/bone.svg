@@ -1,0 +1,10 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dead process">
+  <!-- What is left of an OOM-killed process: the heaviest thing down there, worth nothing. -->
+  <g fill="#efe6d2" stroke="#7a7060" stroke-width="4" stroke-linejoin="round">
+    <path d="M17 20 A9 9 0 1 1 17 32 L47 32 A9 9 0 1 1 47 20 A9 9 0 1 1 47 32 L17 32 A9 9 0 1 1 17 20 Z"/>
+  </g>
+  <rect x="20" y="23" width="24" height="5" rx="2" fill="#c9bda2"/>
+  <g fill="#efe6d2" stroke="#7a7060" stroke-width="3.5" stroke-linejoin="round">
+    <path d="M24 42 A6 6 0 1 1 24 50 L40 50 A6 6 0 1 1 40 42 A6 6 0 1 1 40 50 L24 50 A6 6 0 1 1 24 42 Z"/>
+  </g>
+</svg>
