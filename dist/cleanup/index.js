@@ -84882,7 +84882,7 @@ module.exports = index;
 /***/ 9839:
 /***/ ((module) => {
 
-module.exports = JSON.parse('{"name":"@actions/artifact","version":"6.2.1","preview":true,"description":"Actions artifact lib","keywords":["github","actions","artifact"],"homepage":"https://github.com/actions/toolkit/tree/main/packages/artifact","license":"MIT","type":"module","main":"lib/artifact.js","types":"lib/artifact.d.ts","exports":{".":{"types":"./lib/artifact.d.ts","import":"./lib/artifact.js"}},"directories":{"lib":"lib","test":"__tests__"},"files":["lib","!.DS_Store"],"publishConfig":{"access":"public"},"repository":{"type":"git","url":"git+https://github.com/actions/toolkit.git","directory":"packages/artifact"},"scripts":{"audit-moderate":"npm install && npm audit --json --audit-level=moderate > audit.json","test":"cd ../../ && npm run test ./packages/artifact","bootstrap":"cd ../../ && npm run bootstrap","tsc-run":"tsc && cp src/internal/shared/package-version.cjs lib/internal/shared/","tsc":"npm run bootstrap && npm run tsc-run","gen:docs":"typedoc --plugin typedoc-plugin-markdown --out docs/generated src/artifact.ts --githubPages false --readme none"},"bugs":{"url":"https://github.com/actions/toolkit/issues"},"dependencies":{"@actions/core":"^3.0.0","@actions/github":"^9.0.0","@actions/http-client":"^4.0.0","@azure/storage-blob":"^12.30.0","@octokit/core":"^7.0.6","@octokit/plugin-request-log":"^6.0.0","@octokit/plugin-retry":"^8.0.0","@octokit/request":"^10.0.7","@octokit/request-error":"^7.1.0","@protobuf-ts/plugin":"^2.2.3-alpha.1","@protobuf-ts/runtime":"^2.9.4","archiver":"^7.0.1","jwt-decode":"^4.0.0","unzip-stream":"^0.3.1"},"devDependencies":{"@types/archiver":"^7.0.0","@types/unzip-stream":"^0.3.4","typedoc":"^0.28.16","typedoc-plugin-markdown":"^4.9.0","typescript":"^5.9.3"},"overrides":{"uri-js":"npm:uri-js-replace@^1.0.1","node-fetch":"^3.3.2"}}');
+module.exports = JSON.parse('{"name":"@actions/artifact","version":"6.3.1","preview":true,"description":"Actions artifact lib","keywords":["github","actions","artifact"],"homepage":"https://github.com/actions/toolkit/tree/main/packages/artifact","license":"MIT","type":"module","main":"lib/artifact.js","types":"lib/artifact.d.ts","exports":{".":{"types":"./lib/artifact.d.ts","import":"./lib/artifact.js"}},"directories":{"lib":"lib","test":"__tests__"},"files":["lib","!.DS_Store"],"publishConfig":{"access":"public"},"repository":{"type":"git","url":"git+https://github.com/actions/toolkit.git","directory":"packages/artifact"},"scripts":{"audit-moderate":"npm install && npm audit --json --audit-level=moderate > audit.json","test":"cd ../../ && npm run test ./packages/artifact","bootstrap":"cd ../../ && npm run bootstrap","tsc-run":"tsc && cp src/internal/shared/package-version.cjs lib/internal/shared/","tsc":"npm run bootstrap && npm run tsc-run","gen:docs":"typedoc --plugin typedoc-plugin-markdown --out docs/generated src/artifact.ts --githubPages false --readme none"},"bugs":{"url":"https://github.com/actions/toolkit/issues"},"dependencies":{"@actions/core":"^3.0.1","@actions/github":"^9.1.1","@actions/http-client":"^4.0.1","@azure/storage-blob":"^12.31.0","@octokit/core":"^7.0.6","@octokit/plugin-request-log":"^6.0.0","@octokit/plugin-retry":"^8.1.0","@octokit/request":"^10.0.8","@octokit/request-error":"^7.1.0","@protobuf-ts/runtime":"^2.11.1","@protobuf-ts/runtime-rpc":"^2.11.1","archiver":"^7.0.1","jwt-decode":"^4.0.0","unzip-stream":"^0.3.1"},"devDependencies":{"@protobuf-ts/plugin":"^2.11.1","@types/archiver":"^7.0.0","@types/unzip-stream":"^0.3.4","typedoc":"^0.28.19","typedoc-plugin-markdown":"^4.11.0","typescript":"^5.9.3"},"overrides":{"uri-js":"npm:uri-js-replace@^1.0.1","node-fetch":"^3.3.2"}}');
 
 /***/ })
 
@@ -90246,8 +90246,9 @@ var artifact_twirp_client_awaiter = (undefined && undefined.__awaiter) || functi
 class ArtifactHttpClient {
     constructor(userAgent, maxAttempts, baseRetryIntervalMilliseconds, retryMultiplier) {
         this.maxAttempts = 5;
-        this.baseRetryIntervalMilliseconds = 3000;
+        this.baseRetryIntervalMilliseconds = 8000;
         this.retryMultiplier = 1.5;
+        this.retryTimeoutMilliseconds = 120000;
         const token = getRuntimeToken();
         this.baseUrl = getResultsServiceUrl();
         if (maxAttempts) {
@@ -90286,11 +90287,16 @@ class ArtifactHttpClient {
             let attempt = 0;
             let errorMessage = '';
             let rawBody = '';
+            let totalRetryWaitMilliseconds = 0;
             while (attempt < this.maxAttempts) {
                 let isRetryable = false;
+                let retryAfterSeconds;
                 try {
                     const response = yield operation();
                     const statusCode = response.message.statusCode;
+                    if (statusCode === HttpCodes.TooManyRequests) {
+                        retryAfterSeconds = this.getRetryAfterSeconds(response);
+                    }
                     rawBody = yield response.readBody();
                     core_debug(`[Response] - ${response.message.statusCode}`);
                     core_debug(`Headers: ${JSON.stringify(response.message.headers, null, 2)}`);
@@ -90328,9 +90334,16 @@ class ArtifactHttpClient {
                 if (attempt + 1 === this.maxAttempts) {
                     throw new Error(`Failed to make request after ${this.maxAttempts} attempts: ${errorMessage}`);
                 }
-                const retryTimeMilliseconds = this.getExponentialRetryTimeMilliseconds(attempt);
+                const retryTimeMilliseconds = retryAfterSeconds !== undefined
+                    ? retryAfterSeconds * 1000
+                    : this.getExponentialRetryTimeMilliseconds(attempt);
+                if (totalRetryWaitMilliseconds + retryTimeMilliseconds >
+                    this.retryTimeoutMilliseconds) {
+                    throw new Error(`Retry wait of ${retryTimeMilliseconds} ms would exceed the maximum total retry wait of ${this.retryTimeoutMilliseconds} ms: ${errorMessage}`);
+                }
                 info(`Attempt ${attempt + 1} of ${this.maxAttempts} failed with error: ${errorMessage}. Retrying request in ${retryTimeMilliseconds} ms...`);
                 yield this.sleep(retryTimeMilliseconds);
+                totalRetryWaitMilliseconds += retryTimeMilliseconds;
                 attempt++;
             }
             throw new Error(`Request failed`);
@@ -90352,6 +90365,17 @@ class ArtifactHttpClient {
             HttpCodes.TooManyRequests
         ];
         return retryableStatusCodes.includes(statusCode);
+    }
+    // Only positive integer seconds are supported, not HTTP-date values.
+    getRetryAfterSeconds(response) {
+        var _a;
+        const header = response.message.headers['retry-after'];
+        const value = (_a = (Array.isArray(header) ? header[0] : header)) === null || _a === void 0 ? void 0 : _a.trim();
+        if (value === undefined || !/^\d+$/.test(value)) {
+            return undefined;
+        }
+        const parsed = parseInt(value, 10);
+        return !isNaN(parsed) && parsed > 0 ? parsed : undefined;
     }
     sleep(milliseconds) {
         return artifact_twirp_client_awaiter(this, void 0, void 0, function* () {
