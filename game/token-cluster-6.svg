@@ -1,0 +1,26 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A large cluster of useful tokens">
+  <path d="M 32.1 4.5 L 43.9 4.5 L 48.5 9.1 L 48.5 20.9 L 43.9 25.5 L 32.1 25.5 L 27.5 20.9 L 27.5 9.1 Z" fill="#f2c14a" stroke="#8a5a1e" stroke-width="2.3" stroke-linejoin="round"/>
+  <rect x="31.4" y="6.8" width="13.1" height="2.7" fill="#fff0b8"/>
+  <rect x="33.0" y="13.9" width="10.1" height="2.1" fill="#8a5a1e"/>
+  <rect x="33.0" y="18.4" width="6.3" height="2.1" fill="#8a5a1e"/>
+  <path d="M 46.1 16.5 L 57.9 16.5 L 62.5 21.1 L 62.5 32.9 L 57.9 37.5 L 46.1 37.5 L 41.5 32.9 L 41.5 21.1 Z" fill="#f2c14a" stroke="#8a5a1e" stroke-width="2.3" stroke-linejoin="round"/>
+  <rect x="45.4" y="18.8" width="13.1" height="2.7" fill="#fff0b8"/>
+  <rect x="47.0" y="25.9" width="10.1" height="2.1" fill="#8a5a1e"/>
+  <rect x="47.0" y="30.4" width="6.3" height="2.1" fill="#8a5a1e"/>
+  <path d="M 12.1 8.5 L 23.9 8.5 L 28.5 13.1 L 28.5 24.9 L 23.9 29.5 L 12.1 29.5 L 7.5 24.9 L 7.5 13.1 Z" fill="#f2c14a" stroke="#8a5a1e" stroke-width="2.3" stroke-linejoin="round"/>
+  <rect x="11.4" y="10.8" width="13.1" height="2.7" fill="#fff0b8"/>
+  <rect x="13.0" y="17.9" width="10.1" height="2.1" fill="#8a5a1e"/>
+  <rect x="13.0" y="22.4" width="6.3" height="2.1" fill="#8a5a1e"/>
+  <path d="M 8.1 29.5 L 19.9 29.5 L 24.5 34.1 L 24.5 45.9 L 19.9 50.5 L 8.1 50.5 L 3.5 45.9 L 3.5 34.1 Z" fill="#f2c14a" stroke="#8a5a1e" stroke-width="2.3" stroke-linejoin="round"/>
+  <rect x="7.4" y="31.8" width="13.1" height="2.7" fill="#fff0b8"/>
+  <rect x="9.0" y="39.0" width="10.1" height="2.1" fill="#8a5a1e"/>
+  <rect x="9.0" y="43.4" width="6.3" height="2.1" fill="#8a5a1e"/>
+  <path d="M 27.1 26.5 L 38.9 26.5 L 43.5 31.1 L 43.5 42.9 L 38.9 47.5 L 27.1 47.5 L 22.5 42.9 L 22.5 31.1 Z" fill="#f2c14a" stroke="#8a5a1e" stroke-width="2.3" stroke-linejoin="round"/>
+  <rect x="26.4" y="28.8" width="13.1" height="2.7" fill="#fff0b8"/>
+  <rect x="28.0" y="36.0" width="10.1" height="2.1" fill="#8a5a1e"/>
+  <rect x="28.0" y="40.4" width="6.3" height="2.1" fill="#8a5a1e"/>
+  <path d="M 41.1 38.5 L 52.9 38.5 L 57.5 43.1 L 57.5 54.9 L 52.9 59.5 L 41.1 59.5 L 36.5 54.9 L 36.5 43.1 Z" fill="#f2c14a" stroke="#8a5a1e" stroke-width="2.3" stroke-linejoin="round"/>
+  <rect x="40.4" y="40.8" width="13.1" height="2.7" fill="#fff0b8"/>
+  <rect x="42.0" y="48.0" width="10.1" height="2.1" fill="#8a5a1e"/>
+  <rect x="42.0" y="52.4" width="6.3" height="2.1" fill="#8a5a1e"/>
+</svg>

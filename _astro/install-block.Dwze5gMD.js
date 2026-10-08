@@ -1,0 +1,1 @@
+import{n as e,t}from"./install-block.eDmf4xeV.js";export{t as InstallBlock,e as detectPlatform};

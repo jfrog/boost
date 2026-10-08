@@ -1,0 +1,14 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="TNT barrel">
+  <!-- Staved wood, two hoops, a TNT band and a lit fuse: grab it and the neighbourhood goes. -->
+  <path d="M18 14 Q10 32 18 54 L46 54 Q54 32 46 14 Z" fill="#c98a3c" stroke="#8a5a1e" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M25 14 Q19 32 25 54" fill="none" stroke="#8a5a1e" stroke-width="2.5"/>
+  <path d="M39 14 Q45 32 39 54" fill="none" stroke="#8a5a1e" stroke-width="2.5"/>
+  <path d="M14 21 Q32 25 50 21 L50 27 Q32 31 14 27 Z" fill="#7a5230"/>
+  <path d="M14 45 Q32 49 50 45 L50 51 Q32 55 14 51 Z" fill="#7a5230"/>
+  <path d="M13 30 Q32 34 51 30 L51 42 Q32 46 13 42 Z" fill="#d63a26" stroke="#6a1a10" stroke-width="2"/>
+  <text x="32" y="41" font-family="'Open Sans', system-ui, sans-serif" font-size="12" font-weight="700"
+        fill="#f2e8d0" text-anchor="middle">TNT</text>
+  <path d="M40 14 Q52 6 44 2" fill="none" stroke="#8a5a1e" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="44" cy="3" r="4" fill="#ffd08a"/>
+  <circle cx="44" cy="3" r="2" fill="#fff8e0"/>
+</svg>
