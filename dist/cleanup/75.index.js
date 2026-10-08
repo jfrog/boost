@@ -2,7 +2,7 @@ export const id = 75;
 export const ids = [75];
 export const modules = {
 
-/***/ 1075:
+/***/ 81075:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
@@ -58,15 +58,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DefaultArtifactClient = void 0;
-const core = __importStar(__webpack_require__(2186));
-const upload_specification_1 = __webpack_require__(8103);
-const upload_http_client_1 = __webpack_require__(9908);
-const utils_1 = __webpack_require__(9986);
+const core = __importStar(__webpack_require__(42186));
+const upload_specification_1 = __webpack_require__(18103);
+const upload_http_client_1 = __webpack_require__(39908);
+const utils_1 = __webpack_require__(89986);
 const path_and_artifact_name_validation_1 = __webpack_require__(1492);
-const download_http_client_1 = __webpack_require__(7349);
-const download_specification_1 = __webpack_require__(664);
-const config_variables_1 = __webpack_require__(4312);
-const path_1 = __webpack_require__(1017);
+const download_http_client_1 = __webpack_require__(17349);
+const download_specification_1 = __webpack_require__(30664);
+const config_variables_1 = __webpack_require__(24312);
+const path_1 = __webpack_require__(71017);
 class DefaultArtifactClient {
     /**
      * Constructs a DefaultArtifactClient
@@ -208,7 +208,7 @@ exports.DefaultArtifactClient = DefaultArtifactClient;
 
 /***/ }),
 
-/***/ 4312:
+/***/ 24312:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -291,7 +291,7 @@ exports.isGhes = isGhes;
 
 /***/ }),
 
-/***/ 7682:
+/***/ 77682:
 /***/ ((__unused_webpack_module, exports) => {
 
 
@@ -600,7 +600,7 @@ exports["default"] = CRC64;
 
 /***/ }),
 
-/***/ 7349:
+/***/ 17349:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -638,16 +638,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DownloadHttpClient = void 0;
-const fs = __importStar(__webpack_require__(7147));
-const core = __importStar(__webpack_require__(2186));
-const zlib = __importStar(__webpack_require__(9796));
-const utils_1 = __webpack_require__(9986);
-const url_1 = __webpack_require__(7310);
-const status_reporter_1 = __webpack_require__(7711);
+const fs = __importStar(__webpack_require__(57147));
+const core = __importStar(__webpack_require__(42186));
+const zlib = __importStar(__webpack_require__(59796));
+const utils_1 = __webpack_require__(89986);
+const url_1 = __webpack_require__(57310);
+const status_reporter_1 = __webpack_require__(97711);
 const perf_hooks_1 = __webpack_require__(4074);
-const http_manager_1 = __webpack_require__(1906);
-const config_variables_1 = __webpack_require__(4312);
-const requestUtils_1 = __webpack_require__(8524);
+const http_manager_1 = __webpack_require__(51906);
+const config_variables_1 = __webpack_require__(24312);
+const requestUtils_1 = __webpack_require__(68524);
 class DownloadHttpClient {
     constructor() {
         this.downloadHttpManager = new http_manager_1.HttpManager((0, config_variables_1.getDownloadFileConcurrency)(), '@actions/artifact-download');
@@ -902,7 +902,7 @@ exports.DownloadHttpClient = DownloadHttpClient;
 
 /***/ }),
 
-/***/ 664:
+/***/ 30664:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -931,7 +931,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getDownloadSpecification = void 0;
-const path = __importStar(__webpack_require__(1017));
+const path = __importStar(__webpack_require__(71017));
 /**
  * Creates a specification for a set of files that will be downloaded
  * @param artifactName the name of the artifact
@@ -986,13 +986,13 @@ exports.getDownloadSpecification = getDownloadSpecification;
 
 /***/ }),
 
-/***/ 1906:
+/***/ 51906:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HttpManager = void 0;
-const utils_1 = __webpack_require__(9986);
+const utils_1 = __webpack_require__(89986);
 /**
  * Used for managing http clients during either upload or download
  */
@@ -1030,7 +1030,7 @@ exports.HttpManager = HttpManager;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.checkArtifactFilePath = exports.checkArtifactName = void 0;
-const core_1 = __webpack_require__(2186);
+const core_1 = __webpack_require__(42186);
 /**
  * Invalid characters that cannot be in the artifact name or an uploaded file. Will be rejected
  * from the server if attempted to be sent over. These characters are not allowed due to limitations with certain
@@ -1097,7 +1097,7 @@ exports.checkArtifactFilePath = checkArtifactFilePath;
 
 /***/ }),
 
-/***/ 8524:
+/***/ 68524:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1135,9 +1135,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.retryHttpClientRequest = exports.retry = void 0;
-const utils_1 = __webpack_require__(9986);
-const core = __importStar(__webpack_require__(2186));
-const config_variables_1 = __webpack_require__(4312);
+const utils_1 = __webpack_require__(89986);
+const core = __importStar(__webpack_require__(42186));
+const config_variables_1 = __webpack_require__(24312);
 function retry(name, operation, customErrorMessages, maxAttempts) {
     return __awaiter(this, void 0, void 0, function* () {
         let response = undefined;
@@ -1195,13 +1195,13 @@ exports.retryHttpClientRequest = retryHttpClientRequest;
 
 /***/ }),
 
-/***/ 7711:
+/***/ 97711:
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.StatusReporter = void 0;
-const core_1 = __webpack_require__(2186);
+const core_1 = __webpack_require__(42186);
 /**
  * Status Reporter that displays information about the progress/status of an artifact that is being uploaded or downloaded
  *
@@ -1253,7 +1253,7 @@ exports.StatusReporter = StatusReporter;
 
 /***/ }),
 
-/***/ 6494:
+/***/ 36494:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1298,9 +1298,9 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createGZipFileInBuffer = exports.createGZipFileOnDisk = void 0;
-const fs = __importStar(__webpack_require__(7147));
-const zlib = __importStar(__webpack_require__(9796));
-const util_1 = __webpack_require__(3837);
+const fs = __importStar(__webpack_require__(57147));
+const zlib = __importStar(__webpack_require__(59796));
+const util_1 = __webpack_require__(73837);
 const stat = (0, util_1.promisify)(fs.stat);
 /**
  * GZipping certain files that are already compressed will likely not yield further size reductions. Creating large temporary gzip
@@ -1406,7 +1406,7 @@ exports.createGZipFileInBuffer = createGZipFileInBuffer;
 
 /***/ }),
 
-/***/ 9908:
+/***/ 39908:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1444,20 +1444,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.UploadHttpClient = void 0;
-const fs = __importStar(__webpack_require__(7147));
-const core = __importStar(__webpack_require__(2186));
-const tmp = __importStar(__webpack_require__(8065));
-const stream = __importStar(__webpack_require__(2781));
-const utils_1 = __webpack_require__(9986);
-const config_variables_1 = __webpack_require__(4312);
-const util_1 = __webpack_require__(3837);
-const url_1 = __webpack_require__(7310);
+const fs = __importStar(__webpack_require__(57147));
+const core = __importStar(__webpack_require__(42186));
+const tmp = __importStar(__webpack_require__(68065));
+const stream = __importStar(__webpack_require__(12781));
+const utils_1 = __webpack_require__(89986);
+const config_variables_1 = __webpack_require__(24312);
+const util_1 = __webpack_require__(73837);
+const url_1 = __webpack_require__(57310);
 const perf_hooks_1 = __webpack_require__(4074);
-const status_reporter_1 = __webpack_require__(7711);
-const http_client_1 = __webpack_require__(3642);
-const http_manager_1 = __webpack_require__(1906);
-const upload_gzip_1 = __webpack_require__(6494);
-const requestUtils_1 = __webpack_require__(8524);
+const status_reporter_1 = __webpack_require__(97711);
+const http_client_1 = __webpack_require__(63642);
+const http_manager_1 = __webpack_require__(51906);
+const upload_gzip_1 = __webpack_require__(36494);
+const requestUtils_1 = __webpack_require__(68524);
 const stat = (0, util_1.promisify)(fs.stat);
 class UploadHttpClient {
     constructor() {
@@ -1827,7 +1827,7 @@ exports.UploadHttpClient = UploadHttpClient;
 
 /***/ }),
 
-/***/ 8103:
+/***/ 18103:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1856,9 +1856,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getUploadSpecification = void 0;
-const fs = __importStar(__webpack_require__(7147));
-const core_1 = __webpack_require__(2186);
-const path_1 = __webpack_require__(1017);
+const fs = __importStar(__webpack_require__(57147));
+const core_1 = __webpack_require__(42186);
+const path_1 = __webpack_require__(71017);
 const path_and_artifact_name_validation_1 = __webpack_require__(1492);
 /**
  * Creates a specification that describes how each file that is part of the artifact will be uploaded
@@ -1938,7 +1938,7 @@ exports.getUploadSpecification = getUploadSpecification;
 
 /***/ }),
 
-/***/ 9986:
+/***/ 89986:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -1957,12 +1957,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.digestForStream = exports.sleep = exports.getProperRetention = exports.rmFile = exports.getFileSize = exports.createEmptyFilesForArtifact = exports.createDirectoriesForArtifact = exports.displayHttpDiagnostics = exports.getArtifactUrl = exports.createHttpClient = exports.getUploadHeaders = exports.getDownloadHeaders = exports.getContentRange = exports.tryGetRetryAfterValueTimeInMilliseconds = exports.isThrottledStatusCode = exports.isRetryableStatusCode = exports.isForbiddenStatusCode = exports.isSuccessStatusCode = exports.getApiVersion = exports.parseEnvNumber = exports.getExponentialRetryTimeInMilliseconds = void 0;
 const crypto_1 = __importDefault(__webpack_require__(6113));
-const fs_1 = __webpack_require__(7147);
-const core_1 = __webpack_require__(2186);
-const http_client_1 = __webpack_require__(3642);
-const auth_1 = __webpack_require__(4301);
-const config_variables_1 = __webpack_require__(4312);
-const crc64_1 = __importDefault(__webpack_require__(7682));
+const fs_1 = __webpack_require__(57147);
+const core_1 = __webpack_require__(42186);
+const http_client_1 = __webpack_require__(63642);
+const auth_1 = __webpack_require__(14301);
+const config_variables_1 = __webpack_require__(24312);
+const crc64_1 = __importDefault(__webpack_require__(77682));
 /**
  * Returns a retry time in milliseconds that exponentially gets larger
  * depending on the amount of retries that have been attempted
@@ -2236,7 +2236,7 @@ exports.digestForStream = digestForStream;
 
 /***/ }),
 
-/***/ 4301:
+/***/ 14301:
 /***/ (function(__unused_webpack_module, exports) {
 
 
@@ -2323,7 +2323,7 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 
 /***/ }),
 
-/***/ 3642:
+/***/ 63642:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -2362,11 +2362,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.HttpClient = exports.isHttps = exports.HttpClientResponse = exports.HttpClientError = exports.getProxyUrl = exports.MediaTypes = exports.Headers = exports.HttpCodes = void 0;
-const http = __importStar(__webpack_require__(3685));
-const https = __importStar(__webpack_require__(5687));
+const http = __importStar(__webpack_require__(13685));
+const https = __importStar(__webpack_require__(95687));
 const pm = __importStar(__webpack_require__(3003));
-const tunnel = __importStar(__webpack_require__(4294));
-const undici_1 = __webpack_require__(1773);
+const tunnel = __importStar(__webpack_require__(74294));
+const undici_1 = __webpack_require__(41773);
 var HttpCodes;
 (function (HttpCodes) {
     HttpCodes[HttpCodes["OK"] = 200] = "OK";
@@ -3082,12 +3082,12 @@ class DecodedURL extends URL {
 
 /***/ }),
 
-/***/ 8065:
+/***/ 68065:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 
 
-const { promisify } = __webpack_require__(3837);
+const { promisify } = __webpack_require__(73837);
 const tmp = __webpack_require__(8517);
 
 // file
@@ -3153,9 +3153,9 @@ module.exports.setGracefulCleanup = tmp.setGracefulCleanup;
 /*
  * Module dependencies.
  */
-const fs = __webpack_require__(7147);
-const os = __webpack_require__(2037);
-const path = __webpack_require__(1017);
+const fs = __webpack_require__(57147);
+const os = __webpack_require__(22037);
+const path = __webpack_require__(71017);
 const crypto = __webpack_require__(6113);
 const _c = { fs: fs.constants, os: os.constants };
 
