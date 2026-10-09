@@ -112,6 +112,12 @@ irm https://boost.jfrog.com/install.ps1 | iex
 boost init
 ```
 
+**pi で Boost を使えるように設定** — `boost init` は pi に対応していないため、コミュニティ製パッケージ [pi-jfrog-boost](https://github.com/darkdiamond/pi-jfrog-boost) を使います:
+
+```bash
+pi install npm:pi-jfrog-boost
+```
+
 AI コーディングエージェントがユーザーのマシンに Boost をインストールする場合は、**[AGENT-INSTALL.md](./AGENT-INSTALL.md)** に従ってください。
 
 ## Boost を使うタイミング
@@ -169,7 +175,7 @@ boost report -t
 
 ## ラップ対象
 
-- **エージェント:** Cursor、Claude Code、GitHub Copilot、Codex CLI。
+- **エージェント:** Cursor、Claude Code、GitHub Copilot、Codex CLI、pi。
 - **コマンド:** Docker、npm、pytest、Git、GitHub CLI、およびその他のシェルコマンドが同じラッパーを通ります。
 
 ## エージェントによる Boost の使用例

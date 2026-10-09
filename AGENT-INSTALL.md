@@ -43,6 +43,8 @@ ls ~/.cursor 2>/dev/null
 ls ~/.claude 2>/dev/null
 ls ~/.codex 2>/dev/null
 ls ~/.copilot 2>/dev/null
+ls ~/.pi 2>/dev/null
+command -v pi
 ```
 
 On Windows PowerShell:
@@ -57,12 +59,15 @@ Test-Path "$env:USERPROFILE\.cursor"
 Test-Path "$env:USERPROFILE\.claude"
 Test-Path "$env:USERPROFILE\.codex"
 Test-Path "$env:USERPROFILE\.copilot"
+Test-Path "$env:USERPROFILE\.pi"
+Get-Command pi -ErrorAction SilentlyContinue
 ```
 
 Note what you found:
 
 - Fresh install vs already installed vs needs update
-- Which supported agents appear present: Cursor, Claude Code, Codex CLI, GitHub Copilot
+- Which supported agents appear present: Cursor, Claude Code, Codex CLI,
+  GitHub Copilot, pi
 - Whether the user is on macOS/Linux/WSL or native Windows
 
 ## Confirm with the user
@@ -71,7 +76,8 @@ State the plan in plain language and wait for an explicit yes before changing
 anything. Include at least:
 
 1. What you will install or update
-2. Which agent integrations you will wire (or that you will run bare `boost init`)
+2. Which agent integrations you will wire (or that you will run bare
+   `boost init`), including the pi package if the user runs pi
 3. That Boost is preview software under the
    [Online Preview Agreement](https://boost.jfrog.com/preview-agreement/)
 4. That Boost collects metadata such as timing, exit codes, and token savings to
@@ -164,6 +170,32 @@ boost init --cursor --accept-terms
 
 Restart or reload the agent/editor after hooks are installed.
 
+### pi
+
+pi does not read Boost's hook files, so `boost init` neither detects nor wires
+it. Boost reaches pi through a pi package instead:
+
+```bash
+pi install npm:pi-jfrog-boost
+```
+
+Add `-l` to scope it to the current project. Restart pi or run `/reload` so the
+extension loads. If preflight found it already installed, `pi update` picks up
+new releases instead.
+
+Install it only when preflight found pi and the user agreed. Tell them first
+that [pi-jfrog-boost](https://github.com/darkdiamond/pi-jfrog-boost) is a
+community package (MIT), not built or supported by JFrog. It installs nothing
+itself: it runs the `boost` binary already on the machine, accepts no terms on
+the user's behalf, and touches no other agent's configuration. The safety
+boundaries above hold — it is fail-open, and `DISABLE_BOOST=1` still applies,
+for a whole session or prefixed to a single command.
+
+It filters pi's `bash`, `powershell`, `read`, `grep`, `find`, and `ls` output,
+failing commands included, and keeps pi's own continuation notices intact.
+pi's `read` returns PDFs and Office files as raw bytes; the package converts
+them through `boost read` instead.
+
 ## Verify
 
 ```bash
@@ -175,6 +207,7 @@ boost report -t      # terminal narrative; no browser required
 Optional checks:
 
 ```bash
+pi list              # pi: confirms pi-jfrog-boost is installed
 boost report         # interactive localhost web report
 # In the agent, run a noisy command such as git status / npm test and confirm
 # the returned output is compact while failures remain visible.
@@ -204,6 +237,13 @@ boost init --cursor --uninstall
 boost init --claude --uninstall
 boost init --codex --uninstall
 boost init --copilot --uninstall
+```
+
+`boost init` does not wire pi and `boost uninstall` does not remove it; use pi
+(add `-l` if it was installed project-locally):
+
+```bash
+pi uninstall npm:pi-jfrog-boost
 ```
 
 Wholesale removal (ask first; this can remove the binary and known integrations):
