@@ -1,0 +1,2 @@
+# Conventional sitemap URL — @astrojs/sitemap writes sitemap-index.xml.
+/sitemap.xml /sitemap-index.xml 200
