@@ -112,6 +112,12 @@ irm https://boost.jfrog.com/install.ps1 | iex
 boost init
 ```
 
+**Intégrez Boost à pi** — `boost init` ne couvre pas pi, utilisez le paquet communautaire [pi-jfrog-boost](https://github.com/darkdiamond/pi-jfrog-boost) :
+
+```bash
+pi install npm:pi-jfrog-boost
+```
+
 Pour les agents IA de programmation qui installent Boost sur la machine d'un utilisateur, suivez les instructions du fichier **[AGENT-INSTALL.md](./AGENT-INSTALL.md)**.
 
 ## Quand utiliser Boost
@@ -169,7 +175,7 @@ boost report -t
 
 ## Ce que Boost encapsule
 
-- **Agents :** Cursor, Claude Code, GitHub Copilot, Codex CLI.
+- **Agents :** Cursor, Claude Code, GitHub Copilot, Codex CLI, pi.
 - **Commandes :** Docker, npm, pytest, Git, GitHub CLI et d'autres commandes shell passent par le même mécanisme d'encapsulation.
 
 ## Comment vos agents utilisent Boost
