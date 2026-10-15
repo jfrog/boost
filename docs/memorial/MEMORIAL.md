@@ -22,12 +22,26 @@ A family friend described him as "gifted – a prodigy who studied in advanced c
 
 Beyond his professional excellence, Dima was a true Renaissance man:
 * **Polyglot:** Dima was fluent in **11 languages**, including Hebrew, English, Russian, Tagalog, and Arabic, reflecting his deep love for cultures and people.
-* **Musician:** He was a gifted musician, expressing his soul through the keys of a piano and the strings of a guitar.
+* **Musician:** He was a gifted musician, expressing his soul through the keys of a piano and the strings of a guitar. Watch him play [*"Gorod Kotorogo Net"* ("The City That Doesn't Exist")](dima-piano-cover.mp4) on piano.
 * **Gentle Soul:** Above all, Dima was known for his gentle nature, his kindness, and the quiet strength he brought to every room.
 
-### A Life of Love
+### Family
 
-Dima met Lucille Jane during a trip to the Philippines. She moved to Israel to be with him, and they married in April 2024. Together, they dreamed of building a family.
+<p align="center">
+  <img src="gershovich-family.png" alt="Lena, Vladimir, Lucille-Jane, and Dima Gershovich" width="500">
+</p>
+
+Dima was the only child of Vladimir and Lena Gershovich, who had immigrated to Israel from Kyiv. Lena was a well-known and beloved voice and acting coach at the Nissan Nativ Acting Studio, where for decades she trained generations of Israeli actors. Vladimir spent many years working at the Technion — the same institution where Dima would later study.
+
+Dima met his wife, Lucille-Jane, during a trip to the Philippines, her home country. She moved to Israel to build a life with him, working at a local kindergarten, and the two married in April 2024, dreaming of building a family of their own.
+
+Dima, Lucille-Jane, Vladimir, and Lena were together when they were lost, and they remain together in memory.
+
+### In the News
+
+* [Ynetnews](https://www.ynetnews.com/article/skxjv8znwx)
+* [The Times of Israel – "Four members of the Gershovitz family identified as victims of Haifa missile attack"](https://www.timesofisrael.com/four-members-of-the-gershovitz-family-identified-as-victims-of-haifa-missile-attack/)
+* [Technion – "The pain is one: the pain of lives cut short in an instant"](https://www.technion.ac.il/en/blog/article/the-pain-is-one-the-pain-of-lives-cut-short-in-an-instant/)
 
 ### Legacy
 
