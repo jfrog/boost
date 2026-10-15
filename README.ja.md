@@ -80,14 +80,9 @@
 Boost はトークン節約のために品質を犠牲にしません。安全に省ける情報だけを削るため、エージェントの出力品質は変わりません。[Terminal-Bench 2.0 ベンチマーク](https://boost.jfrog.com/blog/benchmarks-terminal-bench/)がそれを実証しています。タスク成功率は同一で、コストは約 12% 低下しています。Boost はエージェントの動作を妨げることなく、その効率を高く保ちます。
 
 <p align="center">
-  <img src=".github/assets/boost-ui-dashboard.png" alt="boost report ダッシュボード: 節約されたコンテキストトークンの推移と、CLI フィルター / コードベース探索の内訳" width="768">
-</p>
-
-<p align="center">
-  <picture>
-    <source srcset=".github/assets/boost-intro-mobile.gif" media="(max-width: 600px)">
-    <img src=".github/assets/boost-intro.gif" alt="Boost の紹介: JFrog boost のロゴに続き、インストール、タスク実行、boost report のウォークスルー" width="768">
-  </picture>
+  <a href="https://boost.jfrog.com/#token-diet">
+    <img src=".github/assets/frogi-token-diet.gif" alt="アニメーションのティーザー：カエルのFrogiがトークンを食べ、送り直されたコンテキストの階段を上り、体重計で120万トークンを記録。その後、測って、掘り出して、削って軽くなります。" width="720">
+  </a>
 </p>
 
 ## クイックスタート
@@ -138,19 +133,6 @@ $ boost npm ci
 ```
 
 エージェントに届くのは、端末の過去出力ではなく有用なサマリーです。失敗時には、Boost は失敗したテスト、コンパイラエラー、または重要なスタックフレームを保持します。
-
-## [Boost が他と異なる点](https://boost.jfrog.com/docs/en/why-boost/)
-
-| 機能 | Boost | RTK | Headroom | Caveman |
-| --- | :---: | :---: | :---: | :---: |
-| コマンド出力の圧縮 | ✓ | ✓ | ✓ | × |
-| フルコンテキストと RAG の圧縮 | ✓ | × | ✓ | × |
-| アシスタント応答の圧縮 | × | × | × | ✓ |
-| コマンド出力の復元 | ✓ | ✓ | ✓ | × |
-| ネイティブ承認で元の実行コマンドを確認可能 | ✓ | × | — | — |
-| バージョン情報付きの復元フィードバック | ✓ | × | × | × |
-| 繰り返し復元されたフィルタの自動無効化 | ✓ | × | × | × |
-| エージェントのタスクとコストを対象としたエンドツーエンド A/B 比較 | ✓ | × | × | × |
 
 ## 削減効果を確認する
 
