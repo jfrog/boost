@@ -80,14 +80,9 @@
 Boost ne sacrifie jamais la qualité au nom des économies. Il ne supprime que ce qui peut l'être sans risque, afin que la sortie transmise à l'agent reste tout aussi précise. Notre [benchmark Terminal-Bench 2.0](https://boost.jfrog.com/blog/benchmarks-terminal-bench/) le confirme : même taux de réussite des tâches, avec un coût inférieur de ~12 % — Boost maintient les agents à leur niveau optimal sans jamais les ralentir.
 
 <p align="center">
-  <img src=".github/assets/boost-ui-dashboard.png" alt="Tableau de bord boost report : tokens de contexte économisés au fil du temps, avec la répartition filtres CLI et exploration du code" width="768">
-</p>
-
-<p align="center">
-  <picture>
-    <source srcset=".github/assets/boost-intro-mobile.gif" media="(max-width: 600px)">
-    <img src=".github/assets/boost-intro.gif" alt="Présentation de Boost : le logo JFrog boost, puis une démonstration de l'installation, de l'exécution d'une tâche et de boost report" width="768">
-  </picture>
+  <a href="https://boost.jfrog.com/#token-diet">
+    <img src=".github/assets/frogi-token-diet.gif" alt="Teaser animé : la grenouille Frogi mange des tokens, gravit un escalier de contexte renvoyé, pèse 1,2 M de tokens, puis mesure, fouille et élague jusqu’à s’alléger." width="720">
+  </a>
 </p>
 
 ## Démarrage rapide
@@ -138,19 +133,6 @@ $ boost npm ci
 ```
 
 L'agent voit le résumé utile, pas l'historique du terminal. En cas d'échec, Boost conserve les informations qui comptent : le test en échec, l'erreur de compilation ou l'entrée pertinente de la trace de pile.
-
-## [Ce qui distingue Boost](https://boost.jfrog.com/docs/en/why-boost/)
-
-| Fonctionnalité | Boost | RTK | Headroom | Caveman |
-| --- | :---: | :---: | :---: | :---: |
-| Compression de la sortie des commandes | ✓ | ✓ | ✓ | × |
-| Compression du contexte complet et du RAG | ✓ | × | ✓ | × |
-| Compression des réponses de l'assistant | × | × | × | ✓ |
-| Récupération de la sortie des commandes | ✓ | ✓ | ✓ | × |
-| L'interface d'approbation native affiche l'exécutable d'origine | ✓ | × | — | — |
-| Retour d'information versionné sur les récupérations | ✓ | × | × | × |
-| Désactivation automatique des filtres dont la sortie est récupérée à plusieurs reprises | ✓ | × | × | × |
-| Test A/B de bout en bout sur la tâche de l'agent et le coût | ✓ | × | × | × |
 
 ## Visualisez vos économies
 

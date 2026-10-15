@@ -80,14 +80,9 @@
 Boost spart nie auf Kosten der Qualität. Es kürzt nur Inhalte, die bedenkenlos entfallen können, sodass die Agent-Ausgabe genauso präzise bleibt. Unser [Terminal-Bench-2.0-Benchmark](https://boost.jfrog.com/blog/benchmarks-terminal-bench/) belegt das: identische Erfolgsquote bei der Aufgabenbearbeitung, ~12 % niedrigere Kosten — Boost sorgt dafür, dass Agents effizient arbeiten, ohne ihren Arbeitsfluss zu unterbrechen.
 
 <p align="center">
-  <img src=".github/assets/boost-ui-dashboard.png" alt="boost report Dashboard: gesparte Kontext-Tokens im Zeitverlauf, aufgeschlüsselt nach CLI-Filtern und Code-Exploration" width="768">
-</p>
-
-<p align="center">
-  <picture>
-    <source srcset=".github/assets/boost-intro-mobile.gif" media="(max-width: 600px)">
-    <img src=".github/assets/boost-intro.gif" alt="Boost-Intro: das JFrog-boost-Logo und ein Rundgang durch Installation, Task-Ausführung und boost report" width="768">
-  </picture>
+  <a href="https://boost.jfrog.com/#token-diet">
+    <img src=".github/assets/frogi-token-diet.gif" alt="Animierter Teaser: Frosch Frogi frisst Tokens, steigt eine Treppe aus erneut gesendetem Kontext hinauf, bringt 1,2 Mio. Tokens auf die Waage und misst, schürft und trimmt sich dann leichter." width="720">
+  </a>
 </p>
 
 ## Schnellstart
@@ -138,19 +133,6 @@ $ boost npm ci
 ```
 
 Der Agent sieht die nützliche Zusammenfassung statt des Scrollbacks. Im Fehlerfall lässt Boost den entscheidenden fehlgeschlagenen Test, Compilerfehler oder Stack-Frame in der Ausgabe stehen.
-
-## [Was Boost von anderen unterscheidet](https://boost.jfrog.com/docs/en/why-boost/)
-
-| Fähigkeit | Boost | RTK | Headroom | Caveman |
-| --- | :---: | :---: | :---: | :---: |
-| Kompression der Befehlsausgabe | ✓ | ✓ | ✓ | × |
-| Kompression des vollständigen Kontexts und RAG-Kompression | ✓ | × | ✓ | × |
-| Kompression der Assistentenantworten | × | × | × | ✓ |
-| Wiederherstellung der Befehlsausgabe | ✓ | ✓ | ✓ | × |
-| Ursprüngliche ausführbare Datei für native Freigabe sichtbar | ✓ | × | — | — |
-| Versioniertes Retrieval-Feedback | ✓ | × | × | × |
-| Automatische Deaktivierung von Filtern nach wiederholtem Abruf der Originalausgabe | ✓ | × | × | × |
-| Durchgängiger A/B-Test von Agent-Aufgaben und Kosten | ✓ | × | × | × |
 
 ## Sieh dir deine Einsparungen an
 

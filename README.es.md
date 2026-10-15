@@ -80,14 +80,9 @@
 Boost nunca sacrifica calidad para ahorrar. Solo elimina lo que puede descartarse sin riesgo, por lo que la salida del agente conserva la misma precisión. Nuestra [evaluación comparativa con Terminal-Bench 2.0](https://boost.jfrog.com/blog/benchmarks-terminal-bench/) lo demuestra: la misma tasa de éxito en las tareas con un coste aproximadamente un 12 % inferior. Boost mantiene optimizados a los agentes sin interrumpir nunca su ritmo.
 
 <p align="center">
-  <img src=".github/assets/boost-ui-dashboard.png" alt="Panel de boost report: tokens de contexto ahorrados con el tiempo, con el desglose de filtros de CLI y exploración del código" width="768">
-</p>
-
-<p align="center">
-  <picture>
-    <source srcset=".github/assets/boost-intro-mobile.gif" media="(max-width: 600px)">
-    <img src=".github/assets/boost-intro.gif" alt="Introducción a Boost: el logo de JFrog boost y un recorrido por la instalación, la ejecución de una tarea y boost report" width="768">
-  </picture>
+  <a href="https://boost.jfrog.com/#token-diet">
+    <img src=".github/assets/frogi-token-diet.gif" alt="Teaser animado: la rana Frogi come tokens, sube una escalera de contexto reenviado, marca 1,2 M de tokens en la báscula y luego mide, explora y recorta hasta pesar menos." width="720">
+  </a>
 </p>
 
 ## Inicio rápido
@@ -138,19 +133,6 @@ $ boost npm ci
 ```
 
 El agente ve el resumen útil, no todo el historial de la terminal. Cuando se produce un fallo, Boost conserva la prueba fallida, el error del compilador o el marco de pila relevante.
-
-## [En qué se diferencia Boost](https://boost.jfrog.com/docs/en/why-boost/)
-
-| Capacidad | Boost | RTK | Headroom | Caveman |
-| --- | :---: | :---: | :---: | :---: |
-| Compresión de la salida de comandos | ✓ | ✓ | ✓ | × |
-| Compresión del contexto completo y compresión RAG | ✓ | × | ✓ | × |
-| Compresión de las respuestas del asistente | × | × | × | ✓ |
-| Recuperación de la salida de comandos | ✓ | ✓ | ✓ | × |
-| El sistema de aprobación nativo recibe el ejecutable original | ✓ | × | — | — |
-| Información versionada sobre las recuperaciones | ✓ | × | × | × |
-| Desactivación automática de filtros cuyo contenido se recupera repetidamente | ✓ | × | × | × |
-| Pruebas A/B integrales de tareas y costes de agentes | ✓ | × | × | × |
 
 ## Consulta tus ahorros
 
