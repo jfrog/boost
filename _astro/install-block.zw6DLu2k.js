@@ -1,0 +1,1 @@
+import{n as e,t}from"./install-block.BpoAnPMQ.js";export{t as InstallBlock,e as detectPlatform};

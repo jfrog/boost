@@ -1,0 +1,5 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cache-hit token">
+  <path d="M 32 5 L 59 25 L 51 59 L 13 59 L 5 25 Z" fill="#8fe0e8" stroke="#2b6a78" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 32 5 L 59 25 L 5 25 Z" fill="#e0ffff"/>
+  <path d="M 36 27 L 22 42 L 31 43 L 25 57 L 43 38 L 33 37 Z" fill="#2b6a78"/>
+</svg>
