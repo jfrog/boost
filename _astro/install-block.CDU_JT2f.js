@@ -1,0 +1,1 @@
+import{n as e,t}from"./install-block.Y0VhutXc.js";export{t as InstallBlock,e as detectPlatform};

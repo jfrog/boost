@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+  "skills": [
+    {
+      "name": "install-boost",
+      "type": "skill-md",
+      "description": "Install and initialize Boost CLI for a coding agent, then verify measured token savings.",
+      "url": "https://boost.jfrog.com/.well-known/agent-skills/install-boost/SKILL.md",
+      "digest": "sha256:1b5afffcd4294974857d737594fb40c8687d4b2d06bc33e731134df992e0d4a3"
+    }
+  ]
+}

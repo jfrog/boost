@@ -1,0 +1,10 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mystery grab bag">
+  <!-- The original's crown-topped grab bag: worth something, but you find out at the ledge. -->
+  <path d="M12 22 L22 16 L32 24 L42 16 L52 22 L52 14 L44 6 L20 6 L12 14 Z"
+        fill="#f5d76e" stroke="#7a5218" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M20 26 L44 26 L57 44 Q59 56 47 59 L17 59 Q5 56 7 44 Z"
+        fill="#e8c88a" stroke="#7a5218" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="19" y="22" width="26" height="7" rx="2" fill="#7a5218"/>
+  <text x="32" y="50" font-family="ui-monospace, monospace" font-size="24" font-weight="700"
+        fill="#d2691e" text-anchor="middle">?</text>
+</svg>
