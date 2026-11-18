@@ -1,0 +1,4 @@
+/*
+  Link: </llms.txt>; rel="describedby"; type="text/markdown", </docs/en/overview/>; rel="service-doc"; type="text/html", </.well-known/agent-skills/index.json>; rel="describedby"; type="application/json"
+  Vary: Accept
+  X-Content-Type-Options: nosniff
