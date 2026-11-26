@@ -1,0 +1,1 @@
+export{t as InstallBlock,n as detectPlatform}from"./install-block.B4orNeOZ.js";

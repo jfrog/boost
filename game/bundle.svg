@@ -1,0 +1,9 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Boost-compressed bundle">
+  <path d="M7 16 L57 16 L57 52 L7 52 Z" fill="#5cb85f" stroke="#1d5a22" stroke-width="4" stroke-linejoin="round"/>
+  <rect x="9" y="18" width="46" height="7" fill="#b6f5b8"/>
+  <rect x="26" y="16" width="12" height="36" fill="#1d5a22"/>
+  <rect x="7" y="29" width="50" height="10" fill="#1d5a22"/>
+  <rect x="29" y="16" width="6" height="36" fill="#b6f5b8"/>
+  <rect x="7" y="32" width="50" height="4" fill="#b6f5b8"/>
+  <path d="M20 8 Q32 1 44 8 L44 16 L20 16 Z" fill="#3f8a42" stroke="#1d5a22" stroke-width="3" stroke-linejoin="round"/>
+</svg>

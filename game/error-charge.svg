@@ -1,0 +1,7 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Error charge">
+  <path d="M22 3 L42 3 L61 22 L61 42 L42 61 L22 61 L3 42 L3 22 Z"
+        fill="#d63a26" stroke="#6a1a10" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M22 3 L42 3 L61 22 L52 22 L38 12 L26 12 L12 22 L3 22 Z" fill="#f07a5a" opacity="0.7"/>
+  <rect x="28" y="15" width="8" height="24" fill="#ffd8d0"/>
+  <rect x="28" y="43" width="8" height="8" fill="#ffd8d0"/>
+</svg>
